@@ -1,0 +1,6 @@
+{
+  "main": "dist/magical-types.cjs.js",
+  "preconstruct": {
+    "source": "../src/macro"
+  }
+}

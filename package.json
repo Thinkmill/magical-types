@@ -1,0 +1,23 @@
+{
+  "name": "magical-types",
+  "version": "0.0.1",
+  "main": "dist/magical-types.cjs.js",
+  "license": "MIT",
+  "files": [
+    "macro",
+    "dist"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "preconstruct": "^0.0.82",
+    "typescript": "^3.5.2"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      ".",
+      "macro"
+    ]
+  }
+}
