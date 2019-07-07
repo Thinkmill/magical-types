@@ -1,0 +1,22 @@
+{
+  "name": "magical-types",
+  "version": "0.0.1",
+  "main": "dist/magical-types.cjs.js",
+  "license": "MIT",
+  "files": [
+    "macro",
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/react": "^16.8.23",
+    "preconstruct": "^0.0.82",
+    "react": "^16.8.6",
+    "typescript": "^3.5.2"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      ".",
+      "macro"
+    ]
+  }
+}
