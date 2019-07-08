@@ -1,6 +1,6 @@
-# magical-types
+# 🔮 magical-types
 
-> Document stuff typed with TypeScript _magically_
+> Document React components and other stuff typed with TypeScript _magically_
 
 **THIS IS ONLY WHAT I THINK THIS THING MIGHT LOOK LIKE. THIS DOES NOT ACTUALLY WORK YET.**
 
@@ -32,4 +32,16 @@ let MyComponent = (props: Props) => {
 function myFunctionThatDoesCoolStuff(someArgument: { thing: true }) {}
 
 <FunctionTypes function={myFunctionThatDoesCoolStuff} />;
+
+function someFunctionThatReturnsAComponent() {
+  return MyComponent;
+}
+
+<PropTypes component={someFunctionThatReturnsAComponent()} />;
 ```
+
+## Credit/Inspiration
+
+This project is mostly some ideas that I've been thinking about because of some of the constraints in [react-docgen](https://github.com/reactjs/react-docgen), [react-docgen-typescript](https://github.com/styleguidist/react-docgen-typescript) and [extract-react-types](https://github.com/atlassian/extract-react-types) and how some problems could be removed by changing some constraints, notably the removal of having to know what is and isn't a React component.
+
+Not yet implemented but the code for rendering types will likely be heavily based off [pretty-proptypes](https://github.com/atlassian/extract-react-types/tree/master/packages/pretty-proptypes)

@@ -7,7 +7,7 @@ type Props = {
 };
 
 let MyComponentThatDoesStuff = (props: Props) => {
-  return;
+  return null;
 };
 
 <PropTypes component={MyComponentThatDoesStuff} />;
