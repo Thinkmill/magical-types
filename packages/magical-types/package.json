@@ -2,6 +2,7 @@
   "name": "magical-types",
   "version": "0.0.1",
   "main": "dist/magical-types.cjs.js",
+  "module": "dist/magical-types.esm.js",
   "license": "MIT",
   "files": [
     "macro",
@@ -16,7 +17,11 @@
   "preconstruct": {
     "entrypoints": [
       ".",
-      "macro"
+      "macro",
+      "experiment"
     ]
+  },
+  "dependencies": {
+    "typescript": "^3.5.2"
   }
 }

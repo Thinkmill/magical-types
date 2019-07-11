@@ -2,6 +2,6 @@
   "main": "dist/magical-types.cjs.js",
   "module": "dist/magical-types.esm.js",
   "preconstruct": {
-    "source": "../src/macro"
+    "source": "../src/experiment"
   }
 }

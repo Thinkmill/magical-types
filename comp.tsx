@@ -1,13 +1,18 @@
 import React from "react";
-import { PropTypes } from "magical-types";
+
+type Thing = (firstArg: string) => number;
 
 type Props = {
   /* Some description for this */
-  aProp: boolean;
+  a: boolean;
+  b: any;
+  c: "some string";
+  d: "some string" | "something";
+  e: Thing;
 };
 
-let MyComponentThatDoesStuff = (props: Props) => {
+type PropsAlias = Props;
+
+export let MyComponentThatDoesStuff = (props: PropsAlias) => {
   return null;
 };
-
-<PropTypes component={MyComponentThatDoesStuff} />;

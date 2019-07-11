@@ -1,121 +1,58 @@
-import typescript from "typescript";
-import * as fs from "fs";
-import path from "path";
+// @ts-ignore
+import { createMacro, MacroError } from "babel-plugin-macros";
+import * as BabelTypes from "@babel/types";
+import { Visitor, NodePath } from "@babel/traverse";
+import { ComponentType } from "react";
+// @ts-ignore
+import { addNamed } from "@babel/helper-module-imports";
+import { getTypes } from "./get-types";
 
-let configFileName = typescript.findConfigFile(
-  __dirname,
-  typescript.sys.fileExists
-);
+export let PropTypes = (props: { component: ComponentType<any> }) => {
+  return null;
+};
 
-if (!configFileName) {
-  throw new Error("No tsconfig.json file could be found");
-}
+type MacroArgs = {
+  references: Record<string, NodePath[]>;
+  state: { filename: string };
+  babel: { types: typeof BabelTypes };
+};
 
-let configFileContents = fs.readFileSync(configFileName, "utf8");
+export default createMacro(({ references, state, babel }: MacroArgs) => {
+  try {
+    let t = babel.types;
+    if (references.PropTypes && references.PropTypes.length) {
+      let identifierName: string = addNamed(
+        references.PropTypes[0],
+        "PropTypes",
+        "magical-types"
+      ).name;
+      let things: Map<
+        number,
+        Map<number, NodePath<BabelTypes.JSXOpeningElement>>
+      > = new Map();
+      references.PropTypes.forEach(reference => {
+        let { parentPath } = reference;
 
-const result = typescript.parseConfigFileTextToJson(
-  configFileName,
-  configFileContents
-);
-
-let config = typescript.parseJsonConfigFileContent(
-  result,
-  typescript.sys,
-  process.cwd(),
-  undefined,
-  configFileName
-);
-
-let program = typescript.createProgram({
-  options: config.options,
-  rootNames: [path.join(process.cwd(), "comp.tsx")]
-});
-
-let typeChecker = program.getTypeChecker();
-
-function getFunctionComponentProps(type: typescript.Type) {
-  const callSignatures = type.getCallSignatures();
-
-  if (callSignatures.length) {
-    for (const sig of callSignatures) {
-      const params = sig.getParameters();
-      if (params.length !== 0) {
-        return params[0];
-      }
-    }
-  }
-}
-
-function getClassComponentProps(type: typescript.Type) {
-  const constructSignatures = type.getConstructSignatures();
-
-  if (constructSignatures.length) {
-    for (const sig of constructSignatures) {
-      const instanceType = sig.getReturnType();
-      const props = instanceType.getProperty("props");
-
-      if (props) {
-        return props;
-      }
-    }
-  }
-}
-
-for (let filename of program.getRootFileNames()) {
-  let sourceFile = program.getSourceFile(filename);
-  if (sourceFile !== undefined) {
-    let visit = (node: typescript.Node) => {
-      typescript.forEachChild(node, node => {
-        console.log(typescript.SyntaxKind[node.kind]);
-        if (
-          typescript.isJsxOpeningLikeElement(node) &&
-          typescript.isIdentifier(node.tagName) &&
-          node.tagName.escapedText === "PropTypes"
-        ) {
-          let componentAttrib = node.attributes.properties.find(
-            x =>
-              typescript.isJsxAttribute(x) && x.name.escapedText === "component"
-          );
-          if (
-            componentAttrib &&
-            typescript.isJsxAttribute(componentAttrib) &&
-            componentAttrib.initializer &&
-            typescript.isJsxExpression(componentAttrib.initializer) &&
-            componentAttrib.initializer.expression
-          ) {
-            let symbol = typeChecker.getSymbolAtLocation(
-              componentAttrib.initializer.expression
-            );
-            if (symbol) {
-              const type = typeChecker.getTypeOfSymbolAtLocation(
-                symbol,
-                symbol.valueDeclaration || symbol.declarations![0]
-              );
-
-              let propsType =
-                getFunctionComponentProps(type) || getClassComponentProps(type);
-
-              if (propsType) {
-                console.log(propsType);
-              }
-            }
+        reference.replaceWith(t.jsxIdentifier(identifierName));
+        if (parentPath.isJSXOpeningElement()) {
+          if (parentPath.node.start === null || parentPath.node.end === null) {
+            throw new Error("start and end not found");
           }
+          if (!things.has(parentPath.node.start)) {
+            things.set(parentPath.node.start, new Map());
+          }
+          let map = things.get(parentPath.node.start);
+          if (!map) {
+            throw new Error("this should never happen");
+          }
+          map.set(parentPath.node.end, parentPath);
         }
-
-        visit(node);
       });
-    };
-    visit(sourceFile);
+      let stuff = getTypes(state.filename, things);
+      console.log(stuff);
+    }
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
-}
-
-// console.log(program, typeChecker);
-
-console.log("done");
-
-// i want this process to stay alive when i use node --inspect
-function a() {
-  setTimeout(() => a(), 100000);
-}
-
-a();
+});
