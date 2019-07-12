@@ -9,14 +9,7 @@ type Thing = (firstArg: string) => number;
 type Obj = { thing: boolean };
 
 type Props = {
-  /* Some description for this */
-  a?: boolean;
-  b: any;
-  c?: "some string";
-  d: "some string" | "something";
-  e: Thing;
-  f: Obj;
-  g: object;
+  c: Array<string>;
 };
 
 type PropsAlias = Props;
@@ -30,7 +23,6 @@ export default () => {
     <div css={{ fontFamily: "sans-serif" }}>
       something
       <PropTypes component={MyComponentThatDoesStuff} />
-      <PropTypes component={AnotherComp} />
     </div>
   );
 };

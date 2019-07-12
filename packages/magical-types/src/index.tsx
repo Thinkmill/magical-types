@@ -11,6 +11,7 @@ import {
 } from "./pretty-proptypes/components";
 import { colors } from "./pretty-proptypes/components/constants";
 import AddBrackets from "./pretty-proptypes/PrettyConvert/AddBrackets";
+import * as flatted from "flatted";
 
 const Arrow = () => (
   <span
@@ -68,16 +69,28 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return (
         <span>
           <AddBrackets>
-            {node.parameters.map((param, index, array) => (
-              <React.Fragment key={index}>
-                {param.name ? <Type>{param.name}: </Type> : undefined}
-                {renderNode(param.type, depth + 1)}
-                {array.length - 1 === index ? "" : ", "}
-              </React.Fragment>
-            ))}
+            {() =>
+              node.parameters.map((param, index, array) => (
+                <React.Fragment key={index}>
+                  {param.name ? <Type>{param.name}: </Type> : undefined}
+                  {renderNode(param.type, depth + 1)}
+                  {array.length - 1 === index ? "" : ", "}
+                </React.Fragment>
+              ))
+            }
           </AddBrackets>
           <Arrow />
           {renderNode(node.return, depth + 1)}
+        </span>
+      );
+    }
+    case "Array": {
+      return (
+        <span>
+          <TypeMeta>Array</TypeMeta>
+          <AddBrackets openBracket="<" closeBracket=">">
+            {() => <Indent>{renderNode(node.value, depth + 1)}</Indent>}
+          </AddBrackets>
         </span>
       );
     }
@@ -86,14 +99,16 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
         <span>
           <TypeMeta>One of </TypeMeta>
           <AddBrackets openBracket="<" closeBracket=">">
-            <Indent>
-              {node.types.map((n, index, array) => (
-                <div key={index}>
-                  {renderNode(n, depth + 1)}
-                  {array.length - 1 === index ? "" : ", "}
-                </div>
-              ))}
-            </Indent>
+            {() => (
+              <Indent>
+                {node.types.map((n, index, array) => (
+                  <div key={index}>
+                    {renderNode(n, depth + 1)}
+                    {array.length - 1 === index ? "" : ", "}
+                  </div>
+                ))}
+              </Indent>
+            )}
           </AddBrackets>
         </span>
       );
@@ -113,7 +128,7 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return arr;
     }
     case "Object": {
-      let props = <Properties depth={depth} node={node} />;
+      let props = () => <Properties depth={depth} node={node} />;
       if (node.name !== null && depth !== 0) {
         return (
           <span>
@@ -149,11 +164,6 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
 }
 export let PropTypes = (props: { component: ComponentType<any> }) => {
   console.log(props);
-  let node: MagicalNode = (props as any).__types;
-  return (
-    <div>
-      {renderNode(node, 0)}
-      <pre>{JSON.stringify(node, null, 2)}</pre>
-    </div>
-  );
+  let node: MagicalNode = flatted.parse((props as any).__types);
+  return <div>{renderNode(node, 0)}</div>;
 };

@@ -38,7 +38,7 @@ const StateBit = ({
 type Props = {
   openBracket: string;
   closeBracket: string;
-  children: React.ReactNode;
+  children: () => React.ReactNode;
   closedContent: React.ReactNode;
   initialIsShown: boolean;
 };
@@ -76,7 +76,7 @@ export default class AddBrackets extends Component<Props, State> {
           {openBracket}
         </StateBit>
         {isShown ? (
-          children
+          children()
         ) : (
           <StateBit
             isHovered={isHovered}
