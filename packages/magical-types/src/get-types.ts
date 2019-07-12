@@ -1,8 +1,9 @@
 import typescript from "typescript";
 import * as fs from "fs";
-import { NodePath } from "@babel/core";
+import { NodePath, types } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { MagicalNode } from "./types";
+import path from "path";
 
 let configFileName = typescript.findConfigFile(
   __dirname,
@@ -28,14 +29,72 @@ let config = typescript.parseJsonConfigFileContent(
   configFileName
 );
 
+let filesMap = new Map();
+
+const servicesHost = createServiceHost(config.options, filesMap);
+const documentRegistry = typescript.createDocumentRegistry();
+let languageService = typescript.createLanguageService(
+  servicesHost,
+  documentRegistry
+);
+config.fileNames.forEach(filepath => {
+  const normalized = path.normalize(filepath);
+  const found = filesMap.get(normalized);
+  filesMap.set(normalized, {
+    text: fs.readFileSync(normalized, "utf-8"),
+    version: found ? found.version + 1 : 0
+  });
+});
+
+// https://github.com/pedronauck/docz/blob/c0749d32d9b806b8a83fb91f0dbb34203585df4f/core/docz-core/src/utils/docgen/typescript.ts#L122-L157
+
+interface TSFile {
+  text?: string;
+  version: number;
+}
+function createServiceHost(
+  compilerOptions: typescript.CompilerOptions,
+  files: Map<string, TSFile>
+): typescript.LanguageServiceHost {
+  return {
+    getScriptFileNames: () => {
+      return [...files.keys()];
+    },
+    getScriptVersion: fileName => {
+      const file = files.get(fileName);
+      return (file && file.version.toString()) || "";
+    },
+    getScriptSnapshot: fileName => {
+      if (!fs.existsSync(fileName)) {
+        return undefined;
+      }
+
+      let file = files.get(fileName);
+
+      if (file === undefined) {
+        const text = fs.readFileSync(fileName).toString();
+
+        file = { version: 0, text };
+        files.set(fileName, file);
+      }
+
+      return typescript.ScriptSnapshot.fromString(file!.text!);
+    },
+    getCurrentDirectory: () => process.cwd(),
+    getCompilationSettings: () => compilerOptions,
+    getDefaultLibFileName: options => typescript.getDefaultLibFilePath(options),
+    fileExists: typescript.sys.fileExists,
+    readFile: typescript.sys.readFile,
+    readDirectory: typescript.sys.readDirectory
+  };
+}
+
 export function getTypes(
   filename: string,
-  things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>
+  things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>,
+  numOfThings: number
 ) {
-  let program = typescript.createProgram({
-    options: config.options,
-    rootNames: [filename]
-  });
+  let program = languageService.getProgram()!;
 
   let typeChecker = program.getTypeChecker();
 
@@ -181,20 +240,20 @@ export function getTypes(
   if (sourceFile === undefined) {
     throw new Error("source file could not be found");
   }
+  let num = 0;
   let visit = (node: typescript.Node) => {
     typescript.forEachChild(node, node => {
-      console.log(typescript.SyntaxKind[node.kind]);
-
       let map = things.get(node.pos);
 
       if (map) {
-        console.log("found a thing", typescript.SyntaxKind[node.kind]);
         let nodePath = map.get(node.end);
         if (nodePath) {
-          if (!typescript.isJsxOpeningLikeElement(node)) {
+          num++;
+          if (!typescript.isJsxOpeningLikeElement(node.parent)) {
             throw new Error("is not a jsx opening element");
           }
-          let componentAttrib = node.attributes.properties.find(
+          let jsxOpening = node.parent;
+          let componentAttrib = jsxOpening.attributes.properties.find(
             x =>
               typescript.isJsxAttribute(x) && x.name.escapedText === "component"
           );
@@ -221,7 +280,7 @@ export function getTypes(
             symbol.valueDeclaration || symbol.declarations![0]
           );
 
-          console.log(type);
+          console.log(typeChecker.typeToString(type));
 
           let propsSymbol =
             getFunctionComponentProps(type) || getClassComponentProps(type);
@@ -260,4 +319,7 @@ export function getTypes(
     });
   };
   visit(sourceFile);
+  if (num !== numOfThings) {
+    throw new Error("num !== numOfThings");
+  }
 }

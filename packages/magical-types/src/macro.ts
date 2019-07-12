@@ -30,25 +30,28 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
         number,
         Map<number, NodePath<BabelTypes.JSXOpeningElement>>
       > = new Map();
+      let num = 0;
       references.PropTypes.forEach(reference => {
         let { parentPath } = reference;
 
-        reference.replaceWith(t.jsxIdentifier(identifierName));
         if (parentPath.isJSXOpeningElement()) {
-          if (parentPath.node.start === null || parentPath.node.end === null) {
+          if (reference.node.start === null || reference.node.end === null) {
             throw new Error("start and end not found");
           }
-          if (!things.has(parentPath.node.start)) {
-            things.set(parentPath.node.start, new Map());
+          if (!things.has(reference.node.start)) {
+            things.set(reference.node.start, new Map());
           }
-          let map = things.get(parentPath.node.start);
+          let map = things.get(reference.node.start);
           if (!map) {
             throw new Error("this should never happen");
           }
-          map.set(parentPath.node.end, parentPath);
+          num++;
+          map.set(reference.node.end, parentPath);
         }
+        reference.replaceWith(t.jsxIdentifier(identifierName));
       });
-      let stuff = getTypes(state.filename, things);
+
+      let stuff = getTypes(state.filename, things, num);
       console.log(stuff);
     }
   } catch (err) {
