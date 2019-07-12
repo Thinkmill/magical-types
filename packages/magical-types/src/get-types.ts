@@ -14,15 +14,17 @@ if (!configFileName) {
   throw new Error("No tsconfig.json file could be found");
 }
 
-const project = new Project({
-  tsConfigFilePath: configFileName
-});
-
 export function getTypes(
   filename: string,
   things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>,
   numOfThings: number
 ) {
+  const project = new Project({
+    tsConfigFilePath: configFileName,
+    addFilesFromTsConfig: false
+  });
+  project.addExistingSourceFile(filename);
+  project.resolveSourceFileDependencies();
   function getFunctionComponentProps(type: typescript.Type) {
     const callSignatures = type.getCallSignatures();
 
@@ -51,47 +53,16 @@ export function getTypes(
   }
 
   function convertType(type: typescript.Type): MagicalNode {
-    if (type.flags & typescript.TypeFlags.Any) {
+    if (
+      (type as any).intrinsicName &&
+      (type as any).intrinsicName !== "error"
+    ) {
       return {
-        type: "Any"
+        type: "Intrinsic",
+        value: (type as any).intrinsicName
       };
     }
-    if (type.flags & typescript.TypeFlags.Undefined) {
-      return {
-        type: "Undefined"
-      };
-    }
-    if (type.flags & typescript.TypeFlags.Boolean) {
-      return {
-        type: "Boolean"
-      };
-    }
-    if (type.flags & typescript.TypeFlags.BooleanLiteral) {
-      return {
-        type: "BooleanLiteral",
-        value: (type as any).value
-      };
-    }
-    if (type.flags & typescript.TypeFlags.Number) {
-      return {
-        type: "Number"
-      };
-    }
-    if (type.flags & typescript.TypeFlags.String) {
-      return {
-        type: "String"
-      };
-    }
-    if (type.flags & typescript.TypeFlags.Void) {
-      return {
-        type: "Void"
-      };
-    }
-    if (type.flags & typescript.TypeFlags.VoidLike) {
-      return {
-        type: "VoidLike"
-      };
-    }
+
     if (type.isStringLiteral()) {
       return {
         type: "StringLiteral",
@@ -117,28 +88,34 @@ export function getTypes(
       };
     }
     let callSignatures = type.getCallSignatures();
-    if (callSignatures.length) {
-      return {
-        type: "Function",
-        signatures: callSignatures.map(callSignature => {
-          let returnType = callSignature.getReturnType();
-          let parameters = callSignature.getParameters().map(parameter => {
-            return {
-              name: parameter.name,
-              type: convertType(
-                typeChecker.getTypeOfSymbolAtLocation(
-                  parameter,
-                  parameter.valueDeclaration || parameter.declarations[0]
-                )
-              )
-            };
-          });
 
+    if (callSignatures.length) {
+      let signatures = callSignatures.map(callSignature => {
+        let returnType = callSignature.getReturnType();
+        let parameters = callSignature.getParameters().map(parameter => {
           return {
-            return: convertType(returnType),
-            parameters
+            name: parameter.name,
+            type: convertType(
+              typeChecker.getTypeOfSymbolAtLocation(
+                parameter,
+                parameter.valueDeclaration || parameter.declarations[0]
+              )
+            )
           };
-        })
+        });
+
+        return {
+          type: "Function",
+          return: convertType(returnType),
+          parameters
+        } as const;
+      });
+      if (signatures.length === 1) {
+        return signatures[0];
+      }
+      return {
+        type: "Union",
+        types: signatures
       };
     }
     if (type.flags & typescript.TypeFlags.Object) {

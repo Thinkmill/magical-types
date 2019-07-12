@@ -1,8 +1,8 @@
 // @flow
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
-import { Component, Fragment, type Node } from 'react';
-import { colors } from '../components/constants';
+import { jsx, css } from "@emotion/core";
+import { Component, Fragment } from "react";
+import { colors } from "../components/constants";
 
 const StateBit = ({
   isHovered,
@@ -10,22 +10,16 @@ const StateBit = ({
   onMouseLeave,
   onClick,
   children
-}: {
-  isHovered: boolean,
-  onMouseEnter: () => mixed,
-  onMouseLeave: () => mixed,
-  onClick: () => mixed,
-  children: Node
-}) => (
+}: { isHovered: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
   <button
     type="button"
     onClick={onClick}
     css={css`
       background-color: ${isHovered ? colors.P300 : colors.N20};
-      color: ${isHovered ? 'white' : colors.subtleText};
+      color: ${isHovered ? "white" : colors.subtleText};
       border: 0;
-      fonts-size: 14px;
-      fonts-family: sans-serif;
+      font-size: 14px;
+      font-family: sans-serif;
       line-height: 20px;
       width: auto;
       margin: 2px 0;
@@ -42,29 +36,33 @@ const StateBit = ({
 );
 
 type Props = {
-  openBracket: string,
-  closeBracket: string,
-  children: Node | void
+  openBracket: string;
+  closeBracket: string;
+  children: React.ReactNode;
+  closedContent: React.ReactNode;
+  initialIsShown: boolean;
 };
 
 type State = {
-  isHovered: boolean,
-  isShown: boolean
+  isHovered: boolean;
+  isShown: boolean;
 };
 
 export default class AddBrackets extends Component<Props, State> {
   static defaultProps = {
-    openBracket: '(',
-    closeBracket: ')'
+    openBracket: "(",
+    closeBracket: ")",
+    closedContent: "...",
+    initialIsShown: true
   };
 
-  state = { isHovered: false, isShown: true };
+  state = { isHovered: false, isShown: this.props.initialIsShown };
 
   isHovered = () => this.setState({ isHovered: true });
   isNotHovered = () => this.setState({ isHovered: false });
 
   render() {
-    let { openBracket, closeBracket, children } = this.props;
+    let { openBracket, closeBracket, children, closedContent } = this.props;
     let { isHovered, isShown } = this.state;
 
     return (
@@ -86,7 +84,7 @@ export default class AddBrackets extends Component<Props, State> {
             onMouseEnter={this.isHovered}
             onMouseLeave={this.isNotHovered}
           >
-            ...
+            {closedContent}
           </StateBit>
         )}
         <StateBit

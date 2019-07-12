@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
 
-export default function Indent(props: React.HTMLAttributes<HTMLSpanElement>) {
+export default function Indent(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       css={css`
