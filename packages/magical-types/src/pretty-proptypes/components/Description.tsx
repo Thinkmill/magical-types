@@ -1,10 +1,9 @@
 // @flow
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
-import { type Node } from 'react';
+import { jsx, css } from "@emotion/core";
 
-const ReadmeDescription = (props: { children: Node }) =>
-  typeof props.children === 'string' ? (
+const ReadmeDescription = (props: React.HTMLAttributes<HTMLSpanElement>) =>
+  typeof props.children === "string" ? (
     <p {...props} />
   ) : (
     <div
