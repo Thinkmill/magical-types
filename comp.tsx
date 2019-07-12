@@ -4,7 +4,7 @@ import { PropTypes } from "magical-types/macro";
 type Thing = (firstArg: string) => number;
 
 type Props = {
-  children: Array<string>;
+  children: React.ReactNode;
 };
 
 type PropsAlias = Props;

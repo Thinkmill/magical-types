@@ -52,22 +52,21 @@ export function getTypes(
     }
   }
 
+  function setToNodeCache(
+    getNode: () => MagicalNode,
+    typeToSet: typescript.Type
+  ) {
+    let obj = {};
+    // @ts-ignore
+    nodeCache.set((typeToSet as any).id, obj);
+    let node = getNode();
+    Object.assign(obj, node);
+    return node;
+  }
   function convertType(
     type: typescript.Type,
     cacheCurrent: boolean = true
   ): MagicalNode {
-    function setToNodeCache(
-      getNode: () => MagicalNode,
-      typeToSet: typescript.Type = type
-    ) {
-      let obj = {};
-      // @ts-ignore
-      nodeCache.set((typeToSet as any).id, obj);
-      let node = getNode();
-      Object.assign(obj, node);
-      return node;
-    }
-
     let id: number = (type as any).id;
     let cachedNode = nodeCache.get(id);
     if (cachedNode !== undefined && cacheCurrent !== true) {
@@ -77,48 +76,60 @@ export function getTypes(
       (type as any).intrinsicName &&
       (type as any).intrinsicName !== "error"
     ) {
-      let node = {
-        type: "Intrinsic",
-        value: (type as any).intrinsicName
-      } as const;
-      nodeCache.set(id, node);
-      return node;
+      return setToNodeCache(
+        () => ({
+          type: "Intrinsic",
+          value: (type as any).intrinsicName
+        }),
+        type
+      );
     }
 
     if (type.isStringLiteral()) {
-      let node = {
-        type: "StringLiteral",
-        value: type.value
-      } as const;
-      nodeCache.set(id, node);
-      return node;
+      return setToNodeCache(
+        () => ({
+          type: "StringLiteral",
+          value: type.value
+        }),
+        type
+      );
     }
     if (type.isNumberLiteral()) {
-      let node = {
-        type: "NumberLiteral",
-        value: type.value
-      } as const;
-      nodeCache.set(id, node);
-      return node;
+      return setToNodeCache(
+        () => ({
+          type: "NumberLiteral",
+          value: type.value
+        }),
+        type
+      );
     }
     if (type.isUnion()) {
-      return setToNodeCache(() => ({
-        type: "Union",
-        types: type.types.map(type => convertType(type))
-      }));
+      return setToNodeCache(
+        () => ({
+          type: "Union",
+          types: type.types.map(type => convertType(type))
+        }),
+        type
+      );
     }
     if (type.isIntersection()) {
-      return setToNodeCache(() => ({
-        type: "Union",
-        types: type.types.map(type => convertType(type))
-      }));
+      return setToNodeCache(
+        () => ({
+          type: "Union",
+          types: type.types.map(type => convertType(type))
+        }),
+        type
+      );
     }
 
     if ((typeChecker as any).isArrayType(type)) {
-      return setToNodeCache(() => ({
-        type: "Array",
-        value: convertType((type as any).typeArguments[0])
-      }));
+      return setToNodeCache(
+        () => ({
+          type: "Array",
+          value: convertType((type as any).typeArguments[0])
+        }),
+        type
+      );
     }
 
     let callSignatures = type.getCallSignatures();
@@ -151,24 +162,29 @@ export function getTypes(
           type: "Union",
           types: signatures
         };
-      });
+      }, type);
     }
     if (type.flags & typescript.TypeFlags.Object) {
-      return setToNodeCache(() => ({
-        type: "Object",
-        name: type.aliasSymbol ? type.aliasSymbol.escapedName.toString() : null,
-        properties: type.getProperties().map(symbol => {
-          let type = typeChecker.getTypeOfSymbolAtLocation(
-            symbol,
-            symbol.valueDeclaration || symbol.declarations![0]
-          );
+      return setToNodeCache(
+        () => ({
+          type: "Object",
+          name: type.aliasSymbol
+            ? type.aliasSymbol.escapedName.toString()
+            : null,
+          properties: type.getProperties().map(symbol => {
+            let type = typeChecker.getTypeOfSymbolAtLocation(
+              symbol,
+              symbol.valueDeclaration || symbol.declarations![0]
+            );
 
-          return {
-            key: symbol.getEscapedName().toString(),
-            value: convertType(type)
-          };
-        })
-      }));
+            return {
+              key: symbol.getEscapedName().toString(),
+              value: convertType(type)
+            };
+          })
+        }),
+        type
+      );
     }
     console.log("Type that could not be stringified:", type);
     throw new Error("Could not stringify type");

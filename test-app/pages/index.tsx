@@ -9,7 +9,7 @@ type Thing = (firstArg: string) => number;
 type Obj = { thing: boolean };
 
 type Props = {
-  c: Array<string>;
+  c: React.ReactElement;
 };
 
 type PropsAlias = Props;
