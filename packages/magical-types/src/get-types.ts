@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { NodePath, types } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { MagicalNode } from "./types";
-import path from "path";
+import { Project } from "ts-morph";
 
 let configFileName = typescript.findConfigFile(
   __dirname,
@@ -14,90 +14,15 @@ if (!configFileName) {
   throw new Error("No tsconfig.json file could be found");
 }
 
-let configFileContents = fs.readFileSync(configFileName, "utf8");
-
-const result = typescript.parseConfigFileTextToJson(
-  configFileName,
-  configFileContents
-);
-
-let config = typescript.parseJsonConfigFileContent(
-  result,
-  typescript.sys,
-  process.cwd(),
-  undefined,
-  configFileName
-);
-
-let filesMap = new Map();
-
-const servicesHost = createServiceHost(config.options, filesMap);
-const documentRegistry = typescript.createDocumentRegistry();
-let languageService = typescript.createLanguageService(
-  servicesHost,
-  documentRegistry
-);
-config.fileNames.forEach(filepath => {
-  const normalized = path.normalize(filepath);
-  const found = filesMap.get(normalized);
-  filesMap.set(normalized, {
-    text: fs.readFileSync(normalized, "utf-8"),
-    version: found ? found.version + 1 : 0
-  });
+const project = new Project({
+  tsConfigFilePath: configFileName
 });
-
-// https://github.com/pedronauck/docz/blob/c0749d32d9b806b8a83fb91f0dbb34203585df4f/core/docz-core/src/utils/docgen/typescript.ts#L122-L157
-
-interface TSFile {
-  text?: string;
-  version: number;
-}
-function createServiceHost(
-  compilerOptions: typescript.CompilerOptions,
-  files: Map<string, TSFile>
-): typescript.LanguageServiceHost {
-  return {
-    getScriptFileNames: () => {
-      return [...files.keys()];
-    },
-    getScriptVersion: fileName => {
-      const file = files.get(fileName);
-      return (file && file.version.toString()) || "";
-    },
-    getScriptSnapshot: fileName => {
-      if (!fs.existsSync(fileName)) {
-        return undefined;
-      }
-
-      let file = files.get(fileName);
-
-      if (file === undefined) {
-        const text = fs.readFileSync(fileName).toString();
-
-        file = { version: 0, text };
-        files.set(fileName, file);
-      }
-
-      return typescript.ScriptSnapshot.fromString(file!.text!);
-    },
-    getCurrentDirectory: () => process.cwd(),
-    getCompilationSettings: () => compilerOptions,
-    getDefaultLibFileName: options => typescript.getDefaultLibFilePath(options),
-    fileExists: typescript.sys.fileExists,
-    readFile: typescript.sys.readFile,
-    readDirectory: typescript.sys.readDirectory
-  };
-}
 
 export function getTypes(
   filename: string,
   things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>,
   numOfThings: number
 ) {
-  let program = languageService.getProgram()!;
-
-  let typeChecker = program.getTypeChecker();
-
   function getFunctionComponentProps(type: typescript.Type) {
     const callSignatures = type.getCallSignatures();
 
@@ -234,12 +159,10 @@ export function getTypes(
     console.log("Type that could not be stringified:", type);
     throw new Error("Could not stringify type");
   }
+  let sourceFile = project.getSourceFileOrThrow(filename).compilerNode;
 
-  let sourceFile = program.getSourceFile(filename);
+  let typeChecker = project.getTypeChecker().compilerObject;
 
-  if (sourceFile === undefined) {
-    throw new Error("source file could not be found");
-  }
   let num = 0;
   let visit = (node: typescript.Node) => {
     typescript.forEachChild(node, node => {
@@ -279,8 +202,6 @@ export function getTypes(
             symbol,
             symbol.valueDeclaration || symbol.declarations![0]
           );
-
-          console.log(typeChecker.typeToString(type));
 
           let propsSymbol =
             getFunctionComponentProps(type) || getClassComponentProps(type);

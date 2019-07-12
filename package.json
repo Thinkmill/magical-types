@@ -38,6 +38,7 @@
     "@types/jest": "^24.0.15",
     "babel-jest": "^24.8.0",
     "babel-plugin-macros": "^2.6.1",
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "ts-morph": "^3.1.0"
   }
 }
