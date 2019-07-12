@@ -5,20 +5,19 @@ import * as BabelTypes from "@babel/types";
 import { MagicalNode } from "./types";
 import { Project } from "ts-morph";
 
-let configFileName = typescript.findConfigFile(
-  __dirname,
-  typescript.sys.fileExists
-);
-
-if (!configFileName) {
-  throw new Error("No tsconfig.json file could be found");
-}
-
 export function getTypes(
   filename: string,
   things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>,
   numOfThings: number
 ) {
+  let configFileName = typescript.findConfigFile(
+    filename,
+    typescript.sys.fileExists
+  );
+
+  if (!configFileName) {
+    throw new Error("No tsconfig.json file could be found");
+  }
   const project = new Project({
     tsConfigFilePath: configFileName,
     addFilesFromTsConfig: false

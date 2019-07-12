@@ -32,7 +32,7 @@ export const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
   />
 );
 
-function Properties({ node }: { node: ObjectNode }) {
+function Properties({ node, depth }: { node: ObjectNode; depth: number }) {
   return (
     <Indent>
       {node.properties.map((prop, index) => {
@@ -45,7 +45,7 @@ function Properties({ node }: { node: ObjectNode }) {
             {/* {type.optional ? null : (
           <components.Required> required</components.Required>
         )}{" "} */}
-            {renderNode(prop.value)}
+            {renderNode(prop.value, depth + 1)}
           </div>
         );
       })}
@@ -113,6 +113,7 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return arr;
     }
     case "Object": {
+      let props = <Properties depth={depth} node={node} />;
       if (node.name !== null && depth !== 0) {
         return (
           <span>
@@ -122,7 +123,7 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
               openBracket="{"
               closeBracket="}"
             >
-              <Properties node={node} />
+              {props}
             </AddBrackets>
           </span>
         );
@@ -136,7 +137,7 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
             openBracket="{"
             closeBracket="}"
           >
-            <Properties node={node} />
+            {props}
           </AddBrackets>
         </span>
       );
