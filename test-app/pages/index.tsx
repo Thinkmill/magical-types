@@ -4,12 +4,16 @@ import { jsx } from "@emotion/core";
 import { PropTypes } from "magical-types/macro";
 import { MyComponentThatDoesStuff as AnotherComp } from "../../comp";
 
-type Thing = (firstArg: string) => number;
+// type Thing = (firstArg: string) => number;
 
-type Obj = { thing: boolean };
+type Thing = {
+  wow: true;
+  other: Props;
+  node: React.ReactNode;
+};
 
 type Props = {
-  c: React.ReactElement;
+  e: Thing;
 };
 
 type PropsAlias = Props;

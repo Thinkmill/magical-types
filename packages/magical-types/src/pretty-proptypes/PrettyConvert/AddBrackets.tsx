@@ -53,7 +53,7 @@ export default class AddBrackets extends Component<Props, State> {
     openBracket: "(",
     closeBracket: ")",
     closedContent: "...",
-    initialIsShown: true
+    initialIsShown: false
   };
 
   state = { isHovered: false, isShown: this.props.initialIsShown };

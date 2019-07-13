@@ -94,6 +94,31 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
         </span>
       );
     }
+    case "Tuple": {
+      return (
+        <span>
+          <TypeMeta>Tuple</TypeMeta>
+          <AddBrackets openBracket="[" closeBracket="]">
+            {() =>
+              node.value.map((node, index, array) => (
+                <React.Fragment key={index}>
+                  {renderNode(node, depth + 1)}
+                  {array.length - 1 === index ? "" : ", "}
+                </React.Fragment>
+              ))
+            }
+          </AddBrackets>
+        </span>
+      );
+    }
+    case "TypeParameter": {
+      return (
+        <span>
+          <TypeMeta>TypeParameter</TypeMeta>
+          {node.value}
+        </span>
+      );
+    }
     case "Union": {
       return (
         <span>

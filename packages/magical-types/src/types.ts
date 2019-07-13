@@ -12,6 +12,8 @@ export type MagicalNode =
   | { type: "Union"; types: Array<MagicalNode> }
   | { type: "Intersection"; types: Array<MagicalNode> }
   | { type: "Function"; return: MagicalNode; parameters: Array<Parameter> }
+  | { type: "TypeParameter"; value: string }
+  | { type: "Tuple"; value: Array<MagicalNode> }
   | ObjectNode;
 
 type Property = { key: string; value: MagicalNode };

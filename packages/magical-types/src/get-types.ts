@@ -63,13 +63,10 @@ export function getTypes(
     Object.assign(obj, node);
     return node;
   }
-  function convertType(
-    type: typescript.Type,
-    cacheCurrent: boolean = true
-  ): MagicalNode {
+  function convertType(type: typescript.Type): MagicalNode {
     let id: number = (type as any).id;
     let cachedNode = nodeCache.get(id);
-    if (cachedNode !== undefined && cacheCurrent !== true) {
+    if (cachedNode !== undefined) {
       return cachedNode;
     }
     if (
@@ -132,6 +129,18 @@ export function getTypes(
       );
     }
 
+    if ((typeChecker as any).isTupleType(type)) {
+      return setToNodeCache(
+        () => ({
+          type: "Tuple",
+          value: ((type as any) as {
+            typeArguments: Array<typescript.Type>;
+          }).typeArguments.map(x => convertType(x))
+        }),
+        type
+      );
+    }
+
     let callSignatures = type.getCallSignatures();
 
     if (callSignatures.length) {
@@ -172,6 +181,9 @@ export function getTypes(
             ? type.aliasSymbol.escapedName.toString()
             : null,
           properties: type.getProperties().map(symbol => {
+            if (!symbol.valueDeclaration || !symbol.declarations[0]) {
+              debugger;
+            }
             let type = typeChecker.getTypeOfSymbolAtLocation(
               symbol,
               symbol.valueDeclaration || symbol.declarations![0]
@@ -186,6 +198,16 @@ export function getTypes(
         type
       );
     }
+    if (type.isTypeParameter()) {
+      return setToNodeCache(
+        () => ({
+          type: "TypeParameter",
+          value: type.symbol.escapedName.toString()
+        }),
+        type
+      );
+    }
+    debugger;
     console.log("Type that could not be stringified:", type);
     throw new Error("Could not stringify type");
   }
