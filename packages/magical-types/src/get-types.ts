@@ -2,7 +2,7 @@ import typescript from "typescript";
 import * as fs from "fs";
 import { NodePath, types } from "@babel/core";
 import * as BabelTypes from "@babel/types";
-import { MagicalNode } from "./types";
+import { MagicalNode, Property, TypeParameterNode } from "./types";
 import { Project } from "ts-morph";
 import * as flatted from "flatted";
 
@@ -63,6 +63,35 @@ export function getTypes(
     Object.assign(obj, node);
     return node;
   }
+
+  function convertProperty(symbol: typescript.Symbol): Property {
+    let declaration = symbol.valueDeclaration || symbol.declarations[0];
+
+    if (!declaration) {
+      debugger;
+    }
+    let type = typeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
+    // TODO: this could be better
+    let key = symbol.getName();
+
+    return {
+      key,
+      value: convertType(type)
+    };
+  }
+
+  function getNameForType(type: typescript.Type): string | null {
+    if (type.symbol) {
+      let name = type.symbol.getName();
+      if (name !== "__type") {
+        return name;
+      }
+    }
+    if (type.aliasSymbol) {
+      return type.aliasSymbol.getName();
+    }
+    return null;
+  }
   function convertType(type: typescript.Type): MagicalNode {
     let id: number = (type as any).id;
     let cachedNode = nodeCache.get(id);
@@ -104,6 +133,7 @@ export function getTypes(
       return setToNodeCache(
         () => ({
           type: "Union",
+          name: getNameForType(type),
           types: type.types.map(type => convertType(type))
         }),
         type
@@ -112,7 +142,7 @@ export function getTypes(
     if (type.isIntersection()) {
       return setToNodeCache(
         () => ({
-          type: "Union",
+          type: "Intersection",
           types: type.types.map(type => convertType(type))
         }),
         type
@@ -120,6 +150,7 @@ export function getTypes(
     }
 
     if ((typeChecker as any).isArrayType(type)) {
+      // TODO: fix ReadonlyArray
       return setToNodeCache(
         () => ({
           type: "Array",
@@ -141,27 +172,69 @@ export function getTypes(
       );
     }
 
+    if (type.isClass()) {
+      return setToNodeCache(
+        () => ({
+          type: "Class",
+          name: type.symbol ? type.symbol.getName() : null,
+          typeParameters: (type.typeParameters || []).map(x => convertType(x)),
+          thisNode: type.thisType ? convertType(type.thisType) : null,
+          properties: type.getProperties().map(symbol => {
+            return convertProperty(symbol);
+          })
+        }),
+        type
+      );
+    }
     let callSignatures = type.getCallSignatures();
 
     if (callSignatures.length) {
       return setToNodeCache(() => {
         let signatures = callSignatures.map(callSignature => {
           let returnType = callSignature.getReturnType();
+          let typeParameters = callSignature.getTypeParameters() || [];
           let parameters = callSignature.getParameters().map(parameter => {
+            let declaration =
+              parameter.valueDeclaration || parameter.declarations[0];
+
+            if (!typescript.isParameter(declaration)) {
+              throw new Error(
+                "expected node to be a parameter declaration but it was not"
+              );
+            }
+
+            if (
+              typeChecker.isOptionalParameter(declaration) &&
+              declaration.type
+            ) {
+              return {
+                required: false,
+                name: parameter.name,
+                type: convertType(
+                  typeChecker.getTypeFromTypeNode(declaration.type)
+                )
+              };
+            }
+
             let type = typeChecker.getTypeOfSymbolAtLocation(
               parameter,
-              parameter.valueDeclaration || parameter.declarations[0]
+              declaration
             );
             return {
+              required: true,
               name: parameter.name,
               type: convertType(type)
             };
           });
 
           return {
+            name: getNameForType(type),
             type: "Function",
             return: convertType(returnType),
-            parameters
+            parameters,
+            typeParameters: typeParameters.map(
+              x => convertType(x) as TypeParameterNode
+            )
           } as const;
         });
         if (signatures.length === 1) {
@@ -169,6 +242,7 @@ export function getTypes(
         }
         return {
           type: "Union",
+          name: getNameForType(type),
           types: signatures
         };
       }, type);
@@ -177,32 +251,20 @@ export function getTypes(
       return setToNodeCache(
         () => ({
           type: "Object",
-          name: type.aliasSymbol
-            ? type.aliasSymbol.escapedName.toString()
-            : null,
+          name: getNameForType(type),
           properties: type.getProperties().map(symbol => {
-            if (!symbol.valueDeclaration || !symbol.declarations[0]) {
-              debugger;
-            }
-            let type = typeChecker.getTypeOfSymbolAtLocation(
-              symbol,
-              symbol.valueDeclaration || symbol.declarations![0]
-            );
-
-            return {
-              key: symbol.getEscapedName().toString(),
-              value: convertType(type)
-            };
+            return convertProperty(symbol);
           })
         }),
         type
       );
     }
     if (type.isTypeParameter()) {
+      console.log(type.symbol.getName());
       return setToNodeCache(
         () => ({
           type: "TypeParameter",
-          value: type.symbol.escapedName.toString()
+          value: type.symbol.getName()
         }),
         type
       );

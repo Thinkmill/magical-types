@@ -4,35 +4,34 @@ import { jsx, css } from "@emotion/core";
 import { Component, Fragment } from "react";
 import { colors } from "../components/constants";
 
+export let bracketStyle = ({ isHovered }: { isHovered: boolean }) => css`
+  background-color: ${isHovered ? colors.P300 : colors.N20};
+  color: ${isHovered ? "white" : colors.subtleText};
+  border: 0;
+  font-size: 14px;
+  font-family: sans-serif;
+  line-height: 20px;
+  width: auto;
+  margin: 2px 0;
+  padding: 0 0.2em;
+`;
+
 const StateBit = ({
   isHovered,
-  onMouseEnter,
-  onMouseLeave,
-  onClick,
-  children
+  ...props
 }: { isHovered: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
   <button
     type="button"
-    onClick={onClick}
-    css={css`
-      background-color: ${isHovered ? colors.P300 : colors.N20};
-      color: ${isHovered ? "white" : colors.subtleText};
-      border: 0;
-      font-size: 14px;
-      font-family: sans-serif;
-      line-height: 20px;
-      width: auto;
-      margin: 2px 0;
-      padding: 0 0.2em;
-      :hover {
-        cursor: pointer;
-      }
-    `}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-  >
-    {children}
-  </button>
+    css={[
+      bracketStyle({ isHovered }),
+      css`
+        :hover {
+          cursor: pointer;
+        }
+      `
+    ]}
+    {...props}
+  />
 );
 
 type Props = {

@@ -1,8 +1,15 @@
-import React from "react";
+import React, {
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+  useEffect,
+  useReducer
+} from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { ComponentType } from "react";
-import { MagicalNode, ObjectNode } from "./types";
+import { MagicalNode, ObjectNode, ClassNode, TypeParameterNode } from "./types";
 import {
   Type,
   Indent,
@@ -10,7 +17,9 @@ import {
   TypeMeta
 } from "./pretty-proptypes/components";
 import { colors } from "./pretty-proptypes/components/constants";
-import AddBrackets from "./pretty-proptypes/PrettyConvert/AddBrackets";
+import AddBrackets, {
+  bracketStyle
+} from "./pretty-proptypes/PrettyConvert/AddBrackets";
 import * as flatted from "flatted";
 
 const Arrow = () => (
@@ -33,7 +42,13 @@ export const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
   />
 );
 
-function Properties({ node, depth }: { node: ObjectNode; depth: number }) {
+function Properties({
+  node,
+  depth
+}: {
+  node: ObjectNode | ClassNode;
+  depth: number;
+}) {
   return (
     <Indent>
       {node.properties.map((prop, index) => {
@@ -54,6 +69,55 @@ function Properties({ node, depth }: { node: ObjectNode; depth: number }) {
   );
 }
 
+let cache = new Map<
+  TypeParameterNode,
+  { listeners: Array<(...args: any) => any>; value: boolean }
+>();
+
+console.log(cache);
+
+// yes, i know this is bad
+
+function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
+  let [, forceUpdate] = useReducer(() => ({}), {});
+  let val = cache.get(node);
+  if (!val) {
+    val = { listeners: [], value: false };
+    cache.set(node, val);
+  }
+
+  let workingValue = val;
+
+  useEffect(() => {
+    workingValue.listeners.push(forceUpdate);
+    return () => {
+      workingValue.listeners = workingValue.listeners.filter(
+        x => x !== forceUpdate
+      );
+    };
+  }, []);
+
+  return (
+    <span
+      css={bracketStyle({ isHovered: val.value })}
+      onMouseEnter={() => {
+        workingValue.value = true;
+        workingValue.listeners.forEach(listener => {
+          listener();
+        });
+      }}
+      onMouseLeave={() => {
+        workingValue.value = false;
+        workingValue.listeners.forEach(listener => {
+          listener();
+        });
+      }}
+    >
+      {node.value}
+    </span>
+  );
+}
+
 function renderNode(node: MagicalNode, depth: number): React.ReactNode {
   switch (node.type) {
     case "Intrinsic": {
@@ -68,11 +132,30 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
     case "Function": {
       return (
         <span>
-          <AddBrackets>
+          {node.typeParameters.length !== 0 && (
+            <span>
+              <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
+              {node.typeParameters.map((param, index, array) => (
+                <React.Fragment key={index}>
+                  {renderNode(param, depth + 1)}
+                  {array.length - 1 === index ? "" : ", "}
+                </React.Fragment>
+              ))}
+              <span css={bracketStyle({ isHovered: false })}>{">"}</span>
+            </span>
+          )}
+          <AddBrackets initialIsShown>
             {() =>
               node.parameters.map((param, index, array) => (
                 <React.Fragment key={index}>
-                  {param.name ? <Type>{param.name}: </Type> : undefined}
+                  {param.name ? (
+                    <Type>
+                      {param.name}
+                      {param.required ? "" : "?"}:{" "}
+                    </Type>
+                  ) : (
+                    undefined
+                  )}
                   {renderNode(param.type, depth + 1)}
                   {array.length - 1 === index ? "" : ", "}
                 </React.Fragment>
@@ -84,11 +167,16 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
         </span>
       );
     }
+    case "ReadonlyArray":
     case "Array": {
       return (
         <span>
-          <TypeMeta>Array</TypeMeta>
-          <AddBrackets openBracket="<" closeBracket=">">
+          <TypeMeta>{node.type}</TypeMeta>
+          <AddBrackets
+            initialIsShown={depth < 5}
+            openBracket="<"
+            closeBracket=">"
+          >
             {() => <Indent>{renderNode(node.value, depth + 1)}</Indent>}
           </AddBrackets>
         </span>
@@ -98,7 +186,11 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return (
         <span>
           <TypeMeta>Tuple</TypeMeta>
-          <AddBrackets openBracket="[" closeBracket="]">
+          <AddBrackets
+            initialIsShown={depth < 5}
+            openBracket="["
+            closeBracket="]"
+          >
             {() =>
               node.value.map((node, index, array) => (
                 <React.Fragment key={index}>
@@ -112,18 +204,19 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       );
     }
     case "TypeParameter": {
-      return (
-        <span>
-          <TypeMeta>TypeParameter</TypeMeta>
-          {node.value}
-        </span>
-      );
+      return <PrettyTypeParameter node={node} />;
     }
     case "Union": {
       return (
         <span>
-          <TypeMeta>One of </TypeMeta>
-          <AddBrackets openBracket="<" closeBracket=">">
+          <TypeMeta>
+            {node.name === null ? "" : `${node.name} `}One of{" "}
+          </TypeMeta>
+          <AddBrackets
+            initialIsShown={depth < 5}
+            openBracket="<"
+            closeBracket=">"
+          >
             {() => (
               <Indent>
                 {node.types.map((n, index, array) => (
@@ -153,31 +246,28 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return arr;
     }
     case "Object": {
-      let props = () => <Properties depth={depth} node={node} />;
-      if (node.name !== null && depth !== 0) {
-        return (
-          <span>
-            <AddBrackets
-              initialIsShown={false}
-              closedContent={<Type>{node.name}</Type>}
-              openBracket="{"
-              closeBracket="}"
-            >
-              {props}
-            </AddBrackets>
-          </span>
-        );
-      }
       return (
         <span>
+          <TypeMeta>{node.name}</TypeMeta>
           <AddBrackets
-            closedContent={
-              node.name === null ? undefined : <Type>{node.name}</Type>
-            }
+            initialIsShown={depth < 5}
             openBracket="{"
             closeBracket="}"
           >
-            {props}
+            {() => <Properties depth={depth} node={node} />}
+          </AddBrackets>
+        </span>
+      );
+    }
+    case "Class": {
+      return (
+        <span>
+          <TypeMeta>class {node.name}</TypeMeta>
+
+          <AddBrackets openBracket="{" closeBracket="}">
+            {() => {
+              return <Properties depth={depth} node={node} />;
+            }}
           </AddBrackets>
         </span>
       );
@@ -188,7 +278,6 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
   }
 }
 export let PropTypes = (props: { component: ComponentType<any> }) => {
-  console.log(props);
   let node: MagicalNode = flatted.parse((props as any).__types);
   return <div>{renderNode(node, 0)}</div>;
 };

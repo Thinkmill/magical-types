@@ -1,10 +1,12 @@
 import React from "react";
 import { PropTypes } from "magical-types/macro";
 
-type Thing = (firstArg: string) => number;
+class Thing {
+  x: string = "";
+}
 
 type Props = {
-  children: React.ReactNode;
+  children?: Thing;
 };
 
 type PropsAlias = Props;

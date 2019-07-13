@@ -6,14 +6,21 @@ import { MyComponentThatDoesStuff as AnotherComp } from "../../comp";
 
 // type Thing = (firstArg: string) => number;
 
-type Thing = {
-  wow: true;
-  other: Props;
-  node: React.ReactNode;
-};
+class Thing {
+  constructor(something: boolean) {}
+  x: string = "";
+  doAThing(something: number): string {
+    return "";
+  }
+}
 
 type Props = {
-  e: Thing;
+  children: Thing;
+  other: ReadonlyArray<string>;
+  oneMore: Array<boolean>;
+  another: string[];
+  useEffect: typeof React["useEffect"];
+  createContext: typeof React["createContext"];
 };
 
 type PropsAlias = Props;
