@@ -17,7 +17,7 @@ yarn add magical-types
 ### Using it
 
 ```tsx
-import { PropTypes, FunctionTypes } from "magical-types/macro";
+import { PropTypes, FunctionTypes, RawTypes } from "magical-types/macro";
 
 type Props = {
   someProp: string;
@@ -33,11 +33,17 @@ function myFunctionThatDoesCoolStuff(someArgument: { thing: true }) {}
 
 <FunctionTypes function={myFunctionThatDoesCoolStuff} />;
 
+type SomeObject = { someProperty: boolean };
+
+<RawTypes function={myFunctionThatDoesCoolStuff} />;
+
 function someFunctionThatReturnsAComponent() {
   return MyComponent;
 }
 
-<PropTypes component={someFunctionThatReturnsAComponent()} />;
+let AnotherComp = someFunctionThatReturnsAComponent();
+
+<PropTypes component={AnotherComp} />;
 ```
 
 ## Credit/Inspiration

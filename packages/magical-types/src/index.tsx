@@ -32,7 +32,7 @@ const Arrow = () => (
   </span>
 );
 
-export const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
+const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     css={css`
       display: inline-block;
