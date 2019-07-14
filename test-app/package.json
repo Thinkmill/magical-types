@@ -1,6 +1,7 @@
 {
   "name": "@magical-types/test-app",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
