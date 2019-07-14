@@ -35,7 +35,7 @@ function myFunctionThatDoesCoolStuff(someArgument: { thing: true }) {}
 
 type SomeObject = { someProperty: boolean };
 
-<RawTypes function={myFunctionThatDoesCoolStuff} />;
+<RawTypes<SomeObject> />;
 
 function someFunctionThatReturnsAComponent() {
   return MyComponent;
