@@ -308,7 +308,6 @@ export function getTypes(
                 x.name.escapedText ===
                   (exportName === "PropTypes" ? "component" : "function")
             );
-            let type: typescript.Type;
             if (
               !(
                 componentAttrib &&
