@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { NodePath, types } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { MagicalNode, Property, TypeParameterNode } from "./types";
+import { InternalError } from "./errors";
 import { Project } from "ts-morph";
 import * as flatted from "flatted";
 
@@ -269,7 +270,7 @@ export function getTypes(
       );
     }
     if (type.isTypeParameter()) {
-      console.log(type.symbol.getName());
+      let baseTypes = type.getBaseTypes();
       return setToNodeCache(
         () => ({
           type: "TypeParameter",
@@ -280,7 +281,7 @@ export function getTypes(
     }
     debugger;
     console.log("Type that could not be stringified:", type);
-    throw new Error("Could not stringify type");
+    throw new InternalError("Could not stringify type");
   }
 
   let sourceFile = project.getSourceFileOrThrow(filename).compilerNode;
@@ -297,7 +298,7 @@ export function getTypes(
           let { exportName, path } = val;
           num++;
           if (!typescript.isJsxOpeningLikeElement(node.parent)) {
-            throw new Error("is not a jsx opening element");
+            throw new InternalError("is not a jsx opening element");
           }
           let jsxOpening = node.parent;
           let type: typescript.Type;
@@ -317,14 +318,14 @@ export function getTypes(
                 componentAttrib.initializer.expression
               )
             ) {
-              throw new Error("could not find component attrib");
+              throw new InternalError("could not find component attrib");
             }
             let nodeForType = componentAttrib.initializer.expression;
 
             let symbol = typeChecker.getSymbolAtLocation(nodeForType);
 
             if (!symbol) {
-              throw new Error("could not find symbol");
+              throw new InternalError("could not find symbol");
             }
             type = typeChecker.getTypeOfSymbolAtLocation(
               symbol,
@@ -336,7 +337,7 @@ export function getTypes(
                 getFunctionComponentProps(type) || getClassComponentProps(type);
 
               if (!propsSymbol) {
-                throw new Error("could not find props symbol");
+                throw new InternalError("could not find props symbol");
               }
 
               type = typeChecker.getTypeOfSymbolAtLocation(
@@ -346,10 +347,10 @@ export function getTypes(
             }
           } else {
             if (!jsxOpening.typeArguments) {
-              throw new Error("no type arguments on RawTypes");
+              throw new InternalError("no type arguments on RawTypes");
             }
             if (!jsxOpening.typeArguments[0]) {
-              throw new Error("no type argument on RawTypes");
+              throw new InternalError("no type argument on RawTypes");
             }
             type = typeChecker.getTypeFromTypeNode(jsxOpening.typeArguments[0]);
           }
@@ -370,6 +371,6 @@ export function getTypes(
   };
   visit(sourceFile);
   if (num !== numOfThings) {
-    throw new Error("num !== numOfThings");
+    throw new InternalError("num !== numOfThings");
   }
 }
