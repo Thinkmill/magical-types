@@ -208,7 +208,7 @@ export function getTypes(
               parameter.valueDeclaration || parameter.declarations[0];
 
             if (!typescript.isParameter(declaration)) {
-              throw new Error(
+              throw new InternalError(
                 "expected node to be a parameter declaration but it was not"
               );
             }
