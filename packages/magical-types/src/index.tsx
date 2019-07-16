@@ -277,7 +277,22 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
     }
   }
 }
-export let PropTypes = (props: { component: ComponentType<any> }) => {
+
+let renderTypes = (props: any) => {
   let node: MagicalNode = flatted.parse((props as any).__types);
-  return <div>{renderNode(node, 0)}</div>;
+  return <div css={{ fontFamily: "sans-serif" }}>{renderNode(node, 0)}</div>;
 };
+
+export let PropTypes = (props: { component: ComponentType<any> }) => {
+  return renderTypes(props);
+};
+
+export let FunctionTypes = (props: {
+  function: (...args: Array<any>) => any;
+}) => {
+  return renderTypes(props);
+};
+
+export function RawTypes<Type>(props: {}) {
+  return renderTypes(props);
+}

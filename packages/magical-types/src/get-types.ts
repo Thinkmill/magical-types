@@ -8,7 +8,16 @@ import * as flatted from "flatted";
 
 export function getTypes(
   filename: string,
-  things: Map<number, Map<number, NodePath<BabelTypes.JSXOpeningElement>>>,
+  things: Map<
+    number,
+    Map<
+      number,
+      {
+        exportName: "PropTypes" | "FunctionTypes" | "RawTypes";
+        path: NodePath<BabelTypes.JSXOpeningElement>;
+      }
+    >
+  >,
   numOfThings: number
 ) {
   let configFileName = typescript.findConfigFile(
@@ -283,59 +292,74 @@ export function getTypes(
       let map = things.get(node.pos);
 
       if (map) {
-        let nodePath = map.get(node.end);
-        if (nodePath) {
+        let val = map.get(node.end);
+        if (val) {
+          let { exportName, path } = val;
           num++;
           if (!typescript.isJsxOpeningLikeElement(node.parent)) {
             throw new Error("is not a jsx opening element");
           }
           let jsxOpening = node.parent;
-          let componentAttrib = jsxOpening.attributes.properties.find(
-            x =>
-              typescript.isJsxAttribute(x) && x.name.escapedText === "component"
-          );
-          if (
-            !(
-              componentAttrib &&
-              typescript.isJsxAttribute(componentAttrib) &&
-              componentAttrib.initializer &&
-              typescript.isJsxExpression(componentAttrib.initializer) &&
-              componentAttrib.initializer.expression
-            )
-          ) {
-            throw new Error("could not find component attrib");
+          let type: typescript.Type;
+          if (exportName === "PropTypes" || exportName === "FunctionTypes") {
+            let componentAttrib = jsxOpening.attributes.properties.find(
+              x =>
+                typescript.isJsxAttribute(x) &&
+                x.name.escapedText ===
+                  (exportName === "PropTypes" ? "component" : "function")
+            );
+            let type: typescript.Type;
+            if (
+              !(
+                componentAttrib &&
+                typescript.isJsxAttribute(componentAttrib) &&
+                componentAttrib.initializer &&
+                typescript.isJsxExpression(componentAttrib.initializer) &&
+                componentAttrib.initializer.expression
+              )
+            ) {
+              throw new Error("could not find component attrib");
+            }
+            let nodeForType = componentAttrib.initializer.expression;
+
+            let symbol = typeChecker.getSymbolAtLocation(nodeForType);
+
+            if (!symbol) {
+              throw new Error("could not find symbol");
+            }
+            type = typeChecker.getTypeOfSymbolAtLocation(
+              symbol,
+              symbol.valueDeclaration || symbol.declarations![0]
+            );
+
+            if (exportName === "PropTypes") {
+              let propsSymbol =
+                getFunctionComponentProps(type) || getClassComponentProps(type);
+
+              if (!propsSymbol) {
+                throw new Error("could not find props symbol");
+              }
+
+              type = typeChecker.getTypeOfSymbolAtLocation(
+                propsSymbol,
+                propsSymbol.valueDeclaration || propsSymbol.declarations![0]
+              );
+            }
+          } else {
+            if (!jsxOpening.typeArguments) {
+              throw new Error("no type arguments on RawTypes");
+            }
+            if (!jsxOpening.typeArguments[0]) {
+              throw new Error("no type argument on RawTypes");
+            }
+            type = typeChecker.getTypeFromTypeNode(jsxOpening.typeArguments[0]);
           }
-          let symbol = typeChecker.getSymbolAtLocation(
-            componentAttrib.initializer.expression
-          );
 
-          if (!symbol) {
-            throw new Error("could not find symbol");
-          }
-          const type = typeChecker.getTypeOfSymbolAtLocation(
-            symbol,
-            symbol.valueDeclaration || symbol.declarations![0]
-          );
-
-          let propsSymbol =
-            getFunctionComponentProps(type) || getClassComponentProps(type);
-
-          if (!propsSymbol) {
-            throw new Error("could not find props symbol");
-          }
-
-          let propsType = typeChecker.getTypeOfSymbolAtLocation(
-            propsSymbol,
-            propsSymbol.valueDeclaration || propsSymbol.declarations![0]
-          );
-
-          nodePath.node.attributes.push(
+          path.node.attributes.push(
             BabelTypes.jsxAttribute(
               BabelTypes.jsxIdentifier("__types"),
               BabelTypes.jsxExpressionContainer(
-                BabelTypes.stringLiteral(
-                  flatted.stringify(convertType(propsType))
-                )
+                BabelTypes.stringLiteral(flatted.stringify(convertType(type)))
               )
             )
           );

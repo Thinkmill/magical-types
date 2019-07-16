@@ -2,13 +2,23 @@
 
 > Document React components and other stuff typed with TypeScript _magically_
 
-**THIS IS ONLY WHAT I THINK THIS THING MIGHT LOOK LIKE. THIS DOES NOT ACTUALLY WORK YET.**
-
 ## Getting Started
 
-magical-types can be used as a [Babel Macro](https://github.com/kentcdodds/babel-plugin-macros).
+### Installing babel-plugin-macros
 
-### Installing
+magical-types is used as a [Babel Macro](https://github.com/kentcdodds/babel-plugin-macros). Unless you're using Create React App or Gatsby, you'll need to install it and add it to your Babel config.
+
+```bash
+yarn add babel-plugin-macros
+```
+
+```json
+{
+  "plugins": ["babel-plugin-macros"]
+}
+```
+
+### Installing magical-types
 
 ```bash
 yarn add magical-types
@@ -50,4 +60,4 @@ let AnotherComp = someFunctionThatReturnsAComponent();
 
 This project is mostly some ideas that I've been thinking about because of some of the constraints in [react-docgen](https://github.com/reactjs/react-docgen), [react-docgen-typescript](https://github.com/styleguidist/react-docgen-typescript) and [extract-react-types](https://github.com/atlassian/extract-react-types) and how some problems could be removed by changing some constraints, notably the removal of having to know what is and isn't a React component.
 
-Not yet implemented but the code for rendering types will likely be heavily based off [pretty-proptypes](https://github.com/atlassian/extract-react-types/tree/master/packages/pretty-proptypes)
+The code for rendering types is **heavily** based off [pretty-proptypes](https://github.com/atlassian/extract-react-types/tree/master/packages/pretty-proptypes)
