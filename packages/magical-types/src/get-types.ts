@@ -270,7 +270,6 @@ export function getTypes(
       );
     }
     if (type.isTypeParameter()) {
-      let baseTypes = type.getBaseTypes();
       return setToNodeCache(
         () => ({
           type: "TypeParameter",
