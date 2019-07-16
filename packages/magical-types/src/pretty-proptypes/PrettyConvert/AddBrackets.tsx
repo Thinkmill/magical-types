@@ -1,7 +1,7 @@
 // @flow
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
-import { Component, Fragment } from "react";
+import React, { Component, Fragment, useContext, useState } from "react";
 import { colors } from "../components/constants";
 
 export let bracketStyle = ({ isHovered }: { isHovered: boolean }) => css`
@@ -35,11 +35,11 @@ const StateBit = ({
 );
 
 type Props = {
-  openBracket: string;
-  closeBracket: string;
+  openBracket?: string;
+  closeBracket?: string;
   children: () => React.ReactNode;
-  closedContent: React.ReactNode;
-  initialIsShown: boolean;
+  closedContent?: React.ReactNode;
+  initialIsShown?: boolean | Array<string | number>;
 };
 
 type State = {
@@ -47,54 +47,38 @@ type State = {
   isShown: boolean;
 };
 
-export default class AddBrackets extends Component<Props, State> {
-  static defaultProps = {
-    openBracket: "(",
-    closeBracket: ")",
-    closedContent: "...",
-    initialIsShown: false
+export let PathExpansionContext = React.createContext(new Set<string>());
+
+export default function AddBrackets({
+  openBracket = "(",
+  closeBracket = ")",
+  closedContent = "...",
+  initialIsShown = false,
+  children
+}: Props) {
+  let [isHovered, setIsHovered] = useState(false);
+  let defaultPathExpansions = useContext(PathExpansionContext);
+  let [isShown, setIsShown] = useState(
+    typeof initialIsShown === "boolean"
+      ? initialIsShown
+      : defaultPathExpansions.has(initialIsShown.join(":"))
+  );
+
+  let props = {
+    isHovered,
+    onClick: () => {
+      setIsShown(!isShown);
+      setIsHovered(isShown);
+    },
+    onMouseEnter: () => setIsHovered(true),
+    onMouseLeave: () => setIsHovered(false)
   };
 
-  state = { isHovered: false, isShown: this.props.initialIsShown };
-
-  isHovered = () => this.setState({ isHovered: true });
-  isNotHovered = () => this.setState({ isHovered: false });
-
-  render() {
-    let { openBracket, closeBracket, children, closedContent } = this.props;
-    let { isHovered, isShown } = this.state;
-
-    return (
-      <Fragment>
-        <StateBit
-          isHovered={isHovered}
-          onClick={() => this.setState({ isShown: !isShown })}
-          onMouseEnter={this.isHovered}
-          onMouseLeave={this.isNotHovered}
-        >
-          {openBracket}
-        </StateBit>
-        {isShown ? (
-          children()
-        ) : (
-          <StateBit
-            isHovered={isHovered}
-            onClick={() => this.setState({ isShown: true, isHovered: false })}
-            onMouseEnter={this.isHovered}
-            onMouseLeave={this.isNotHovered}
-          >
-            {closedContent}
-          </StateBit>
-        )}
-        <StateBit
-          isHovered={isHovered}
-          onClick={() => this.setState({ isShown: !isShown })}
-          onMouseEnter={this.isHovered}
-          onMouseLeave={this.isNotHovered}
-        >
-          {closeBracket}
-        </StateBit>
-      </Fragment>
-    );
-  }
+  return (
+    <Fragment>
+      <StateBit {...props}>{openBracket}</StateBit>
+      {isShown ? children() : <StateBit {...props}>{closedContent}</StateBit>}
+      <StateBit {...props}>{closeBracket}</StateBit>
+    </Fragment>
+  );
 }

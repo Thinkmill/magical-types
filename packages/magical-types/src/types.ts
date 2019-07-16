@@ -35,7 +35,7 @@ export type MagicalNode =
   | ClassNode
   | ObjectNode;
 
-export type Property = { key: string; value: MagicalNode };
+export type Property = { key: string; description: string; value: MagicalNode };
 
 type Parameter = {
   name: string;

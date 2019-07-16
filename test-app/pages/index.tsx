@@ -6,21 +6,17 @@ import { MyComponentThatDoesStuff as AnotherComp } from "../../comp";
 
 // type Thing = (firstArg: string) => number;
 
-class Thing {
-  constructor(something: boolean) {}
-  x: string = "";
-  doAThing(something: number): string {
-    return "";
-  }
-}
+type Status = "notstarted" | "started" | "inprogress" | "completed";
+
+type Task = { id: string; status: Status; title: string };
 
 type Props = {
-  children: Thing;
-  other: ReadonlyArray<string>;
-  oneMore: Array<boolean>;
-  another: string[];
-  useEffect: typeof React["useEffect"];
-  createContext: typeof React["createContext"];
+  /** The tasks that the board should render */
+  tasks: Array<Task>;
+  /** A function that will be called.
+   * Important Note: this is the _changed_ tasks, **not** all of the new tasks.
+   */
+  onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
 type PropsAlias = Props;
@@ -29,11 +25,21 @@ let MyComponentThatDoesStuff = (props: PropsAlias) => {
   return null;
 };
 
+let MyOtherComponent = (props: {
+  children?: React.ReactNode;
+  dangerouslySetInnerHTML?: {
+    __html: string;
+  };
+}) => {
+  return <div {...props as any} />;
+};
+
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
       <PropTypes component={MyComponentThatDoesStuff} />
+      <PropTypes component={MyOtherComponent} />
     </div>
   );
 };

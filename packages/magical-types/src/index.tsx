@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useCallback,
-  useEffect,
-  useReducer
-} from "react";
+import React, { useEffect, useReducer, useMemo, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { ComponentType } from "react";
@@ -18,7 +11,8 @@ import {
 } from "./pretty-proptypes/components";
 import { colors } from "./pretty-proptypes/components/constants";
 import AddBrackets, {
-  bracketStyle
+  bracketStyle,
+  PathExpansionContext
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
 import * as flatted from "flatted";
 
@@ -44,16 +38,22 @@ const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
 
 function Properties({
   node,
-  depth
+  path
 }: {
   node: ObjectNode | ClassNode;
-  depth: number;
+  path: Array<number | string>;
 }) {
   return (
     <Indent>
       {node.properties.map((prop, index) => {
         return (
           <div key={index}>
+            {prop.description !== "" && (
+              <div>
+                {prop.description}
+                <br />
+              </div>
+            )}
             <TypeMinWidth>
               <Type>{prop.key}</Type>
             </TypeMinWidth>
@@ -61,7 +61,7 @@ function Properties({
             {/* {type.optional ? null : (
           <components.Required> required</components.Required>
         )}{" "} */}
-            {renderNode(prop.value, depth + 1)}
+            {renderNode(prop.value, path.concat("properties", index, "value"))}
           </div>
         );
       })}
@@ -118,7 +118,10 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
   );
 }
 
-function renderNode(node: MagicalNode, depth: number): React.ReactNode {
+function renderNode(
+  node: MagicalNode,
+  path: Array<string | number>
+): React.ReactNode {
   switch (node.type) {
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
@@ -137,7 +140,7 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
               <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
               {node.typeParameters.map((param, index, array) => (
                 <React.Fragment key={index}>
-                  {renderNode(param, depth + 1)}
+                  {renderNode(param, path.concat("typeParameters", index))}
                   {array.length - 1 === index ? "" : ", "}
                 </React.Fragment>
               ))}
@@ -156,28 +159,33 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
                   ) : (
                     undefined
                   )}
-                  {renderNode(param.type, depth + 1)}
+                  {renderNode(param.type, path.concat("parameters", index))}
                   {array.length - 1 === index ? "" : ", "}
                 </React.Fragment>
               ))
             }
           </AddBrackets>
           <Arrow />
-          {renderNode(node.return, depth + 1)}
+          {renderNode(node.return, path.concat("return"))}
         </span>
       );
     }
     case "ReadonlyArray":
     case "Array": {
+      let newPath = path.concat("value");
+
       return (
         <span>
           <TypeMeta>{node.type}</TypeMeta>
           <AddBrackets
-            initialIsShown={depth < 5}
+            initialIsShown={newPath}
             openBracket="<"
             closeBracket=">"
+            closedContent={
+              (node as any).value.name ? (node as any).value.name : undefined
+            }
           >
-            {() => <Indent>{renderNode(node.value, depth + 1)}</Indent>}
+            {() => <Indent>{renderNode(node.value, newPath)}</Indent>}
           </AddBrackets>
         </span>
       );
@@ -186,15 +194,11 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return (
         <span>
           <TypeMeta>Tuple</TypeMeta>
-          <AddBrackets
-            initialIsShown={depth < 5}
-            openBracket="["
-            closeBracket="]"
-          >
+          <AddBrackets initialIsShown={path} openBracket="[" closeBracket="]">
             {() =>
               node.value.map((node, index, array) => (
                 <React.Fragment key={index}>
-                  {renderNode(node, depth + 1)}
+                  {renderNode(node, path.concat("value", index))}
                   {array.length - 1 === index ? "" : ", "}
                 </React.Fragment>
               ))
@@ -207,21 +211,18 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return <PrettyTypeParameter node={node} />;
     }
     case "Union": {
+      console.log(path.join(":"));
       return (
         <span>
           <TypeMeta>
             {node.name === null ? "" : `${node.name} `}One of{" "}
           </TypeMeta>
-          <AddBrackets
-            initialIsShown={depth < 5}
-            openBracket="<"
-            closeBracket=">"
-          >
+          <AddBrackets initialIsShown={path} openBracket="<" closeBracket=">">
             {() => (
               <Indent>
                 {node.types.map((n, index, array) => (
                   <div key={index}>
-                    {renderNode(n, depth + 1)}
+                    {renderNode(n, path.concat("types", index))}
                     {array.length - 1 === index ? "" : ", "}
                   </div>
                 ))}
@@ -234,13 +235,13 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
     case "Intersection": {
       let arr: Array<React.ReactNode> = [];
       node.types.forEach((type, index) => {
+        arr.push(
+          <span key={index}>
+            {renderNode(type, path.concat("types", index))}
+          </span>
+        );
         if (index < node.types.length - 1) {
-          arr.push(
-            <span key={index}>{renderNode(type, depth + 1)}</span>,
-            <div key={`divider-${index}`}>&</div>
-          );
-        } else {
-          arr.push(<span key={index}>{renderNode(type, depth + 1)}</span>);
+          arr.push(<div key={`divider-${index}`}>&</div>);
         }
       });
       return arr;
@@ -249,12 +250,8 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
       return (
         <span>
           <TypeMeta>{node.name}</TypeMeta>
-          <AddBrackets
-            initialIsShown={depth < 5}
-            openBracket="{"
-            closeBracket="}"
-          >
-            {() => <Properties depth={depth} node={node} />}
+          <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
+            {() => <Properties path={path} node={node} />}
           </AddBrackets>
         </span>
       );
@@ -264,9 +261,9 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
         <span>
           <TypeMeta>class {node.name}</TypeMeta>
 
-          <AddBrackets openBracket="{" closeBracket="}">
+          <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
             {() => {
-              return <Properties depth={depth} node={node} />;
+              return <Properties path={path} node={node} />;
             }}
           </AddBrackets>
         </span>
@@ -278,9 +275,117 @@ function renderNode(node: MagicalNode, depth: number): React.ReactNode {
   }
 }
 
+// what are we doing here?
+// first, what do we want to achieve?
+// important note to understand this: magical nodes can contain circular references
+// 1. we only want to expand each node by default a single time
+// 2. the shallowest node and then first node at that depth is the one that should be expanded
+// so, how do we implement this?
+// we need to do a breadth first graph traversal
+// Wikipedia explains what this is: https://en.wikipedia.org/wiki/Breadth-first_search
+
+type PositionedNode = { path: Array<string | number>; node: MagicalNode };
+function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
+  let pathsThatShouldBeExpandedByDefault = new Set<string>();
+
+  // because of circular references, we don't want to visit a node more than once
+  let visitedNodes = new Set<MagicalNode>();
+
+  let queue: Array<PositionedNode> = [{ node: rootNode, path: [] }];
+
+  while (queue.length) {
+    let currentPositionedNode = queue.shift() as PositionedNode;
+
+    visitedNodes.add(currentPositionedNode.node);
+    if (
+      (["Object", "Union", "Array", "ReadonlyArray", "Tuple", "Class"] as Array<
+        MagicalNode["type"]
+      >).includes(currentPositionedNode.node.type)
+    ) {
+      pathsThatShouldBeExpandedByDefault.add(
+        currentPositionedNode.path.join(":")
+      );
+    }
+    // we don't want to open any nodes deeper than 5 nodes by default
+    if (currentPositionedNode.path.length < 5) {
+      queue.push(
+        ...getChildren(currentPositionedNode).filter(
+          ({ node }) => !visitedNodes.has(node)
+        )
+      );
+    }
+  }
+  return pathsThatShouldBeExpandedByDefault;
+}
+
+function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
+  switch (node.type) {
+    case "StringLiteral":
+    case "NumberLiteral":
+    case "TypeParameter":
+    case "Intrinsic": {
+      return [];
+    }
+    case "Union":
+    case "Intersection": {
+      return node.types.map((node, index) => {
+        return { node, path: path.concat("types", index) };
+      });
+    }
+    case "Array":
+    case "ReadonlyArray": {
+      return [{ node: node.value, path: path.concat("value") }];
+    }
+    case "Tuple": {
+      return node.value.map((node, index) => {
+        return { node, path: path.concat("value", index) };
+      });
+    }
+    case "Function": {
+      return [
+        { node, path: path.concat("return") },
+        ...node.parameters.map((param, index) => {
+          return {
+            node: param.type,
+            path: path.concat("parameters", index, "type")
+          };
+        }),
+        ...node.typeParameters.map((node, index) => {
+          return { node, path: path.concat("typeParameters", index) };
+        })
+      ];
+    }
+    case "Class":
+    case "Object": {
+      return node.properties.map((param, index) => {
+        return {
+          node: param.value,
+          path: path.concat("properties", index, "value")
+        };
+      });
+    }
+
+    default: {
+      let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
+      throw new Error("this should never happen");
+    }
+  }
+}
+
 let renderTypes = (props: any) => {
   let node: MagicalNode = flatted.parse((props as any).__types);
-  return <div css={{ fontFamily: "sans-serif" }}>{renderNode(node, 0)}</div>;
+  let pathsThatShouldBeExpandedByDefault = useMemo(() => {
+    return getPathsThatShouldBeExpandedByDefault(node);
+  }, [node]);
+  console.log(pathsThatShouldBeExpandedByDefault, node);
+
+  return (
+    <div css={{ fontFamily: "sans-serif" }}>
+      <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
+        {renderNode(node, [])}
+      </PathExpansionContext.Provider>
+    </div>
+  );
 };
 
 export let PropTypes = (props: { component: ComponentType<any> }) => {

@@ -83,8 +83,11 @@ export function getTypes(
     let type = typeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
     // TODO: this could be better
     let key = symbol.getName();
-
+    let thing = typescript.displayPartsToString(
+      symbol.getDocumentationComment(typeChecker)
+    );
     return {
+      description: thing,
       key,
       value: convertType(type)
     };
