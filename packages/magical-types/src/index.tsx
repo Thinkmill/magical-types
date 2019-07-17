@@ -294,7 +294,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   let queue: Array<PositionedNode> = [{ node: rootNode, path: [] }];
 
   while (queue.length) {
-    let currentPositionedNode = queue.shift() as PositionedNode;
+    let currentPositionedNode = queue.shift()!;
 
     visitedNodes.add(currentPositionedNode.node);
     if (

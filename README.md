@@ -56,8 +56,8 @@ let AnotherComp = someFunctionThatReturnsAComponent();
 <PropTypes component={AnotherComp} />;
 ```
 
-## Credit/Inspiration
+## Thanks/Inspiration
 
 This project is mostly some ideas that I've been thinking about because of some of the constraints in [react-docgen](https://github.com/reactjs/react-docgen), [react-docgen-typescript](https://github.com/styleguidist/react-docgen-typescript) and [extract-react-types](https://github.com/atlassian/extract-react-types) and how some problems could be removed by changing some constraints, notably the removal of having to know what is and isn't a React component.
 
-The code for rendering types is **heavily** based off [pretty-proptypes](https://github.com/atlassian/extract-react-types/tree/master/packages/pretty-proptypes)
+The code for rendering types is **heavily** based off [pretty-proptypes](https://github.com/atlassian/extract-react-types/tree/master/packages/pretty-proptypes).

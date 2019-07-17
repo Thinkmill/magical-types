@@ -74,11 +74,17 @@ export default function AddBrackets({
     onMouseLeave: () => setIsHovered(false)
   };
 
-  return (
+  return isShown ? (
     <Fragment>
       <StateBit {...props}>{openBracket}</StateBit>
-      {isShown ? children() : <StateBit {...props}>{closedContent}</StateBit>}
+      {children()}
       <StateBit {...props}>{closeBracket}</StateBit>
     </Fragment>
+  ) : (
+    <StateBit {...props}>
+      {openBracket}
+      {closedContent}
+      {closeBracket}
+    </StateBit>
   );
 }
