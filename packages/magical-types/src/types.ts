@@ -17,7 +17,10 @@ export type ClassNode = {
 export type TypeParameterNode = { type: "TypeParameter"; value: string };
 
 export type MagicalNode =
+  | { type: "Unknown" }
   | { type: "Intrinsic"; value: string }
+  | { type: "Builtin"; name: string; typeArguments: Array<MagicalNode> }
+  | { type: "Promise"; value: MagicalNode }
   | { type: "StringLiteral"; value: string }
   | { type: "NumberLiteral"; value: number }
   | { type: "Array"; value: MagicalNode }

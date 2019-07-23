@@ -123,6 +123,9 @@ function renderNode(
   path: Array<string | number>
 ): React.ReactNode {
   switch (node.type) {
+    case "Unknown": {
+      return <span>Could not stringify this type</span>;
+    }
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
     }
@@ -170,7 +173,31 @@ function renderNode(
         </span>
       );
     }
+    case "Builtin": {
+      return (
+        <span>
+          <Type>{node.name}</Type>
+          {node.typeArguments.length && (
+            <AddBrackets initialIsShown={path} openBracket="<" closeBracket=">">
+              {() => {
+                return (
+                  <Indent>
+                    {node.typeArguments.map((param, index, array) => (
+                      <React.Fragment key={index}>
+                        {renderNode(param, path.concat("typeArguments", index))}
+                        {array.length - 1 === index ? "" : ", "}
+                      </React.Fragment>
+                    ))}
+                  </Indent>
+                );
+              }}
+            </AddBrackets>
+          )}
+        </span>
+      );
+    }
     case "ReadonlyArray":
+    case "Promise":
     case "Array": {
       let newPath = path.concat("value");
 
@@ -298,9 +325,16 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
 
     visitedNodes.add(currentPositionedNode.node);
     if (
-      (["Object", "Union", "Array", "ReadonlyArray", "Tuple", "Class"] as Array<
-        MagicalNode["type"]
-      >).includes(currentPositionedNode.node.type)
+      ([
+        "Object",
+        "Union",
+        "Array",
+        "ReadonlyArray",
+        "Tuple",
+        "Class",
+        "Promise",
+        "Builtin"
+      ] as Array<MagicalNode["type"]>).includes(currentPositionedNode.node.type)
     ) {
       pathsThatShouldBeExpandedByDefault.add(
         currentPositionedNode.path.join(":")
@@ -323,8 +357,14 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
     case "StringLiteral":
     case "NumberLiteral":
     case "TypeParameter":
+    case "Unknown":
     case "Intrinsic": {
       return [];
+    }
+    case "Builtin": {
+      return node.typeArguments.map((node, index) => {
+        return { node, path: path.concat("typeArguments", index) };
+      });
     }
     case "Union":
     case "Intersection": {
@@ -333,6 +373,7 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
       });
     }
     case "Array":
+    case "Promise":
     case "ReadonlyArray": {
       return [{ node: node.value, path: path.concat("value") }];
     }
@@ -367,7 +408,8 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
 
     default: {
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
-      throw new Error("this should never happen");
+      // @ts-ignore
+      throw new Error("this should never happen: " + node.type);
     }
   }
 }

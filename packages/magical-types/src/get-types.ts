@@ -62,19 +62,10 @@ export function getTypes(
     }
   }
 
-  function setToNodeCache(
-    getNode: () => MagicalNode,
-    typeToSet: typescript.Type
-  ) {
-    let obj = {};
-    // @ts-ignore
-    nodeCache.set((typeToSet as any).id, obj);
-    let node = getNode();
-    Object.assign(obj, node);
-    return node;
-  }
-
-  function convertProperty(symbol: typescript.Symbol): Property {
+  function convertProperty(
+    symbol: typescript.Symbol,
+    path: Array<string | number>
+  ): Property {
     let declaration = symbol.valueDeclaration || symbol.declarations[0];
 
     if (!declaration) {
@@ -89,7 +80,7 @@ export function getTypes(
     return {
       description: thing,
       key,
-      value: convertType(type)
+      value: convertType(type, path.concat("getProperties()", key))
     };
   }
 
@@ -105,185 +96,224 @@ export function getTypes(
     }
     return null;
   }
-  function convertType(type: typescript.Type): MagicalNode {
+  function convertType(
+    type: typescript.Type,
+    path: Array<string | number>
+  ): MagicalNode {
     let id: number = (type as any).id;
     let cachedNode = nodeCache.get(id);
     if (cachedNode !== undefined) {
       return cachedNode;
     }
+    let obj = {} as MagicalNode;
+    nodeCache.set(id, obj);
+    try {
+      let node = _convertType(type, path);
+      Object.assign(obj, node);
+      return obj;
+    } catch (err) {
+      err.message = `The following error occurred while trying to stringify the following path: ${path} :${
+        err.message
+      }`;
+      throw err;
+    }
+  }
+
+  let ptn = /lib\.[a-zA-Z\.]\.d\.ts$/;
+  function _convertType(
+    type: typescript.Type,
+    path: Array<string | number>
+  ): MagicalNode {
+    if (
+      type.symbol &&
+      type.symbol.valueDeclaration &&
+      ptn.test((type.symbol.valueDeclaration.getSourceFile() as any).path)
+    ) {
+      return {
+        type: "Builtin",
+        name: type.symbol.getName(),
+        typeArguments: ((type as any).typeArguments || []).map((x, index) =>
+          convertType(x, path.concat("typeArguments", index))
+        )
+      };
+    }
     if (
       (type as any).intrinsicName &&
       (type as any).intrinsicName !== "error"
     ) {
-      return setToNodeCache(
-        () => ({
-          type: "Intrinsic",
-          value: (type as any).intrinsicName
-        }),
-        type
-      );
+      return {
+        type: "Intrinsic",
+        value: (type as any).intrinsicName
+      };
+    }
+
+    if (type.symbol && type.symbol.escapedName === "Promise") {
+      return {
+        type: "Promise",
+        value: convertType(
+          (type as any).typeArguments[0],
+          path.concat("typeArguments", 0)
+        )
+      };
     }
 
     if (type.isStringLiteral()) {
-      return setToNodeCache(
-        () => ({
-          type: "StringLiteral",
-          value: type.value
-        }),
-        type
-      );
+      return {
+        type: "StringLiteral",
+        value: type.value
+      };
     }
     if (type.isNumberLiteral()) {
-      return setToNodeCache(
-        () => ({
-          type: "NumberLiteral",
-          value: type.value
-        }),
-        type
-      );
+      return {
+        type: "NumberLiteral",
+        value: type.value
+      };
     }
     if (type.isUnion()) {
-      return setToNodeCache(
-        () => ({
-          type: "Union",
-          name: getNameForType(type),
-          types: type.types.map(type => convertType(type))
-        }),
-        type
-      );
+      return {
+        type: "Union",
+        name: getNameForType(type),
+        types: type.types.map((type, index) =>
+          convertType(type, path.concat("types", index))
+        )
+      };
     }
     if (type.isIntersection()) {
-      return setToNodeCache(
-        () => ({
-          type: "Intersection",
-          types: type.types.map(type => convertType(type))
-        }),
-        type
-      );
+      return {
+        type: "Intersection",
+        types: type.types.map((type, index) =>
+          convertType(type, path.concat("types", index))
+        )
+      };
     }
 
     if ((typeChecker as any).isArrayType(type)) {
       // TODO: fix ReadonlyArray
-      return setToNodeCache(
-        () => ({
-          type: "Array",
-          value: convertType((type as any).typeArguments[0])
-        }),
-        type
-      );
+      return {
+        type: "Array",
+        value: convertType(
+          (type as any).typeArguments[0],
+          path.concat("typeArguments", 0)
+        )
+      };
     }
 
     if ((typeChecker as any).isTupleType(type)) {
-      return setToNodeCache(
-        () => ({
-          type: "Tuple",
-          value: ((type as any) as {
-            typeArguments: Array<typescript.Type>;
-          }).typeArguments.map(x => convertType(x))
-        }),
-        type
-      );
+      return {
+        type: "Tuple",
+        value: ((type as any) as {
+          typeArguments: Array<typescript.Type>;
+        }).typeArguments.map((x, index) =>
+          convertType(x, path.concat("typeArguments", index))
+        )
+      };
     }
 
     if (type.isClass()) {
-      return setToNodeCache(
-        () => ({
-          type: "Class",
-          name: type.symbol ? type.symbol.getName() : null,
-          typeParameters: (type.typeParameters || []).map(x => convertType(x)),
-          thisNode: type.thisType ? convertType(type.thisType) : null,
-          properties: type.getProperties().map(symbol => {
-            return convertProperty(symbol);
-          })
-        }),
-        type
-      );
+      return {
+        type: "Class",
+        name: type.symbol ? type.symbol.getName() : null,
+        typeParameters: (type.typeParameters || []).map((x, index) =>
+          convertType(x, path.concat("typeParameters", index))
+        ),
+        thisNode: type.thisType
+          ? convertType(type.thisType, path.concat("thisType"))
+          : null,
+        properties: type.getProperties().map((symbol, index) => {
+          return convertProperty(symbol, path);
+        })
+      };
+    }
+
+    if (type.flags & typescript.TypeFlags.Object) {
+      return {
+        type: "Object",
+        name: getNameForType(type),
+        properties: type.getProperties().map((symbol, index) => {
+          return convertProperty(symbol, path);
+        })
+      };
     }
     let callSignatures = type.getCallSignatures();
 
     if (callSignatures.length) {
-      return setToNodeCache(() => {
-        let signatures = callSignatures.map(callSignature => {
-          let returnType = callSignature.getReturnType();
-          let typeParameters = callSignature.getTypeParameters() || [];
-          let parameters = callSignature.getParameters().map(parameter => {
-            let declaration =
-              parameter.valueDeclaration || parameter.declarations[0];
+      let signatures = callSignatures.map((callSignature, index) => {
+        let localPath = path.concat("getCallSignatures()", index);
 
-            if (!typescript.isParameter(declaration)) {
-              throw new InternalError(
-                "expected node to be a parameter declaration but it was not"
-              );
-            }
+        let returnType = callSignature.getReturnType();
+        let typeParameters = callSignature.getTypeParameters() || [];
+        let parameters = callSignature.getParameters().map(parameter => {
+          let declaration =
+            parameter.valueDeclaration || parameter.declarations[0];
 
-            if (
-              typeChecker.isOptionalParameter(declaration) &&
-              declaration.type
-            ) {
-              return {
-                required: false,
-                name: parameter.name,
-                type: convertType(
-                  typeChecker.getTypeFromTypeNode(declaration.type)
-                )
-              };
-            }
-
-            let type = typeChecker.getTypeOfSymbolAtLocation(
-              parameter,
-              declaration
+          if (!typescript.isParameter(declaration)) {
+            throw new InternalError(
+              "expected node to be a parameter declaration but it was not"
             );
-            return {
-              required: true,
-              name: parameter.name,
-              type: convertType(type)
-            };
-          });
+          }
 
+          if (
+            typeChecker.isOptionalParameter(declaration) &&
+            declaration.type
+          ) {
+            return {
+              required: false,
+              name: parameter.name,
+              type: convertType(
+                typeChecker.getTypeFromTypeNode(declaration.type),
+                localPath.concat("getParameters()", parameter.name)
+              )
+            };
+          }
+
+          let type = typeChecker.getTypeOfSymbolAtLocation(
+            parameter,
+            declaration
+          );
           return {
-            name: getNameForType(type),
-            type: "Function",
-            return: convertType(returnType),
-            parameters,
-            typeParameters: typeParameters.map(
-              x => convertType(x) as TypeParameterNode
+            required: true,
+            name: parameter.name,
+            type: convertType(
+              type,
+              localPath.concat("getParameters()", parameter.name)
             )
-          } as const;
+          };
         });
-        if (signatures.length === 1) {
-          return signatures[0];
-        }
+
         return {
-          type: "Union",
           name: getNameForType(type),
-          types: signatures
-        };
-      }, type);
+          type: "Function",
+          return: convertType(returnType, localPath.concat("getReturnType()")),
+          parameters,
+          typeParameters: typeParameters.map(
+            (x, index) =>
+              convertType(
+                x,
+                path.concat("typeParameters", index)
+              ) as TypeParameterNode
+          )
+        } as const;
+      });
+      if (signatures.length === 1) {
+        return signatures[0];
+      }
+      return {
+        type: "Union",
+        name: getNameForType(type),
+        types: signatures
+      };
     }
-    if (type.flags & typescript.TypeFlags.Object) {
-      return setToNodeCache(
-        () => ({
-          type: "Object",
-          name: getNameForType(type),
-          properties: type.getProperties().map(symbol => {
-            return convertProperty(symbol);
-          })
-        }),
-        type
-      );
-    }
+
     if (type.isTypeParameter()) {
-      return setToNodeCache(
-        () => ({
-          type: "TypeParameter",
-          value: type.symbol.getName()
-        }),
-        type
-      );
+      return {
+        type: "TypeParameter",
+        value: type.symbol.getName()
+      };
     }
+    return { type: "Unknown" };
     debugger;
     console.log("Type that could not be stringified:", type);
-    throw new InternalError("Could not stringify type");
+    throw new InternalError("Could not stringify type of path: " + path);
   }
 
   let sourceFile = project.getSourceFileOrThrow(filename).compilerNode;
@@ -361,7 +391,9 @@ export function getTypes(
             BabelTypes.jsxAttribute(
               BabelTypes.jsxIdentifier("__types"),
               BabelTypes.jsxExpressionContainer(
-                BabelTypes.stringLiteral(flatted.stringify(convertType(type)))
+                BabelTypes.stringLiteral(
+                  flatted.stringify(convertType(type, []))
+                )
               )
             )
           );

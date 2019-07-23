@@ -3,6 +3,7 @@ import React from "react";
 import { jsx } from "@emotion/core";
 import { PropTypes } from "magical-types/macro";
 import { MyComponentThatDoesStuff as AnotherComp } from "../../comp";
+import Select from "react-select/base";
 
 // type Thing = (firstArg: string) => number;
 
@@ -19,19 +20,10 @@ type Props = {
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
-type PropsAlias = Props;
-
-let MyComponentThatDoesStuff = (props: PropsAlias) => {
+let MyComponentThatDoesStuff = (
+  props: React.ButtonHTMLAttributes<HTMLButtonElement>
+) => {
   return null;
-};
-
-let MyOtherComponent = (props: {
-  children?: React.ReactNode;
-  dangerouslySetInnerHTML?: {
-    __html: string;
-  };
-}) => {
-  return <div {...props as any} />;
 };
 
 export default () => {
@@ -39,7 +31,7 @@ export default () => {
     <div css={{ fontFamily: "sans-serif" }}>
       something
       <PropTypes component={MyComponentThatDoesStuff} />
-      <PropTypes component={MyOtherComponent} />
+      <PropTypes component={Select} />
     </div>
   );
 };
