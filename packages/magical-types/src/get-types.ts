@@ -25,7 +25,7 @@ export function getTypes(
     filename,
     typescript.sys.fileExists
   );
-  let nodeCache = new Map<number, MagicalNode>();
+  let nodeCache = new Map<typescript.Type, MagicalNode>();
   if (!configFileName) {
     throw new Error("No tsconfig.json file could be found");
   }
@@ -100,13 +100,12 @@ export function getTypes(
     type: typescript.Type,
     path: Array<string | number>
   ): MagicalNode {
-    let id: number = (type as any).id;
-    let cachedNode = nodeCache.get(id);
+    let cachedNode = nodeCache.get(type);
     if (cachedNode !== undefined) {
       return cachedNode;
     }
     let obj = {} as MagicalNode;
-    nodeCache.set(id, obj);
+    nodeCache.set(type, obj);
     try {
       let node = _convertType(type, path);
       Object.assign(obj, node);

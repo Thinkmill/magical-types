@@ -9,7 +9,7 @@ import Select from "react-select/base";
 
 type Status = "notstarted" | "started" | "inprogress" | "completed";
 
-type Task = { id: string; status: Status; title: string };
+type Task = { id: string; status: Status; title: string; task: Task };
 
 type Props = {
   /** The tasks that the board should render */
