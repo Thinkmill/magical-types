@@ -20,9 +20,7 @@ type Props = {
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
-let MyComponentThatDoesStuff = (
-  props: React.ButtonHTMLAttributes<HTMLButtonElement>
-) => {
+let MyComponentThatDoesStuff = (props: Props) => {
   return null;
 };
 
@@ -31,7 +29,7 @@ export default () => {
     <div css={{ fontFamily: "sans-serif" }}>
       something
       <PropTypes component={MyComponentThatDoesStuff} />
-      <PropTypes component={Select} />
+      {/* <PropTypes component={Select} /> */}
     </div>
   );
 };

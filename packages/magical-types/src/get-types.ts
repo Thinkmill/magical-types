@@ -125,19 +125,6 @@ export function getTypes(
     path: Array<string | number>
   ): MagicalNode {
     if (
-      type.symbol &&
-      type.symbol.valueDeclaration &&
-      ptn.test((type.symbol.valueDeclaration.getSourceFile() as any).path)
-    ) {
-      return {
-        type: "Builtin",
-        name: type.symbol.getName(),
-        typeArguments: ((type as any).typeArguments || []).map((x, index) =>
-          convertType(x, path.concat("typeArguments", index))
-        )
-      };
-    }
-    if (
       (type as any).intrinsicName &&
       (type as any).intrinsicName !== "error"
     ) {
@@ -147,6 +134,7 @@ export function getTypes(
       };
     }
 
+    // i think this is done badly
     if (type.symbol && type.symbol.escapedName === "Promise") {
       return {
         type: "Promise",
@@ -225,19 +213,10 @@ export function getTypes(
       };
     }
 
-    if (type.flags & typescript.TypeFlags.Object) {
-      return {
-        type: "Object",
-        name: getNameForType(type),
-        properties: type.getProperties().map((symbol, index) => {
-          return convertProperty(symbol, path);
-        })
-      };
-    }
     let callSignatures = type.getCallSignatures();
-
     if (callSignatures.length) {
       let signatures = callSignatures.map((callSignature, index) => {
+        console.log(callSignature);
         let localPath = path.concat("getCallSignatures()", index);
 
         let returnType = callSignature.getReturnType();
@@ -304,6 +283,15 @@ export function getTypes(
       };
     }
 
+    if (type.flags & typescript.TypeFlags.Object) {
+      return {
+        type: "Object",
+        name: getNameForType(type),
+        properties: type.getProperties().map((symbol, index) => {
+          return convertProperty(symbol, path);
+        })
+      };
+    }
     if (type.isTypeParameter()) {
       return {
         type: "TypeParameter",
