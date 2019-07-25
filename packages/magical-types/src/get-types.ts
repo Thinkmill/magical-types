@@ -1,6 +1,5 @@
 import typescript from "typescript";
-import * as fs from "fs";
-import { NodePath, types } from "@babel/core";
+import { NodePath } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { MagicalNode, Property, TypeParameterNode } from "./types";
 import { InternalError } from "./errors";
