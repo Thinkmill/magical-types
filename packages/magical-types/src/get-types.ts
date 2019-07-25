@@ -298,7 +298,6 @@ export function getTypes(
         value: type.symbol.getName()
       };
     }
-    return { type: "Unknown" };
     debugger;
     console.log("Type that could not be stringified:", type);
     throw new InternalError("Could not stringify type of path: " + path);

@@ -123,9 +123,6 @@ function renderNode(
   path: Array<string | number>
 ): React.ReactNode {
   switch (node.type) {
-    case "Unknown": {
-      return <span>Could not stringify this type</span>;
-    }
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
     }
@@ -170,29 +167,6 @@ function renderNode(
           </AddBrackets>
           <Arrow />
           {renderNode(node.return, path.concat("return"))}
-        </span>
-      );
-    }
-    case "Builtin": {
-      return (
-        <span>
-          <Type>{node.name}</Type>
-          {node.typeArguments.length && (
-            <AddBrackets initialIsShown={path} openBracket="<" closeBracket=">">
-              {() => {
-                return (
-                  <Indent>
-                    {node.typeArguments.map((param, index, array) => (
-                      <React.Fragment key={index}>
-                        {renderNode(param, path.concat("typeArguments", index))}
-                        {array.length - 1 === index ? "" : ", "}
-                      </React.Fragment>
-                    ))}
-                  </Indent>
-                );
-              }}
-            </AddBrackets>
-          )}
         </span>
       );
     }
@@ -357,14 +331,8 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
     case "StringLiteral":
     case "NumberLiteral":
     case "TypeParameter":
-    case "Unknown":
     case "Intrinsic": {
       return [];
-    }
-    case "Builtin": {
-      return node.typeArguments.map((node, index) => {
-        return { node, path: path.concat("typeArguments", index) };
-      });
     }
     case "Union":
     case "Intersection": {
