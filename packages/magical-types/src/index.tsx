@@ -2,7 +2,13 @@ import React, { useEffect, useReducer, useMemo, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { ComponentType } from "react";
-import { MagicalNode, ObjectNode, ClassNode, TypeParameterNode } from "./types";
+import {
+  MagicalNode,
+  ObjectNode,
+  ClassNode,
+  TypeParameterNode,
+  SignatureNode
+} from "./types";
 import {
   Type,
   Indent,
@@ -69,6 +75,56 @@ function Properties({
   );
 }
 
+function PrettyObject({
+  node,
+  path
+}: {
+  node: ObjectNode;
+  path: Array<number | string>;
+}) {
+  return (
+    <Indent>
+      {node.constructSignatures.map((signature, index) => {
+        return (
+          <PrettySignatureButDifferent
+            node={signature}
+            path={path.concat("constructSignatures", index)}
+            type="construct"
+          />
+        );
+      })}
+      {node.callSignatures.map((signature, index) => {
+        return (
+          <PrettySignatureButDifferent
+            node={signature}
+            path={path.concat("callSignatures", index)}
+            type="call"
+          />
+        );
+      })}
+      {node.properties.map((prop, index) => {
+        return (
+          <div key={index}>
+            {prop.description !== "" && (
+              <div>
+                {prop.description}
+                <br />
+              </div>
+            )}
+            <TypeMinWidth>
+              <Type>{prop.key}</Type>
+            </TypeMinWidth>
+
+            {/* {type.optional ? null : (
+          <components.Required> required</components.Required>
+        )}{" "} */}
+            {renderNode(prop.value, path.concat("properties", index, "value"))}
+          </div>
+        );
+      })}
+    </Indent>
+  );
+}
 let cache = new Map<
   TypeParameterNode,
   { listeners: Array<(...args: any) => any>; value: boolean }
@@ -118,6 +174,105 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
   );
 }
 
+function PrettySignatureButDifferent({
+  node,
+  path,
+  type
+}: {
+  node: SignatureNode;
+  path: Array<string | number>;
+  type: "construct" | "call";
+}) {
+  return (
+    <span>
+      {type === "construct" ? "new " : ""}
+      {node.typeParameters.length !== 0 && (
+        <span>
+          <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
+          {node.typeParameters.map((param, index, array) => (
+            <React.Fragment key={index}>
+              {renderNode(param, path.concat("typeParameters", index))}
+              {array.length - 1 === index ? "" : ", "}
+            </React.Fragment>
+          ))}
+          <span css={bracketStyle({ isHovered: false })}>{">"}</span>
+        </span>
+      )}
+      <AddBrackets initialIsShown>
+        {() =>
+          node.parameters.map((param, index, array) => (
+            <React.Fragment key={index}>
+              {param.name ? (
+                <Type>
+                  {param.name}
+                  {param.required ? "" : "?"}:{" "}
+                </Type>
+              ) : (
+                undefined
+              )}
+              {renderNode(param.type, path.concat("parameters", index))}
+              {array.length - 1 === index ? "" : ", "}
+            </React.Fragment>
+          ))
+        }
+      </AddBrackets>
+      <span
+        css={css`
+          color: ${colors.G500};
+        `}
+      >
+        {": "}
+      </span>
+      {renderNode(node.return, path.concat("return"))}
+    </span>
+  );
+}
+
+function PrettySignature({
+  node,
+  path
+}: {
+  node: SignatureNode;
+  path: Array<string | number>;
+}) {
+  return (
+    <span>
+      {node.typeParameters.length !== 0 && (
+        <span>
+          <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
+          {node.typeParameters.map((param, index, array) => (
+            <React.Fragment key={index}>
+              {renderNode(param, path.concat("typeParameters", index))}
+              {array.length - 1 === index ? "" : ", "}
+            </React.Fragment>
+          ))}
+          <span css={bracketStyle({ isHovered: false })}>{">"}</span>
+        </span>
+      )}
+      <AddBrackets initialIsShown>
+        {() =>
+          node.parameters.map((param, index, array) => (
+            <React.Fragment key={index}>
+              {param.name ? (
+                <Type>
+                  {param.name}
+                  {param.required ? "" : "?"}:{" "}
+                </Type>
+              ) : (
+                undefined
+              )}
+              {renderNode(param.type, path.concat("parameters", index))}
+              {array.length - 1 === index ? "" : ", "}
+            </React.Fragment>
+          ))
+        }
+      </AddBrackets>
+      <Arrow />
+      {renderNode(node.return, path.concat("return"))}
+    </span>
+  );
+}
+
 function renderNode(
   node: MagicalNode,
   path: Array<string | number>
@@ -132,44 +287,7 @@ function renderNode(
     case "NumberLiteral": {
       return <Type>{node.value}</Type>;
     }
-    case "Function": {
-      return (
-        <span>
-          {node.typeParameters.length !== 0 && (
-            <span>
-              <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
-              {node.typeParameters.map((param, index, array) => (
-                <React.Fragment key={index}>
-                  {renderNode(param, path.concat("typeParameters", index))}
-                  {array.length - 1 === index ? "" : ", "}
-                </React.Fragment>
-              ))}
-              <span css={bracketStyle({ isHovered: false })}>{">"}</span>
-            </span>
-          )}
-          <AddBrackets initialIsShown>
-            {() =>
-              node.parameters.map((param, index, array) => (
-                <React.Fragment key={index}>
-                  {param.name ? (
-                    <Type>
-                      {param.name}
-                      {param.required ? "" : "?"}:{" "}
-                    </Type>
-                  ) : (
-                    undefined
-                  )}
-                  {renderNode(param.type, path.concat("parameters", index))}
-                  {array.length - 1 === index ? "" : ", "}
-                </React.Fragment>
-              ))
-            }
-          </AddBrackets>
-          <Arrow />
-          {renderNode(node.return, path.concat("return"))}
-        </span>
-      );
-    }
+
     case "ReadonlyArray":
     case "Promise":
     case "Array": {
@@ -205,6 +323,14 @@ function renderNode(
               ))
             }
           </AddBrackets>
+        </span>
+      );
+    }
+    case "IndexedAccess": {
+      return (
+        <span>
+          <div>{renderNode(node.object, path.concat("object"))}</div>
+          <div>{renderNode(node.index, path.concat("index"))}</div>
         </span>
       );
     }
@@ -252,7 +378,7 @@ function renderNode(
         <span>
           <TypeMeta>{node.name}</TypeMeta>
           <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
-            {() => <Properties path={path} node={node} />}
+            {() => <PrettyObject path={path} node={node} />}
           </AddBrackets>
         </span>
       );
@@ -261,12 +387,24 @@ function renderNode(
       return (
         <span>
           <TypeMeta>class {node.name}</TypeMeta>
-
           <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
             {() => {
               return <Properties path={path} node={node} />;
             }}
           </AddBrackets>
+        </span>
+      );
+    }
+    case "Conditional": {
+      return (
+        <span>
+          {renderNode(node.check, path.concat("check"))}{" "}
+          <TypeMeta>extends</TypeMeta>{" "}
+          {renderNode(node.extends, path.concat("extends"))}{" "}
+          <TypeMeta> ? </TypeMeta>
+          {renderNode(node.true, path.concat("true"))}
+          <TypeMeta> : </TypeMeta>
+          {renderNode(node.false, path.concat("false"))}
         </span>
       );
     }
@@ -327,6 +465,15 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
 }
 
 function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
+  function getPositionedNodeFromKey<Obj, Key extends keyof Obj>(
+    obj: Obj,
+    key: Key
+  ): {
+    node: Obj[Key];
+    path: Array<string | number>;
+  } {
+    return { node: obj[key], path: path.concat(key as string | number) };
+  }
   switch (node.type) {
     case "StringLiteral":
     case "NumberLiteral":
@@ -350,28 +497,99 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
         return { node, path: path.concat("value", index) };
       });
     }
-    case "Function": {
+    case "IndexedAccess": {
       return [
-        { node, path: path.concat("return") },
-        ...node.parameters.map((param, index) => {
+        { node: node.object, path: path.concat("object") },
+        { node: node.index, path: path.concat("index") }
+      ];
+    }
+    // case "Function": {
+    //   return [
+    //     { node, path: path.concat("return") },
+    //     ...node.parameters.map((param, index) => {
+    //       return {
+    //         node: param.type,
+    //         path: path.concat("parameters", index, "type")
+    //       };
+    //     }),
+    //     ...node.typeParameters.map((node, index) => {
+    //       return { node, path: path.concat("typeParameters", index) };
+    //     })
+    //   ];
+    // }
+    case "Class": {
+      return [
+        ...node.properties.map((param, index) => {
           return {
-            node: param.type,
-            path: path.concat("parameters", index, "type")
+            node: param.value,
+            path: path.concat("properties", index, "value")
           };
-        }),
-        ...node.typeParameters.map((node, index) => {
-          return { node, path: path.concat("typeParameters", index) };
         })
       ];
     }
-    case "Class":
     case "Object": {
-      return node.properties.map((param, index) => {
-        return {
-          node: param.value,
-          path: path.concat("properties", index, "value")
-        };
-      });
+      return [
+        ...node.callSignatures
+          .map(
+            (signature, index): Array<PositionedNode> => {
+              return [
+                ...signature.parameters.map(x => ({
+                  node: x.type,
+                  path: path.concat(
+                    "callSignatures",
+                    "parameters",
+                    index,
+                    "type"
+                  )
+                })),
+                {
+                  node: signature.return,
+                  path: path.concat("callSignatures", "return")
+                }
+              ];
+            }
+          )
+          .flat(),
+        ...node.constructSignatures
+          .map(
+            (signature, index): Array<PositionedNode> => {
+              return [
+                ...signature.parameters.map(x => ({
+                  node: x.type,
+                  path: path.concat(
+                    "callSignatures",
+                    "parameters",
+                    index,
+                    "type"
+                  )
+                })),
+                {
+                  node: signature.return,
+                  path: path.concat("constructSignatures", "return")
+                }
+              ];
+            }
+          )
+          .flat(),
+        ...node.aliasTypeArguments.map((node, index) => ({
+          node,
+          path: path.concat("aliasTypeArguments", index)
+        })),
+        ...node.properties.map((param, index) => {
+          return {
+            node: param.value,
+            path: path.concat("properties", index, "value")
+          };
+        })
+      ];
+    }
+    case "Conditional": {
+      return [
+        getPositionedNodeFromKey(node, "check"),
+        getPositionedNodeFromKey(node, "true"),
+        getPositionedNodeFromKey(node, "false"),
+        getPositionedNodeFromKey(node, "extends")
+      ];
     }
 
     default: {

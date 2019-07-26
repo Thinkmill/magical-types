@@ -2,7 +2,6 @@ import React from "react";
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
 import { PropTypes } from "magical-types/macro";
-import { MyComponentThatDoesStuff as AnotherComp } from "../../comp";
 import Select from "react-select/base";
 
 // type Thing = (firstArg: string) => number;
@@ -20,7 +19,7 @@ type Props = {
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
-let MyComponentThatDoesStuff = (props: Props) => {
+let MyComponentThatDoesStuff = (props: Node) => {
   return null;
 };
 
@@ -29,7 +28,7 @@ export default () => {
     <div css={{ fontFamily: "sans-serif" }}>
       something
       <PropTypes component={MyComponentThatDoesStuff} />
-      {/* <PropTypes component={Select} /> */}
+      <PropTypes component={Select} />
     </div>
   );
 };

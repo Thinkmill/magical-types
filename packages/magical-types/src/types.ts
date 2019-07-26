@@ -1,9 +1,25 @@
 import { typeParameter } from "@babel/types";
 
+export type SignatureNode = {
+  type: "Signature";
+  return: MagicalNode;
+  parameters: Array<Parameter>;
+  typeParameters: Array<TypeParameterNode>;
+};
+
+export type IndexedAccessNode = {
+  type: "IndexedAccess";
+  object: MagicalNode;
+  index: MagicalNode;
+};
+
 export type ObjectNode = {
   type: "Object";
   name: string | null;
   properties: Array<Property>;
+  callSignatures: Array<SignatureNode>;
+  constructSignatures: Array<SignatureNode>;
+  aliasTypeArguments: Array<MagicalNode>;
 };
 
 export type ClassNode = {
@@ -26,12 +42,14 @@ export type MagicalNode =
   | { type: "Union"; types: Array<MagicalNode>; name: string | null }
   | { type: "Intersection"; types: Array<MagicalNode> }
   | {
-      type: "Function";
-      return: MagicalNode;
-      parameters: Array<Parameter>;
-      typeParameters: Array<TypeParameterNode>;
+      type: "Conditional";
+      true: MagicalNode;
+      false: MagicalNode;
+      check: MagicalNode;
+      extends: MagicalNode;
     }
   | TypeParameterNode
+  | IndexedAccessNode
   | { type: "Tuple"; value: Array<MagicalNode> }
   | ClassNode
   | ObjectNode;
