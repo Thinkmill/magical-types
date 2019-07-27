@@ -21,7 +21,7 @@ import AddBrackets, {
   bracketStyle,
   PathExpansionContext
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
-import { getChildMagicalNodes } from "./utils";
+import { getChildPositionedMagicalNodes } from "./utils";
 import * as flatted from "flatted";
 
 const Arrow = () => (
@@ -456,7 +456,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
     // we don't want to open any nodes deeper than 5 nodes by default
     if (currentPositionedNode.path.length < 5) {
       queue.push(
-        ...getChildMagicalNodes(currentPositionedNode).filter(
+        ...getChildPositionedMagicalNodes(currentPositionedNode).filter(
           ({ node }) => !visitedNodes.has(node)
         )
       );

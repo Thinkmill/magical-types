@@ -1,6 +1,6 @@
 import { PositionedMagicalNode } from "./types";
 
-export function getChildMagicalNodes({
+export function getChildPositionedMagicalNodes({
   node,
   path
 }: PositionedMagicalNode): Array<PositionedMagicalNode> {
@@ -54,42 +54,38 @@ export function getChildMagicalNodes({
     }
     case "Object": {
       return [
-        ...node.callSignatures
-          .map((signature, index) => {
-            return [
-              ...signature.typeParameters.map(x => ({
-                node: x,
-                path: path.concat("callSignatures", "typeParameters", index)
-              })),
-              ...signature.parameters.map(x => ({
-                node: x.type,
-                path: path.concat("callSignatures", "parameters", index, "type")
-              })),
-              {
-                node: signature.return,
-                path: path.concat("callSignatures", "return")
-              }
-            ];
-          })
-          .flat(),
-        ...node.constructSignatures
-          .map((signature, index) => {
-            return [
-              ...signature.typeParameters.map(x => ({
-                node: x,
-                path: path.concat("callSignatures", "typeParameters", index)
-              })),
-              ...signature.parameters.map(x => ({
-                node: x.type,
-                path: path.concat("callSignatures", "parameters", index, "type")
-              })),
-              {
-                node: signature.return,
-                path: path.concat("constructSignatures", "return")
-              }
-            ];
-          })
-          .flat(),
+        ...node.callSignatures.flatMap((signature, index) => {
+          return [
+            ...signature.typeParameters.map(x => ({
+              node: x,
+              path: path.concat("callSignatures", "typeParameters", index)
+            })),
+            ...signature.parameters.map(x => ({
+              node: x.type,
+              path: path.concat("callSignatures", "parameters", index, "type")
+            })),
+            {
+              node: signature.return,
+              path: path.concat("callSignatures", "return")
+            }
+          ];
+        }),
+        ...node.constructSignatures.flatMap((signature, index) => {
+          return [
+            ...signature.typeParameters.map(x => ({
+              node: x,
+              path: path.concat("callSignatures", "typeParameters", index)
+            })),
+            ...signature.parameters.map(x => ({
+              node: x.type,
+              path: path.concat("callSignatures", "parameters", index, "type")
+            })),
+            {
+              node: signature.return,
+              path: path.concat("constructSignatures", "return")
+            }
+          ];
+        }),
         ...node.aliasTypeArguments.map((node, index) => ({
           node,
           path: path.concat("aliasTypeArguments", index)
