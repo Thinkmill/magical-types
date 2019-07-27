@@ -180,6 +180,12 @@ export function getTypes(
 
   let convertType = wrapInCache(
     (type: typescript.Type, path: Array<string | number>): MagicalNode => {
+      if (!type) {
+        return {
+          type: "Intrinsic",
+          value: "looks like something went wrong"
+        };
+      }
       if (
         (type as any).intrinsicName &&
         (type as any).intrinsicName !== "error"
@@ -336,8 +342,6 @@ export function getTypes(
       // @ts-ignore
       if (type.flags & typescript.TypeFlags.Conditional) {
         let conditionalType = type as typescript.ConditionalType;
-        console.log(typeChecker.typeToString(conditionalType));
-        debugger;
         return {
           type: "Conditional",
           check: convertType(
