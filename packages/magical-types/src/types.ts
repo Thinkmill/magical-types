@@ -54,6 +54,11 @@ export type MagicalNode =
   | ClassNode
   | ObjectNode;
 
+export type PositionedMagicalNode = {
+  path: Array<string | number>;
+  node: MagicalNode;
+};
+
 export type Property = { key: string; description: string; value: MagicalNode };
 
 type Parameter = {

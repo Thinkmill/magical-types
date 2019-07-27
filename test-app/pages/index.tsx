@@ -19,7 +19,7 @@ type Props = {
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
-let MyComponentThatDoesStuff = (props: Node) => {
+let MyComponentThatDoesStuff = (props: Props) => {
   return null;
 };
 

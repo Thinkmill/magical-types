@@ -7,7 +7,8 @@ import {
   ObjectNode,
   ClassNode,
   TypeParameterNode,
-  SignatureNode
+  SignatureNode,
+  PositionedMagicalNode
 } from "./types";
 import {
   Type,
@@ -423,14 +424,13 @@ function renderNode(
 // we need to do a breadth first graph traversal
 // Wikipedia explains what this is: https://en.wikipedia.org/wiki/Breadth-first_search
 
-type PositionedNode = { path: Array<string | number>; node: MagicalNode };
 function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   let pathsThatShouldBeExpandedByDefault = new Set<string>();
 
   // because of circular references, we don't want to visit a node more than once
   let visitedNodes = new Set<MagicalNode>();
 
-  let queue: Array<PositionedNode> = [{ node: rootNode, path: [] }];
+  let queue: Array<PositionedMagicalNode> = [{ node: rootNode, path: [] }];
 
   while (queue.length) {
     let currentPositionedNode = queue.shift()!;
@@ -464,7 +464,10 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   return pathsThatShouldBeExpandedByDefault;
 }
 
-function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
+function getChildren({
+  node,
+  path
+}: PositionedMagicalNode): Array<PositionedMagicalNode> {
   function getPositionedNodeFromKey<Obj, Key extends keyof Obj>(
     obj: Obj,
     key: Key
@@ -530,46 +533,32 @@ function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
     case "Object": {
       return [
         ...node.callSignatures
-          .map(
-            (signature, index): Array<PositionedNode> => {
-              return [
-                ...signature.parameters.map(x => ({
-                  node: x.type,
-                  path: path.concat(
-                    "callSignatures",
-                    "parameters",
-                    index,
-                    "type"
-                  )
-                })),
-                {
-                  node: signature.return,
-                  path: path.concat("callSignatures", "return")
-                }
-              ];
-            }
-          )
+          .map((signature, index) => {
+            return [
+              ...signature.parameters.map(x => ({
+                node: x.type,
+                path: path.concat("callSignatures", "parameters", index, "type")
+              })),
+              {
+                node: signature.return,
+                path: path.concat("callSignatures", "return")
+              }
+            ];
+          })
           .flat(),
         ...node.constructSignatures
-          .map(
-            (signature, index): Array<PositionedNode> => {
-              return [
-                ...signature.parameters.map(x => ({
-                  node: x.type,
-                  path: path.concat(
-                    "callSignatures",
-                    "parameters",
-                    index,
-                    "type"
-                  )
-                })),
-                {
-                  node: signature.return,
-                  path: path.concat("constructSignatures", "return")
-                }
-              ];
-            }
-          )
+          .map((signature, index) => {
+            return [
+              ...signature.parameters.map(x => ({
+                node: x.type,
+                path: path.concat("callSignatures", "parameters", index, "type")
+              })),
+              {
+                node: signature.return,
+                path: path.concat("constructSignatures", "return")
+              }
+            ];
+          })
           .flat(),
         ...node.aliasTypeArguments.map((node, index) => ({
           node,
