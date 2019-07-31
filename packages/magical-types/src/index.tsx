@@ -493,3 +493,5 @@ export let FunctionTypes = (props: {
 export function RawTypes<Type>(props: {}) {
   return renderTypes(props);
 }
+
+export { MagicalNode };

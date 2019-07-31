@@ -1,0 +1,1 @@
+Export the MagicalNode type
