@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.0.4
+
+### Patch Changes
+
+- 27f5688: Export the MagicalNode type
+
 ## 0.0.3
 
 ### Patch Changes
