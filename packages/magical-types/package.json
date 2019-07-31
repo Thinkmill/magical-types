@@ -26,6 +26,7 @@
     "@emotion/core": "^10.0.14",
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
+    "react-markdown": "^4.1.0",
     "ts-morph": "^3.1.0",
     "typescript": "^3.5.2"
   },

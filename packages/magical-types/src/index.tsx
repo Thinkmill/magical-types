@@ -2,12 +2,14 @@ import React, { useEffect, useReducer, useMemo, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { ComponentType } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   MagicalNode,
   ObjectNode,
   ClassNode,
   TypeParameterNode,
-  SignatureNode
+  SignatureNode,
+  PositionedMagicalNode
 } from "./types";
 import {
   Type,
@@ -20,6 +22,7 @@ import AddBrackets, {
   bracketStyle,
   PathExpansionContext
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
+import { getChildPositionedMagicalNodes } from "./utils";
 import * as flatted from "flatted";
 
 const Arrow = () => (
@@ -46,7 +49,7 @@ function Properties({
   node,
   path
 }: {
-  node: ObjectNode | ClassNode;
+  node: ClassNode;
   path: Array<number | string>;
 }) {
   return (
@@ -56,8 +59,7 @@ function Properties({
           <div key={index}>
             {prop.description !== "" && (
               <div>
-                {prop.description}
-                <br />
+                <ReactMarkdown source={prop.description} />
               </div>
             )}
             <TypeMinWidth>
@@ -107,8 +109,7 @@ function PrettyObject({
           <div key={index}>
             {prop.description !== "" && (
               <div>
-                {prop.description}
-                <br />
+                <ReactMarkdown source={prop.description} />
               </div>
             )}
             <TypeMinWidth>
@@ -423,14 +424,13 @@ function renderNode(
 // we need to do a breadth first graph traversal
 // Wikipedia explains what this is: https://en.wikipedia.org/wiki/Breadth-first_search
 
-type PositionedNode = { path: Array<string | number>; node: MagicalNode };
 function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   let pathsThatShouldBeExpandedByDefault = new Set<string>();
 
   // because of circular references, we don't want to visit a node more than once
   let visitedNodes = new Set<MagicalNode>();
 
-  let queue: Array<PositionedNode> = [{ node: rootNode, path: [] }];
+  let queue: Array<PositionedMagicalNode> = [{ node: rootNode, path: [] }];
 
   while (queue.length) {
     let currentPositionedNode = queue.shift()!;
@@ -455,149 +455,13 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
     // we don't want to open any nodes deeper than 5 nodes by default
     if (currentPositionedNode.path.length < 5) {
       queue.push(
-        ...getChildren(currentPositionedNode).filter(
+        ...getChildPositionedMagicalNodes(currentPositionedNode).filter(
           ({ node }) => !visitedNodes.has(node)
         )
       );
     }
   }
   return pathsThatShouldBeExpandedByDefault;
-}
-
-function getChildren({ node, path }: PositionedNode): Array<PositionedNode> {
-  function getPositionedNodeFromKey<Obj, Key extends keyof Obj>(
-    obj: Obj,
-    key: Key
-  ): {
-    node: Obj[Key];
-    path: Array<string | number>;
-  } {
-    return { node: obj[key], path: path.concat(key as string | number) };
-  }
-  switch (node.type) {
-    case "StringLiteral":
-    case "NumberLiteral":
-    case "TypeParameter":
-    case "Intrinsic": {
-      return [];
-    }
-    case "Union":
-    case "Intersection": {
-      return node.types.map((node, index) => {
-        return { node, path: path.concat("types", index) };
-      });
-    }
-    case "Array":
-    case "Promise":
-    case "ReadonlyArray": {
-      return [{ node: node.value, path: path.concat("value") }];
-    }
-    case "Tuple": {
-      return node.value.map((node, index) => {
-        return { node, path: path.concat("value", index) };
-      });
-    }
-    case "IndexedAccess": {
-      return [
-        { node: node.object, path: path.concat("object") },
-        { node: node.index, path: path.concat("index") }
-      ];
-    }
-    // case "Function": {
-    //   return [
-    //     { node, path: path.concat("return") },
-    //     ...node.parameters.map((param, index) => {
-    //       return {
-    //         node: param.type,
-    //         path: path.concat("parameters", index, "type")
-    //       };
-    //     }),
-    //     ...node.typeParameters.map((node, index) => {
-    //       return { node, path: path.concat("typeParameters", index) };
-    //     })
-    //   ];
-    // }
-    case "Class": {
-      return [
-        ...node.properties.map((param, index) => {
-          return {
-            node: param.value,
-            path: path.concat("properties", index, "value")
-          };
-        })
-      ];
-    }
-    case "Object": {
-      return [
-        ...node.callSignatures
-          .map(
-            (signature, index): Array<PositionedNode> => {
-              return [
-                ...signature.parameters.map(x => ({
-                  node: x.type,
-                  path: path.concat(
-                    "callSignatures",
-                    "parameters",
-                    index,
-                    "type"
-                  )
-                })),
-                {
-                  node: signature.return,
-                  path: path.concat("callSignatures", "return")
-                }
-              ];
-            }
-          )
-          .flat(),
-        ...node.constructSignatures
-          .map(
-            (signature, index): Array<PositionedNode> => {
-              return [
-                ...signature.parameters.map(x => ({
-                  node: x.type,
-                  path: path.concat(
-                    "callSignatures",
-                    "parameters",
-                    index,
-                    "type"
-                  )
-                })),
-                {
-                  node: signature.return,
-                  path: path.concat("constructSignatures", "return")
-                }
-              ];
-            }
-          )
-          .flat(),
-        ...node.aliasTypeArguments.map((node, index) => ({
-          node,
-          path: path.concat("aliasTypeArguments", index)
-        })),
-        ...node.properties.map((param, index) => {
-          return {
-            node: param.value,
-            path: path.concat("properties", index, "value")
-          };
-        })
-      ];
-    }
-    case "Conditional": {
-      return [
-        getPositionedNodeFromKey(node, "check"),
-        getPositionedNodeFromKey(node, "true"),
-        getPositionedNodeFromKey(node, "false"),
-        getPositionedNodeFromKey(node, "extends")
-      ];
-    }
-
-    default: {
-      let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
-      // @ts-ignore
-      throw new Error("this should never happen: " + node.type);
-    }
-  }
 }
 
 let renderTypes = (props: any) => {
