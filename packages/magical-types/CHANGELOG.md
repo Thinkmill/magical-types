@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.0.3
+
+### Patch Changes
+
+- a7cf6de: Render markdown in comments
+
 ## 0.0.2
 
 ### Patch Changes
