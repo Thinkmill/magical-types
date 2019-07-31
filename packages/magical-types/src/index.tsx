@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useMemo, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { ComponentType } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   MagicalNode,
   ObjectNode,
@@ -48,7 +49,7 @@ function Properties({
   node,
   path
 }: {
-  node: ObjectNode | ClassNode;
+  node: ClassNode;
   path: Array<number | string>;
 }) {
   return (
@@ -58,8 +59,7 @@ function Properties({
           <div key={index}>
             {prop.description !== "" && (
               <div>
-                {prop.description}
-                <br />
+                <ReactMarkdown source={prop.description} />
               </div>
             )}
             <TypeMinWidth>
@@ -109,8 +109,7 @@ function PrettyObject({
           <div key={index}>
             {prop.description !== "" && (
               <div>
-                {prop.description}
-                <br />
+                <ReactMarkdown source={prop.description} />
               </div>
             )}
             <TypeMinWidth>
