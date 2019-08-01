@@ -34,7 +34,7 @@ export default () => {
       something
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       <FunctionTypes function={myFunc} />
-      {/* <PropTypes component={Select} /> */}
+      <PropTypes component={Select} />
     </div>
   );
 };

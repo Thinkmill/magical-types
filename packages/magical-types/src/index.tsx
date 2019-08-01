@@ -229,13 +229,16 @@ function PrettySignatureButDifferent({
 
 function PrettySignature({
   node,
-  path
+  path,
+  type
 }: {
   node: SignatureNode;
   path: Array<string | number>;
+  type: "construct" | "call";
 }) {
   return (
     <span>
+      {type === "construct" ? "new " : ""}
       {node.typeParameters.length !== 0 && (
         <span>
           <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
@@ -372,6 +375,32 @@ function renderNode(
       return arr;
     }
     case "Object": {
+      if (
+        node.callSignatures.length === 1 &&
+        node.properties.length === 0 &&
+        node.constructSignatures.length === 0
+      ) {
+        return (
+          <PrettySignature
+            node={node.callSignatures[0]}
+            type="call"
+            path={path.concat("callSignatures", 0)}
+          />
+        );
+      }
+      if (
+        node.constructSignatures.length === 1 &&
+        node.properties.length === 0 &&
+        node.callSignatures.length === 0
+      ) {
+        return (
+          <PrettySignature
+            node={node.constructSignatures[0]}
+            type="construct"
+            path={path.concat("constructSignatures", 0)}
+          />
+        );
+      }
       return (
         <span>
           <TypeMeta>{node.name}</TypeMeta>
@@ -463,7 +492,6 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
 
 let renderTypes = (props: any) => {
   let node: MagicalNode = flatted.parse((props as any).__types);
-  console.log(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);

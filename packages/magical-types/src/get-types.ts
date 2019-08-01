@@ -334,7 +334,6 @@ export function getTypes(
       // @ts-ignore
       if (type.flags & typescript.TypeFlags.Conditional) {
         let conditionalType = type as typescript.ConditionalType;
-        console.log({ ...conditionalType });
         return {
           type: "Conditional",
           check: convertType(
