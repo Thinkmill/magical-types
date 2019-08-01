@@ -7,7 +7,7 @@ export type SignatureNode = {
   typeParameters: Array<TypeParameterNode>;
 };
 
-export type IndexedAccessNode = {
+type IndexedAccessNode = {
   type: "IndexedAccess";
   object: MagicalNode;
   index: MagicalNode;
