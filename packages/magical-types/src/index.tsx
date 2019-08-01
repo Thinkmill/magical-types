@@ -153,7 +153,7 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
   }, []);
 
   return (
-    <span
+    <Type
       css={bracketStyle({ isHovered: val.value })}
       onMouseEnter={() => {
         workingValue.value = true;
@@ -169,7 +169,7 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
       }}
     >
       {node.value}
-    </span>
+    </Type>
   );
 }
 
@@ -463,6 +463,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
 
 let renderTypes = (props: any) => {
   let node: MagicalNode = flatted.parse((props as any).__types);
+  console.log(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);

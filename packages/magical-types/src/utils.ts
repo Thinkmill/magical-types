@@ -54,7 +54,7 @@ export function getChildPositionedMagicalNodes({
     }
     case "Object": {
       return [
-        ...node.callSignatures.flatMap((signature, index) => {
+        ...flatMap(node.callSignatures, (signature, index) => {
           return [
             ...signature.typeParameters.map(x => ({
               node: x,
@@ -70,7 +70,7 @@ export function getChildPositionedMagicalNodes({
             }
           ];
         }),
-        ...node.constructSignatures.flatMap((signature, index) => {
+        ...flatMap(node.constructSignatures, (signature, index) => {
           return [
             ...signature.typeParameters.map(x => ({
               node: x,
@@ -113,4 +113,16 @@ export function getChildPositionedMagicalNodes({
       throw new Error("this should never happen: " + node.type);
     }
   }
+}
+
+function flatMap<T, U>(
+  array: Array<T>,
+  callback: (value: T, index: number) => U | ReadonlyArray<U>
+): U[] {
+  // @ts-ignore
+  return array.reduce((acc, x, index) => {
+    const r = callback(x, index);
+    if (Array.isArray(r)) return [...acc, ...r];
+    return [...acc, r];
+  }, []);
 }

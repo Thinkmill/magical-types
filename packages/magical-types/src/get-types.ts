@@ -181,10 +181,7 @@ export function getTypes(
   let convertType = wrapInCache(
     (type: typescript.Type, path: Array<string | number>): MagicalNode => {
       if (!type) {
-        return {
-          type: "Intrinsic",
-          value: "looks like something went wrong"
-        };
+        throw new InternalError(`falsy type at path: ${path}`);
       }
       if (
         (type as any).intrinsicName &&
@@ -276,11 +273,6 @@ export function getTypes(
       }
 
       if (type.flags & typescript.TypeFlags.Object) {
-        // console.log(type.id);
-        // if (path.length > 100) {
-        //   console.log(type, path);
-        //   throw new InternalError("this is probably bad");
-        // }
         return {
           type: "Object",
           name: getNameForType(type),
@@ -342,6 +334,7 @@ export function getTypes(
       // @ts-ignore
       if (type.flags & typescript.TypeFlags.Conditional) {
         let conditionalType = type as typescript.ConditionalType;
+        console.log({ ...conditionalType });
         return {
           type: "Conditional",
           check: convertType(
@@ -353,12 +346,12 @@ export function getTypes(
             path.concat("extendsType")
           ),
           false: convertType(
-            conditionalType.resolvedFalseType,
-            path.concat("resolvedFalseType")
+            (conditionalType as any).root.falseType,
+            path.concat("falseType")
           ),
           true: convertType(
-            conditionalType.resolvedTrueType,
-            path.concat("resolvedTrueType")
+            (conditionalType as any).root.trueType,
+            path.concat("trueType")
           )
         };
       }
