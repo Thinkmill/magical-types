@@ -131,8 +131,6 @@ let cache = new Map<
   { listeners: Array<(...args: any) => any>; value: boolean }
 >();
 
-console.log(cache);
-
 // yes, i know this is bad
 
 function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
@@ -339,7 +337,6 @@ function renderNode(
       return <PrettyTypeParameter node={node} />;
     }
     case "Union": {
-      console.log(path.join(":"));
       return (
         <span>
           <TypeMeta>
@@ -469,7 +466,6 @@ let renderTypes = (props: any) => {
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);
-  console.log(pathsThatShouldBeExpandedByDefault, node);
 
   return (
     <div css={{ fontFamily: "sans-serif" }}>
