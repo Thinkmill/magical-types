@@ -164,8 +164,20 @@ export function getTypes(
       value.types = value.types.filter(
         x => !(x.type === "Intrinsic" && x.value === "undefined")
       );
-      console.log(value.types);
-      if (value.types.length === 1) {
+
+      if (
+        value.types.length === 2 &&
+        value.types.every(
+          x =>
+            x.type === "Intrinsic" &&
+            (x.value === "true" || x.value === "false")
+        )
+      ) {
+        value = {
+          type: "Intrinsic",
+          value: "boolean"
+        };
+      } else if (value.types.length === 1) {
         value = value.types[0];
       }
     }
@@ -240,28 +252,12 @@ export function getTypes(
         };
       }
       if (type.isUnion()) {
-        let types = type.types.map((type, index) =>
-          convertType(type, path.concat("types", index))
-        );
-
-        console.log(types);
-        if (
-          types.length === 2 &&
-          types.every(
-            x =>
-              x.type === "Intrinsic" &&
-              (x.value === "true" || x.value === "false")
-          )
-        ) {
-          return {
-            type: "Intrinsic",
-            value: "boolean"
-          };
-        }
         return {
           type: "Union",
           name: getNameForType(type),
-          types
+          types: type.types.map((type, index) =>
+            convertType(type, path.concat("types", index))
+          )
         };
       }
       if (type.isIntersection()) {
