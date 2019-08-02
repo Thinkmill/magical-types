@@ -252,12 +252,38 @@ export function getTypes(
         };
       }
       if (type.isUnion()) {
+        let types = type.types.map((type, index) =>
+          convertType(type, path.concat("types", index))
+        );
+        if (
+          types.filter(
+            x =>
+              x.type === "Intrinsic" &&
+              (x.value === "false" || x.value === "true")
+          ).length === 2
+        ) {
+          let allTypes = types;
+          types = [];
+          let needsToAddBoolean = true;
+          for (let type of allTypes) {
+            if (
+              type.type === "Intrinsic" &&
+              (type.value === "true" || type.value === "false")
+            ) {
+              if (needsToAddBoolean) {
+                needsToAddBoolean = false;
+                types.push({ type: "Intrinsic", value: "boolean" });
+              }
+            } else {
+              types.push(type);
+            }
+          }
+        }
+
         return {
           type: "Union",
           name: getNameForType(type),
-          types: type.types.map((type, index) =>
-            convertType(type, path.concat("types", index))
-          )
+          types
         };
       }
       if (type.isIntersection()) {
