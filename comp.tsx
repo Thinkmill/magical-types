@@ -1,10 +1,7 @@
 import React from "react";
-import { FunctionTypes } from "magical-types/macro";
+import { RawTypes } from "magical-types/macro";
 import Select from "react-select/base";
 
-function myFunc<Something>(
-  someArg: Something,
-  anotherArg: Something extends string ? boolean : number
-) {}
+type SomeType = { thing?: boolean };
 
-<FunctionTypes function={myFunc} />;
+<RawTypes<SomeType> />;

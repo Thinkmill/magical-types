@@ -63,9 +63,15 @@ export function getTypes(
         return obj;
       } catch (err) {
         debugger;
-        err.message = `The following error occurred while trying to stringify the following path: ${path} :${
-          err.message
-        }`;
+        if (
+          !err.message.startsWith(
+            "The following error occurred while trying to stringify"
+          )
+        ) {
+          err.message = `The following error occurred while trying to stringify the following path: ${path} :${
+            err.message
+          }`;
+        }
         throw err;
       }
     };
@@ -73,7 +79,6 @@ export function getTypes(
 
   let convertParameter = wrapInCache((parameter: typescript.Symbol, path) => {
     let declaration = parameter.valueDeclaration || parameter.declarations[0];
-
     if (!typescript.isParameter(declaration)) {
       throw new InternalError(
         "expected node to be a parameter declaration but it was not"
@@ -145,16 +150,34 @@ export function getTypes(
     if (!declaration) {
       debugger;
     }
+    let isRequired = !(symbol.flags & typescript.SymbolFlags.Optional);
     let type = typeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
     // TODO: this could be better
     let key = symbol.getName();
+
+    let value = convertType(type, path.concat("getProperties()", key));
+
+    // i know this is technically wrong but this is better than every optional thing
+    // being a union of undefined and the type
+    // ideally, we would have the type of the property without undefined unless it's actually a union of undefined and the type
+    if (!isRequired && value.type === "Union") {
+      value.types = value.types.filter(
+        x => !(x.type === "Intrinsic" && x.value === "undefined")
+      );
+      console.log(value.types);
+      if (value.types.length === 1) {
+        value = value.types[0];
+      }
+    }
+
     let thing = typescript.displayPartsToString(
       symbol.getDocumentationComment(typeChecker)
     );
     return {
       description: thing,
+      required: isRequired,
       key,
-      value: convertType(type, path.concat("getProperties()", key))
+      value: value
     };
   }
 
@@ -217,12 +240,28 @@ export function getTypes(
         };
       }
       if (type.isUnion()) {
+        let types = type.types.map((type, index) =>
+          convertType(type, path.concat("types", index))
+        );
+
+        console.log(types);
+        if (
+          types.length === 2 &&
+          types.every(
+            x =>
+              x.type === "Intrinsic" &&
+              (x.value === "true" || x.value === "false")
+          )
+        ) {
+          return {
+            type: "Intrinsic",
+            value: "boolean"
+          };
+        }
         return {
           type: "Union",
           name: getNameForType(type),
-          types: type.types.map((type, index) =>
-            convertType(type, path.concat("types", index))
-          )
+          types
         };
       }
       if (type.isIntersection()) {

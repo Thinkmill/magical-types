@@ -10,6 +10,10 @@ type Status = "notstarted" | "started" | "inprogress" | "completed";
 
 type Task = { id: string; status: Status; title: string; task: Task };
 
+let thing = {
+  wow: "string"
+} as const;
+
 type Props = {
   /** The tasks that the board should render */
   tasks: Array<Task>;
@@ -23,17 +27,14 @@ let MyComponentThatDoesStuff = (props: Props) => {
   return null;
 };
 
-function myFunc<Something>(
-  someArg: Something,
-  anotherArg: Something extends string ? boolean : number
-) {}
+function myFunc(someArg: { thing?: string }, another: typeof thing) {}
 
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
-      <FunctionTypes function={myFunc} />
+      {/* <FunctionTypes function={myFunc} /> */}
       <PropTypes component={Select} />
     </div>
   );

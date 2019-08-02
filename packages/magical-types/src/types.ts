@@ -59,7 +59,12 @@ export type PositionedMagicalNode = {
   node: MagicalNode;
 };
 
-export type Property = { key: string; description: string; value: MagicalNode };
+export type Property = {
+  key: string;
+  description: string;
+  value: MagicalNode;
+  required: boolean;
+};
 
 type Parameter = {
   name: string;

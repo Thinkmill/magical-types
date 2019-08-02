@@ -113,12 +113,9 @@ function PrettyObject({
               </div>
             )}
             <TypeMinWidth>
-              <Type>{prop.key}</Type>
+              <Type>{prop.key + (prop.required ? "" : "?")}</Type>
             </TypeMinWidth>
 
-            {/* {type.optional ? null : (
-          <components.Required> required</components.Required>
-        )}{" "} */}
             {renderNode(prop.value, path.concat("properties", index, "value"))}
           </div>
         );
@@ -332,7 +329,7 @@ function renderNode(
       return (
         <span>
           <div>{renderNode(node.object, path.concat("object"))}</div>
-          <div>{renderNode(node.index, path.concat("index"))}</div>
+          <div>[{renderNode(node.index, path.concat("index"))}]</div>
         </span>
       );
     }
