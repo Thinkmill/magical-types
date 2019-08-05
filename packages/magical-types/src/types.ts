@@ -19,7 +19,7 @@ export type ObjectNode = {
   properties: Array<Property>;
   callSignatures: Array<SignatureNode>;
   constructSignatures: Array<SignatureNode>;
-  aliasTypeArguments: Array<MagicalNode>;
+  typeParameters: Array<TypeParameterNode>;
 };
 
 export type ClassNode = {
@@ -30,7 +30,11 @@ export type ClassNode = {
   properties: Array<Property>;
 };
 
-export type TypeParameterNode = { type: "TypeParameter"; value: string };
+export type TypeParameterNode = {
+  type: "TypeParameter";
+  value: string;
+  constraint: null | MagicalNode;
+};
 
 export type MagicalNode =
   | { type: "Intrinsic"; value: string }

@@ -218,6 +218,16 @@ export function getTypes(
       if (!type) {
         throw new InternalError(`falsy type at path: ${path}`);
       }
+      if (type.isTypeParameter()) {
+        let constraint = type.getConstraint();
+        return {
+          type: "TypeParameter",
+          value: type.symbol.getName(),
+          constraint: constraint
+            ? convertType(constraint, path.concat("getConstraint()"))
+            : null
+        };
+      }
       if (
         (type as any).intrinsicName &&
         (type as any).intrinsicName !== "error"
@@ -337,14 +347,17 @@ export function getTypes(
         return {
           type: "Object",
           name: getNameForType(type),
-          aliasTypeArguments: (type.aliasTypeArguments || []).map(
-            (type, index) => {
-              return convertType(
-                type,
-                path.concat("aliasTypeArguments", index)
-              );
-            }
-          ),
+          typeParameters: (type.aliasSymbol
+            ? ((type.aliasSymbol as any) as { typeParameters: Array<any> })
+                .typeParameters || []
+            : []
+          ).map((arg: any, index: number) => {
+            let type = typeChecker.getTypeOfSymbolAtLocation(arg.symbol, arg);
+            return convertType(
+              type,
+              path.concat("aliasSymbol", "typeParameters", index)
+            ) as TypeParameterNode;
+          }),
           constructSignatures: type
             .getConstructSignatures()
             .map((constructSignature, index) =>
@@ -373,12 +386,7 @@ export function getTypes(
           })
         };
       }
-      if (type.isTypeParameter()) {
-        return {
-          type: "TypeParameter",
-          value: type.symbol.getName()
-        };
-      }
+
       // @ts-ignore
       if (type.flags & typescript.TypeFlags.IndexedAccess) {
         let indexedAccessType = type as typescript.IndexedAccessType;

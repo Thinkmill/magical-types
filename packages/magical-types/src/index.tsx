@@ -89,6 +89,7 @@ function PrettyObject({
       {node.constructSignatures.map((signature, index) => {
         return (
           <PrettySignatureButDifferent
+            key={index}
             node={signature}
             path={path.concat("constructSignatures", index)}
             type="construct"
@@ -98,6 +99,7 @@ function PrettyObject({
       {node.callSignatures.map((signature, index) => {
         return (
           <PrettySignatureButDifferent
+            key={index}
             node={signature}
             path={path.concat("callSignatures", index)}
             type="call"
@@ -401,6 +403,18 @@ function renderNode(
       return (
         <span>
           <TypeMeta>{node.name}</TypeMeta>
+          {node.typeParameters.length !== 0 && (
+            <React.Fragment>
+              <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
+              {node.typeParameters.map((param, index, array) => (
+                <React.Fragment key={index}>
+                  {renderNode(param, path.concat("typeParameters", index))}
+                  {array.length - 1 === index ? "" : ", "}
+                </React.Fragment>
+              ))}
+              <span css={bracketStyle({ isHovered: false })}>{">"}</span>
+            </React.Fragment>
+          )}
           <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
             {() => <PrettyObject path={path} node={node} />}
           </AddBrackets>
@@ -489,6 +503,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
 
 let renderTypes = (props: any) => {
   let node: MagicalNode = flatted.parse((props as any).__types);
+  console.log(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);

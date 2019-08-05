@@ -86,9 +86,9 @@ export function getChildPositionedMagicalNodes({
             }
           ];
         }),
-        ...node.aliasTypeArguments.map((node, index) => ({
+        ...node.typeParameters.map((node, index) => ({
           node,
-          path: path.concat("aliasTypeArguments", index)
+          path: path.concat("typeParameters", index)
         })),
         ...node.properties.map((param, index) => {
           return {

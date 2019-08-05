@@ -1,7 +1,7 @@
 import React from "react";
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import { PropTypes, FunctionTypes } from "magical-types/macro";
+import { PropTypes, FunctionTypes, RawTypes } from "magical-types/macro";
 import Select from "react-select/base";
 
 // type Thing = (firstArg: string) => number;
@@ -29,13 +29,21 @@ let MyComponentThatDoesStuff = (props: Props) => {
 
 function myFunc(someArg: { thing?: string }, another: typeof thing) {}
 
+type AnOkayishType<FirstOne, Thing extends FirstOne> = {
+  thing: Thing;
+  other: FirstOne;
+};
+
+type A = string;
+type B = "wow";
+
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={Select} />
+      <RawTypes<AnOkayishType<A, B>> />
     </div>
   );
 };
