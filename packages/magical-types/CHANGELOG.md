@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.0.5
+
+### Patch Changes
+
+- 64449b0: Fix conditional type rendering
+
 ## 0.0.4
 
 ### Patch Changes
