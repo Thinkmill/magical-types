@@ -115,7 +115,7 @@ export function getChildPositionedMagicalNodes({
   }
 }
 
-function flatMap<T, U>(
+export function flatMap<T, U>(
   array: Array<T>,
   callback: (value: T, index: number) => U | ReadonlyArray<U>
 ): U[] {

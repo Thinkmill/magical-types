@@ -1,25 +1,12 @@
 // @flow
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
-import { Component, type Node } from 'react';
-import { resolveFromGeneric } from 'kind2string';
-import { gridSize } from '../components/constants';
-import allComponents, { type Components } from '../components';
-import Toggle from './Toggle';
-import prettyConvert, { SIMPLE_TYPES } from './converters';
-
-const Wrapper = (props: { children: Node }) => (
-  <code
-    css={css`
-      display: inline-block;
-      font-size: 0.8rem;
-      line-height: 1.4;
-      margin-bottom: ${gridSize}px;
-      margin-top: ${gridSize}px;
-    `}
-    {...props}
-  />
-);
+import { jsx, css } from "@emotion/core";
+import { Component, type Node } from "react";
+import { resolveFromGeneric } from "kind2string";
+import { gridSize } from "../components/constants";
+import allComponents, { type Components } from "../components";
+import Toggle from "./Toggle";
+import prettyConvert, { SIMPLE_TYPES } from "./converters";
 
 // const printFunc = type => null;
 
@@ -38,11 +25,14 @@ export default class PrettyPropType extends Component<PrettyPropTypeProps, *> {
     let { shouldCollapse, typeValue: type, components } = this.props;
     // any instance of returning null means we are confident the information will
     // be displayed elsewhere so we do not need to also include it here.
-    if (type.kind === 'generic') {
+    if (type.kind === "generic") {
       type = resolveFromGeneric(type);
     }
     if (SIMPLE_TYPES.includes(type.kind)) return null;
-    if (type.kind === 'nullable' && SIMPLE_TYPES.includes(type.arguments.kind)) {
+    if (
+      type.kind === "nullable" &&
+      SIMPLE_TYPES.includes(type.arguments.kind)
+    ) {
       return null;
     }
 
@@ -51,8 +41,11 @@ export default class PrettyPropType extends Component<PrettyPropTypeProps, *> {
         beginClosed
         afterCollapse={(isCollapsed, toggleCollapse) => (
           <div>
-            <components.Button isCollapsed={isCollapsed} onClick={toggleCollapse}>
-              {isCollapsed ? 'Expand Prop Shape' : 'Hide Prop Shape'}
+            <components.Button
+              isCollapsed={isCollapsed}
+              onClick={toggleCollapse}
+            >
+              {isCollapsed ? "Expand Prop Shape" : "Hide Prop Shape"}
             </components.Button>
           </div>
         )}

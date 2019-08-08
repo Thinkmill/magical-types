@@ -1,10 +1,10 @@
-// @flow
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
-import { type Node } from 'react';
-import { colors, gridSize, borderRadius } from '../components/constants';
+import { jsx, css } from "@emotion/core";
+import React from "react";
+import { colors, gridSize, borderRadius } from "../components/constants";
+import { MagicalNode, ObjectNode } from "../../types";
 
-const Heading = ({ children, ...rest }: { children: Node }) => (
+const Heading = (props: React.HTMLAttributes<HTMLHeadingElement>) => (
   <h3
     css={css`
       border-bottom: 2px solid ${colors.N20};
@@ -14,13 +14,11 @@ const Heading = ({ children, ...rest }: { children: Node }) => (
       margin: 0 0 ${gridSize}px 0;
       padding-bottom: ${gridSize}px;
     `}
-    {...rest}
-  >
-    {children}
-  </h3>
+    {...props}
+  />
 );
 
-const HeadingDefault = (props: { children: Node }) => (
+const HeadingDefault = (props: React.HTMLAttributes<HTMLElement>) => (
   <code
     css={css`
       color: ${colors.subtleText};
@@ -29,7 +27,7 @@ const HeadingDefault = (props: { children: Node }) => (
   />
 );
 
-const HeadingRequired = (props: { children: Node }) => (
+const HeadingRequired = (props: React.HTMLAttributes<HTMLElement>) => (
   <code
     css={css`
       color: ${colors.R500};
@@ -38,7 +36,7 @@ const HeadingRequired = (props: { children: Node }) => (
   />
 );
 
-const HeadingType = (props: { children: Node }) => (
+const HeadingType = (props: React.HTMLAttributes<HTMLElement>) => (
   <code
     css={css`
       background: ${colors.N20};
@@ -51,7 +49,7 @@ const HeadingType = (props: { children: Node }) => (
   />
 );
 
-const HeadingName = (props: { children: Node }) => (
+const HeadingName = (props: React.HTMLAttributes<HTMLElement>) => (
   <code
     css={css`
       background: ${colors.B50};
@@ -65,25 +63,18 @@ const HeadingName = (props: { children: Node }) => (
   />
 );
 
-const Whitespace = () => ' ';
+const Whitespace = () => (" " as any) as React.ReactElement;
 
 type PropTypeHeadingProps = {
-  name: any,
-  required: boolean,
-  type: any,
-  // This is probably giving up
-  defaultValue?: any
+  name: any;
+  required: boolean;
 };
 
 const PropTypeHeading = (props: PropTypeHeadingProps) => (
   <Heading>
     <HeadingName>{props.name}</HeadingName>
     <Whitespace />
-    <HeadingType>{props.type}</HeadingType>
-    {props.defaultValue !== undefined && <HeadingDefault> = {props.defaultValue}</HeadingDefault>}
-    {props.required && props.defaultValue === undefined ? (
-      <HeadingRequired> required</HeadingRequired>
-    ) : null}
+    {props.required ? <HeadingRequired> required</HeadingRequired> : null}
   </Heading>
 );
 

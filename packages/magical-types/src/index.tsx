@@ -15,14 +15,17 @@ import {
   Type,
   Indent,
   StringType,
-  TypeMeta
+  TypeMeta,
+  Description
 } from "./pretty-proptypes/components";
-import { colors } from "./pretty-proptypes/components/constants";
+import { colors, gridSize } from "./pretty-proptypes/components/constants";
 import AddBrackets, {
   bracketStyle,
   PathExpansionContext
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
-import { getChildPositionedMagicalNodes } from "./utils";
+import { getChildPositionedMagicalNodes, flatMap } from "./utils";
+import PropTypeHeading from "./pretty-proptypes/Prop/Heading";
+import PropsWrapper from "./pretty-proptypes/Props/Wrapper";
 import * as flatted from "flatted";
 
 const Arrow = () => (
@@ -89,6 +92,7 @@ function PrettyObject({
       {node.constructSignatures.map((signature, index) => {
         return (
           <PrettySignatureButDifferent
+            key={index}
             node={signature}
             path={path.concat("constructSignatures", index)}
             type="construct"
@@ -98,6 +102,7 @@ function PrettyObject({
       {node.callSignatures.map((signature, index) => {
         return (
           <PrettySignatureButDifferent
+            key={index}
             node={signature}
             path={path.concat("callSignatures", index)}
             type="call"
@@ -487,8 +492,11 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   return pathsThatShouldBeExpandedByDefault;
 }
 
-let renderTypes = (props: any) => {
-  let node: MagicalNode = flatted.parse((props as any).__types);
+let getMagicalNode = (props: any): MagicalNode => {
+  return flatted.parse((props as any).__types);
+};
+
+let renderTypes = (node: MagicalNode) => {
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);
@@ -502,18 +510,73 @@ let renderTypes = (props: any) => {
   );
 };
 
-export let PropTypes = (props: { component: ComponentType<any> }) => {
-  return renderTypes(props);
+const PropTypeWrapper = (props: { children: React.ReactNode }) => (
+  <div
+    css={css`
+      margin-top: ${gridSize * 4}px;
+    `}
+    {...props}
+  />
+);
+
+function simplifyIntersection(node: MagicalNode): MagicalNode {
+  if (node.type !== "Intersection") {
+    return node;
+  }
+  let types = node.types;
+  if (types.every(value => value.type === "Object")) {
+    let objectNodes = types as ObjectNode[];
+    return {
+      type: "Object",
+      callSignatures: flatMap(objectNodes, x => x.callSignatures),
+      constructSignatures: flatMap(objectNodes, x => x.callSignatures),
+      properties: flatMap(objectNodes, x => x.properties),
+      name: null,
+      // TODO: fix this
+      aliasTypeArguments: []
+    };
+  }
+  return node;
+}
+
+export let PropTypes = (props: {
+  component: ComponentType<any>;
+  heading?: string;
+}) => {
+  let node = getMagicalNode(props);
+  console.log(node);
+  let finalNode = simplifyIntersection(node);
+  if (finalNode.type === "Object") {
+    return (
+      <PropsWrapper heading={props.heading}>
+        {finalNode.properties.map((prop, index) => {
+          return (
+            <PropTypeWrapper key={index}>
+              <PropTypeHeading name={prop.key} required={prop.required} />
+              {prop.description && (
+                <Description>
+                  <ReactMarkdown source={prop.description} />
+                </Description>
+              )}
+              {renderTypes(prop.value)}
+            </PropTypeWrapper>
+          );
+        })}
+      </PropsWrapper>
+    );
+  }
+
+  return renderTypes(node);
 };
 
 export let FunctionTypes = (props: {
   function: (...args: Array<any>) => any;
 }) => {
-  return renderTypes(props);
+  return renderTypes(getMagicalNode(props));
 };
 
 export function RawTypes<Type>(props: {}) {
-  return renderTypes(props);
+  return renderTypes(getMagicalNode(props));
 }
 
 export * from "./types";
