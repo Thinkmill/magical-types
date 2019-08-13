@@ -544,7 +544,6 @@ export let PropTypes = (props: {
   heading?: string;
 }) => {
   let node = getMagicalNode(props);
-  console.log(node);
   let finalNode = simplifyIntersection(node);
   if (finalNode.type === "Object") {
     return (

@@ -1,7 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { PropTypes } from "magical-types/macro";
-import { MyComponentThatDoesStuff as SomeComp } from "../../../comp";
 
 type Thing = (firstArg: string) => number;
 
@@ -27,294 +26,234 @@ test("it works", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
-        class="css-1cf4d7"
+        class="css-r69ve0-Wrapper"
       >
-        <span>
-          <span
-            class="css-yekgsh-TypeMeta"
+        <h2
+          class="css-o41ti2"
+        >
+          Props
+        </h2>
+        <div
+          class="css-oh232t-PropTypeWrapper"
+        >
+          <h3
+            class="css-z92blb-Heading"
           >
-            Props
-          </span>
-          <button
-            class="css-e509v-StateBit"
-            type="button"
-          >
-            {
-          </button>
+            <code
+              class="css-f88zer-HeadingName"
+            >
+              a
+            </code>
+             
+            <code
+              class="css-nu8k78-HeadingRequired"
+            >
+               required
+            </code>
+          </h3>
+          
           <div
-            class="css-1x0u41u-Indent"
+            class="css-1cf4d7"
           >
-            <div>
+            <span
+              class="css-fr8k13-Type"
+            >
+              boolean
+            </span>
+          </div>
+        </div>
+        <div
+          class="css-oh232t-PropTypeWrapper"
+        >
+          <h3
+            class="css-z92blb-Heading"
+          >
+            <code
+              class="css-f88zer-HeadingName"
+            >
+              b
+            </code>
+             
+            <code
+              class="css-nu8k78-HeadingRequired"
+            >
+               required
+            </code>
+          </h3>
+          
+          <div
+            class="css-1cf4d7"
+          >
+            <span
+              class="css-fr8k13-Type"
+            >
+              any
+            </span>
+          </div>
+        </div>
+        <div
+          class="css-oh232t-PropTypeWrapper"
+        >
+          <h3
+            class="css-z92blb-Heading"
+          >
+            <code
+              class="css-f88zer-HeadingName"
+            >
+              c
+            </code>
+             
+            <code
+              class="css-nu8k78-HeadingRequired"
+            >
+               required
+            </code>
+          </h3>
+          
+          <div
+            class="css-1cf4d7"
+          >
+            <span
+              class="css-d46q2u-StringType"
+            >
+              "
+              some string
+              "
+            </span>
+          </div>
+        </div>
+        <div
+          class="css-oh232t-PropTypeWrapper"
+        >
+          <h3
+            class="css-z92blb-Heading"
+          >
+            <code
+              class="css-f88zer-HeadingName"
+            >
+              d
+            </code>
+             
+            <code
+              class="css-nu8k78-HeadingRequired"
+            >
+               required
+            </code>
+          </h3>
+          
+          <div
+            class="css-1cf4d7"
+          >
+            <span>
               <span
-                class="css-1wt60gk-TypeMinWidth"
+                class="css-yekgsh-TypeMeta"
               >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  a
-                </span>
-              </span>
-              <span
-                class="css-fr8k13-Type"
-              >
-                boolean
-              </span>
-            </div>
-            <div>
-              <span
-                class="css-1wt60gk-TypeMinWidth"
-              >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  b
-                </span>
-              </span>
-              <span
-                class="css-fr8k13-Type"
-              >
-                any
-              </span>
-            </div>
-            <div>
-              <span
-                class="css-1wt60gk-TypeMinWidth"
-              >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  c
-                </span>
-              </span>
-              <span
-                class="css-d46q2u-StringType"
-              >
-                "
-                some string
-                "
-              </span>
-            </div>
-            <div>
-              <span
-                class="css-1wt60gk-TypeMinWidth"
-              >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  d
-                </span>
-              </span>
-              <span>
-                <span
-                  class="css-yekgsh-TypeMeta"
-                >
-                  
-                  One of
-                   
-                </span>
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  &lt;
-                </button>
-                <div
-                  class="css-1x0u41u-Indent"
-                >
-                  <div>
-                    <span
-                      class="css-d46q2u-StringType"
-                    >
-                      "
-                      some string
-                      "
-                    </span>
-                    , 
-                  </div>
-                  <div>
-                    <span
-                      class="css-d46q2u-StringType"
-                    >
-                      "
-                      something
-                      "
-                    </span>
-                    
-                  </div>
-                </div>
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  &gt;
-                </button>
-              </span>
-            </div>
-            <div>
-              <span
-                class="css-1wt60gk-TypeMinWidth"
-              >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  e
-                </span>
-              </span>
-              <span>
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  (
-                </button>
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  firstArg
-                  
-                  :
-                   
-                </span>
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  string
-                </span>
                 
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  )
-                </button>
-                <span
-                  class="css-ftc9nv-Arrow"
-                >
-                   =&gt; 
-                </span>
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  number
-                </span>
+                One of
+                 
               </span>
-            </div>
-          </div>
-          <button
-            class="css-e509v-StateBit"
-            type="button"
-          >
-            }
-          </button>
-        </span>
-      </div>
-    </div>
-  `);
-});
-
-test("it works", () => {
-  let { container } = render(<PropTypes component={SomeComp} />);
-  expect(container).toMatchInlineSnapshot(`
-    <div>
-      <div
-        class="css-1cf4d7"
-      >
-        <span>
-          <span
-            class="css-yekgsh-TypeMeta"
-          >
-            Props
-          </span>
-          <button
-            class="css-e509v-StateBit"
-            type="button"
-          >
-            {
-          </button>
-          <div
-            class="css-1x0u41u-Indent"
-          >
-            <div>
-              <span
-                class="css-1wt60gk-TypeMinWidth"
+              <button
+                class="css-e509v-StateBit"
+                type="button"
               >
-                <span
-                  class="css-fr8k13-Type"
-                >
-                  children
-                </span>
-              </span>
-              <span>
-                <span
-                  class="css-yekgsh-TypeMeta"
-                >
-                  
-                  One of
-                   
-                </span>
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  &lt;
-                </button>
-                <div
-                  class="css-1x0u41u-Indent"
-                >
-                  <div>
-                    <span
-                      class="css-fr8k13-Type"
-                    >
-                      undefined
-                    </span>
-                    , 
-                  </div>
-                  <div>
-                    <span>
-                      <span
-                        class="css-yekgsh-TypeMeta"
-                      >
-                        class 
-                        Thing
-                      </span>
-                      <button
-                        class="css-e509v-StateBit"
-                        type="button"
-                      >
-                        {
-                      </button>
-                      <button
-                        class="css-e509v-StateBit"
-                        type="button"
-                      >
-                        ...
-                      </button>
-                      <button
-                        class="css-e509v-StateBit"
-                        type="button"
-                      >
-                        }
-                      </button>
-                    </span>
-                    
-                  </div>
+                &lt;
+              </button>
+              <div
+                class="css-1x0u41u-Indent"
+              >
+                <div>
+                  <span
+                    class="css-d46q2u-StringType"
+                  >
+                    "
+                    some string
+                    "
+                  </span>
+                  , 
                 </div>
-                <button
-                  class="css-e509v-StateBit"
-                  type="button"
-                >
-                  &gt;
-                </button>
-              </span>
-            </div>
+                <div>
+                  <span
+                    class="css-d46q2u-StringType"
+                  >
+                    "
+                    something
+                    "
+                  </span>
+                  
+                </div>
+              </div>
+              <button
+                class="css-e509v-StateBit"
+                type="button"
+              >
+                &gt;
+              </button>
+            </span>
           </div>
-          <button
-            class="css-e509v-StateBit"
-            type="button"
+        </div>
+        <div
+          class="css-oh232t-PropTypeWrapper"
+        >
+          <h3
+            class="css-z92blb-Heading"
           >
-            }
-          </button>
-        </span>
+            <code
+              class="css-f88zer-HeadingName"
+            >
+              e
+            </code>
+             
+            <code
+              class="css-nu8k78-HeadingRequired"
+            >
+               required
+            </code>
+          </h3>
+          
+          <div
+            class="css-1cf4d7"
+          >
+            <span>
+              
+              <button
+                class="css-e509v-StateBit"
+                type="button"
+              >
+                (
+              </button>
+              <span
+                class="css-fr8k13-Type"
+              >
+                firstArg
+                
+                :
+                 
+              </span>
+              <span
+                class="css-fr8k13-Type"
+              >
+                string
+              </span>
+              
+              <button
+                class="css-e509v-StateBit"
+                type="button"
+              >
+                )
+              </button>
+              <span
+                class="css-ftc9nv-Arrow"
+              >
+                 =&gt; 
+              </span>
+              <span
+                class="css-fr8k13-Type"
+              >
+                number
+              </span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   `);
