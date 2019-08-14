@@ -1,1 +1,0 @@
-Display prop types better
