@@ -1,6 +1,6 @@
 {
   "name": "magical-types",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/magical-types.cjs.js",
   "module": "dist/magical-types.esm.js",
   "license": "MIT",
