@@ -1,0 +1,7 @@
+{
+  "releases": [
+    { "name": "magical-types", "type": "patch" },
+    { "name": "@magical-types/test-app", "type": "patch" }
+  ],
+  "dependents": []
+}

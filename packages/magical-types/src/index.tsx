@@ -482,11 +482,19 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
     }
     // we don't want to open any nodes deeper than 5 nodes by default
     if (currentPositionedNode.path.length < 5) {
-      queue.push(
-        ...getChildPositionedMagicalNodes(currentPositionedNode).filter(
-          ({ node }) => !visitedNodes.has(node)
-        )
-      );
+      let childPositionedNodes = getChildPositionedMagicalNodes(
+        currentPositionedNode
+      ).filter(({ node }) => !visitedNodes.has(node));
+      console.log({
+        len: childPositionedNodes,
+        pathlen: currentPositionedNode.path.length
+      });
+      if (
+        childPositionedNodes.length < 40 ||
+        currentPositionedNode.path.length < 2
+      ) {
+        queue.push(...childPositionedNodes);
+      }
     }
   }
   return pathsThatShouldBeExpandedByDefault;
@@ -545,23 +553,28 @@ export let PropTypes = (props: {
 }) => {
   let node = getMagicalNode(props);
   let finalNode = simplifyIntersection(node);
+  let pathsThatShouldBeExpandedByDefault = useMemo(() => {
+    return getPathsThatShouldBeExpandedByDefault(node);
+  }, [finalNode]);
   if (finalNode.type === "Object") {
     return (
-      <PropsWrapper heading={props.heading}>
-        {finalNode.properties.map((prop, index) => {
-          return (
-            <PropTypeWrapper key={index}>
-              <PropTypeHeading name={prop.key} required={prop.required} />
-              {prop.description && (
-                <Description>
-                  <ReactMarkdown source={prop.description} />
-                </Description>
-              )}
-              {renderTypes(prop.value)}
-            </PropTypeWrapper>
-          );
-        })}
-      </PropsWrapper>
+      <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
+        <PropsWrapper heading={props.heading}>
+          {finalNode.properties.map((prop, index) => {
+            return (
+              <PropTypeWrapper key={index}>
+                <PropTypeHeading name={prop.key} required={prop.required} />
+                {prop.description && (
+                  <Description>
+                    <ReactMarkdown source={prop.description} />
+                  </Description>
+                )}
+                {renderNode(prop.value, ["properties", index, "value"])}
+              </PropTypeWrapper>
+            );
+          })}
+        </PropsWrapper>
+      </PathExpansionContext.Provider>
     );
   }
 

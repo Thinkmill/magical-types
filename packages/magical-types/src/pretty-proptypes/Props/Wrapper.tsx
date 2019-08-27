@@ -8,7 +8,7 @@ const Wrapper = (props: React.HTMLAttributes<HTMLElement>) => (
   <div
     css={css`
       margin-top: ${gridSize * 1.5}px;
-
+      font-family: sans-serif;
       @media (min-width: 780px) {
         margin-bottom: ${gridSize * 3}px;
         margin-top: ${gridSize * 3}px;

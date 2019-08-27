@@ -1,7 +1,21 @@
 import React from "react";
+/** @jsx jsx */
+import { jsx, CSSObject } from "@emotion/core";
 import { RawTypes } from "magical-types/macro";
-import Select from "react-select/base";
 
-type SomeType = { thing?: boolean };
+type Something = "a" | "b";
 
-<RawTypes<SomeType> />;
+type Thing = {
+  [Key in Something]: boolean;
+};
+
+export default () => {
+  return (
+    <div css={{ fontFamily: "sans-serif" }}>
+      something
+      {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
+      {/* <FunctionTypes function={myFunc} /> */}
+      <RawTypes<Thing> />
+    </div>
+  );
+};

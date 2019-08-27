@@ -68,9 +68,7 @@ export function getTypes(
             "The following error occurred while trying to stringify"
           )
         ) {
-          err.message = `The following error occurred while trying to stringify the following path: ${path} :${
-            err.message
-          }`;
+          err.message = `The following error occurred while trying to stringify the following path: ${path} :${err.message}`;
         }
         throw err;
       }
@@ -145,15 +143,21 @@ export function getTypes(
     symbol: typescript.Symbol,
     path: Array<string | number>
   ): Property {
-    let declaration = symbol.valueDeclaration || symbol.declarations[0];
-
-    if (!declaration) {
-      debugger;
+    let key = symbol.getName();
+    let type: typescript.Type;
+    if (
+      symbol.valueDeclaration ||
+      (symbol.declarations && symbol.declarations[0])
+    ) {
+      let declaration = symbol.valueDeclaration || symbol.declarations[0];
+      type = typeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
+    } else if ((symbol as any).type) {
+      type = (symbol as any).type;
+    } else {
+      throw new InternalError("type not found for property");
     }
     let isRequired = !(symbol.flags & typescript.SymbolFlags.Optional);
-    let type = typeChecker.getTypeOfSymbolAtLocation(symbol, declaration);
     // TODO: this could be better
-    let key = symbol.getName();
 
     let value = convertType(type, path.concat("getProperties()", key));
 

@@ -1,0 +1,1 @@
+Fix object properties that use `X in Y`
