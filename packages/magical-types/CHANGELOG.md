@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.0.7
+
+### Patch Changes
+
+- 9a3e803: Fix object properties that use `X in Y`
+
 ## 0.0.6
 
 ### Patch Changes
