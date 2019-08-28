@@ -1,0 +1,1 @@
+Improve performance of hovering on brackets

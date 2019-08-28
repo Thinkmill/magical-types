@@ -9,7 +9,8 @@ import {
   ClassNode,
   TypeParameterNode,
   SignatureNode,
-  PositionedMagicalNode
+  PositionedMagicalNode,
+  Parameter
 } from "./types";
 import {
   Type,
@@ -175,6 +176,33 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
   );
 }
 
+function Parameters({
+  parameters,
+  path
+}: {
+  parameters: Parameter[];
+  path: Array<string | number>;
+}) {
+  return (
+    <React.Fragment>
+      {parameters.map((param, index, array) => (
+        <React.Fragment key={index}>
+          {param.name ? (
+            <Type>
+              {param.name}
+              {param.required ? "" : "?"}:{" "}
+            </Type>
+          ) : (
+            undefined
+          )}
+          {renderNode(param.type, path.concat("parameters", index))}
+          {array.length - 1 === index ? "" : ", "}
+        </React.Fragment>
+      ))}
+    </React.Fragment>
+  );
+}
+
 function PrettySignatureButDifferent({
   node,
   path,
@@ -200,22 +228,7 @@ function PrettySignatureButDifferent({
         </span>
       )}
       <AddBrackets initialIsShown>
-        {() =>
-          node.parameters.map((param, index, array) => (
-            <React.Fragment key={index}>
-              {param.name ? (
-                <Type>
-                  {param.name}
-                  {param.required ? "" : "?"}:{" "}
-                </Type>
-              ) : (
-                undefined
-              )}
-              {renderNode(param.type, path.concat("parameters", index))}
-              {array.length - 1 === index ? "" : ", "}
-            </React.Fragment>
-          ))
-        }
+        <Parameters parameters={node.parameters} path={path} />
       </AddBrackets>
       <span
         css={css`
@@ -254,27 +267,26 @@ function PrettySignature({
         </span>
       )}
       <AddBrackets initialIsShown>
-        {() =>
-          node.parameters.map((param, index, array) => (
-            <React.Fragment key={index}>
-              {param.name ? (
-                <Type>
-                  {param.name}
-                  {param.required ? "" : "?"}:{" "}
-                </Type>
-              ) : (
-                undefined
-              )}
-              {renderNode(param.type, path.concat("parameters", index))}
-              {array.length - 1 === index ? "" : ", "}
-            </React.Fragment>
-          ))
-        }
+        <Parameters path={path} parameters={node.parameters} />
       </AddBrackets>
       <Arrow />
       {renderNode(node.return, path.concat("return"))}
     </span>
   );
+}
+
+function RenderNode({
+  node,
+  path
+}: {
+  node: MagicalNode;
+  path: Array<string | number>;
+}): React.ReactElement {
+  return renderNode(node, path) as React.ReactElement;
+}
+
+function LazyRender({ children }: { children: () => React.ReactNode }) {
+  return children() as React.ReactElement;
 }
 
 function renderNode(
@@ -308,7 +320,7 @@ function renderNode(
               (node as any).value.name ? (node as any).value.name : undefined
             }
           >
-            {() => <Indent>{renderNode(node.value, newPath)}</Indent>}
+            <RenderNode path={newPath} node={node.value} />
           </AddBrackets>
         </span>
       );
@@ -318,14 +330,16 @@ function renderNode(
         <span>
           <TypeMeta>Tuple</TypeMeta>
           <AddBrackets initialIsShown={path} openBracket="[" closeBracket="]">
-            {() =>
-              node.value.map((node, index, array) => (
-                <React.Fragment key={index}>
-                  {renderNode(node, path.concat("value", index))}
-                  {array.length - 1 === index ? "" : ", "}
-                </React.Fragment>
-              ))
-            }
+            <LazyRender>
+              {() =>
+                node.value.map((node, index, array) => (
+                  <React.Fragment key={index}>
+                    {renderNode(node, path.concat("value", index))}
+                    {array.length - 1 === index ? "" : ", "}
+                  </React.Fragment>
+                ))
+              }
+            </LazyRender>
           </AddBrackets>
         </span>
       );
@@ -348,16 +362,18 @@ function renderNode(
             {node.name === null ? "" : `${node.name} `}One of{" "}
           </TypeMeta>
           <AddBrackets initialIsShown={path} openBracket="<" closeBracket=">">
-            {() => (
-              <Indent>
-                {node.types.map((n, index, array) => (
-                  <div key={index}>
-                    {renderNode(n, path.concat("types", index))}
-                    {array.length - 1 === index ? "" : ", "}
-                  </div>
-                ))}
-              </Indent>
-            )}
+            <LazyRender>
+              {() => (
+                <Indent>
+                  {node.types.map((n, index, array) => (
+                    <div key={index}>
+                      {renderNode(n, path.concat("types", index))}
+                      {array.length - 1 === index ? "" : ", "}
+                    </div>
+                  ))}
+                </Indent>
+              )}
+            </LazyRender>
           </AddBrackets>
         </span>
       );
@@ -407,7 +423,7 @@ function renderNode(
         <span>
           <TypeMeta>{node.name}</TypeMeta>
           <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
-            {() => <PrettyObject path={path} node={node} />}
+            <PrettyObject path={path} node={node} />
           </AddBrackets>
         </span>
       );
@@ -417,9 +433,7 @@ function renderNode(
         <span>
           <TypeMeta>class {node.name}</TypeMeta>
           <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
-            {() => {
-              return <Properties path={path} node={node} />;
-            }}
+            <Properties path={path} node={node} />
           </AddBrackets>
         </span>
       );

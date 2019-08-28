@@ -37,7 +37,7 @@ const StateBit = ({
 type Props = {
   openBracket?: string;
   closeBracket?: string;
-  children: () => React.ReactNode;
+  children: React.ReactElement;
   closedContent?: React.ReactNode;
   initialIsShown?: boolean | Array<string | number>;
 };
@@ -77,7 +77,7 @@ export default function AddBrackets({
   return isShown ? (
     <Fragment>
       <StateBit {...props}>{openBracket}</StateBit>
-      {children()}
+      {children}
       <StateBit {...props}>{closeBracket}</StateBit>
     </Fragment>
   ) : (

@@ -66,7 +66,7 @@ export type Property = {
   required: boolean;
 };
 
-type Parameter = {
+export type Parameter = {
   name: string;
   type: MagicalNode;
   required: boolean;
