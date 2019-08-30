@@ -530,7 +530,7 @@ export function getTypes(
     throw new InternalError("num !== numOfThings");
   }
   debugger;
-  let { hashedNodes, nodes } = serializeNodes();
+  let { hashedNodes, nodes } = serializeNodes(allConverted);
   try {
     fs.mkdirSync(typeDir);
   } catch (err) {
