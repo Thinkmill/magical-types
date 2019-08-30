@@ -5,6 +5,12 @@ import { MagicalNode, Property, TypeParameterNode } from "./types";
 import { InternalError } from "./errors";
 import { Project } from "ts-morph";
 import * as flatted from "flatted";
+import * as fs from "fs";
+import path from "path";
+import { serializeNodes } from "./serialize";
+import { getHashForNode } from "./serialize";
+
+let typeDir = path.join(__dirname, "node_modules");
 
 export function getTypes(
   filename: string,
@@ -20,6 +26,7 @@ export function getTypes(
   >,
   numOfThings: number
 ) {
+  let allConverted: MagicalNode[] = [];
   let configFileName = typescript.findConfigFile(
     filename,
     typescript.sys.fileExists
@@ -503,7 +510,7 @@ export function getTypes(
             type = typeChecker.getTypeFromTypeNode(jsxOpening.typeArguments[0]);
           }
           let converted = convertType(type, []);
-          debugger;
+          allConverted.push(converted);
           path.node.attributes.push(
             BabelTypes.jsxAttribute(
               BabelTypes.jsxIdentifier("__types"),
@@ -522,4 +529,19 @@ export function getTypes(
   if (num !== numOfThings) {
     throw new InternalError("num !== numOfThings");
   }
+  debugger;
+  let { hashedNodes, nodes } = serializeNodes();
+  try {
+    fs.mkdirSync(typeDir);
+  } catch (err) {
+    if (err.code !== "EEXIST") {
+      throw err;
+    }
+  }
+  nodes.forEach((node, index) => {
+    fs.writeFileSync(
+      path.join(typeDir, getHashForNode(node) + ".json"),
+      JSON.stringify(hashedNodes[index])
+    );
+  });
 }

@@ -1,7 +1,6 @@
 import { typeParameter } from "@babel/types";
 
 export type SignatureNode = {
-  type: "Signature";
   return: MagicalNode;
   parameters: Array<Parameter>;
   typeParameters: Array<TypeParameterNode>;
@@ -53,6 +52,22 @@ export type MagicalNode =
   | { type: "Tuple"; value: Array<MagicalNode> }
   | ClassNode
   | ObjectNode;
+
+export type MagicalNodeHash = string & { __magicalNodeHash: any };
+
+type InnerReplace<Thing> = Thing extends MagicalNode
+  ? MagicalNodeHash
+  : Thing extends object
+  ? ReplaceMagicalNode<Thing>
+  : Thing;
+
+type ReplaceMagicalNode<Thing> = {
+  [Key in keyof Thing]: Thing[Key] extends Array<infer Element>
+    ? Array<InnerReplace<Element>>
+    : InnerReplace<Thing[Key]>;
+};
+
+export type HashedMagicalNode = ReplaceMagicalNode<MagicalNode>;
 
 export type PositionedMagicalNode = {
   path: Array<string | number>;

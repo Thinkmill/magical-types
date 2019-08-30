@@ -33,9 +33,9 @@ export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
-      {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
+      <PropTypes component={MyComponentThatDoesStuff} />
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={Select} />
+      {/* <PropTypes component={Select} /> */}
     </div>
   );
 };

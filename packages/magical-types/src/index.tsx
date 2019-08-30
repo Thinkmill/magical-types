@@ -499,10 +499,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
       let childPositionedNodes = getChildPositionedMagicalNodes(
         currentPositionedNode
       ).filter(({ node }) => !visitedNodes.has(node));
-      console.log({
-        len: childPositionedNodes,
-        pathlen: currentPositionedNode.path.length
-      });
+
       if (
         childPositionedNodes.length < 40 ||
         currentPositionedNode.path.length < 2

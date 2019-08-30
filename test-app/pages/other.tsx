@@ -1,14 +1,14 @@
 import React from "react";
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import { PropTypes } from "magical-types/macro";
-import Textfield from "@design-system/textfield";
+import { RawTypes } from "magical-types/macro";
+import { HashedMagicalNode } from "magical-types/src/types";
 
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
-      <PropTypes component={Textfield} />
+      {/* <RawTypes<HashedMagicalNode> /> */}
     </div>
   );
 };
