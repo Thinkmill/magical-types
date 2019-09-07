@@ -1,7 +1,11 @@
 import { MagicalNode, HashedMagicalNode, MagicalNodeHash } from "./types";
 import * as flatted from "flatted";
+import Deque from "double-ended-queue";
+import crypto from "crypto";
 import { h64 as hashStr } from "./hash";
 import { getChildPositionedMagicalNodes } from "./utils";
+
+crypto.createHash("sha256");
 
 let weakMemoize = function<Arg, Return>(
   func: (arg: Arg) => Return
@@ -29,7 +33,7 @@ export function serializeNodes(rootNodes: MagicalNode[]) {
   // because of circular references, we don't want to visit a node more than once
   let visitedNodes = new Set<MagicalNode>();
 
-  let queue = [...rootNodes];
+  let queue = new Deque(rootNodes);
 
   while (queue.length) {
     let currentNode = queue.shift()!;
