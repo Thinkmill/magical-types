@@ -32,7 +32,11 @@ function myFunc(someArg: { thing?: string }, another: typeof thing) {}
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
-      something
+      <h1>Hey there! This is magical-types.</h1>
+      <p>
+        It's pretty work in progress right now but below you can see all the
+        prop types for react-select
+      </p>
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
       <PropTypes component={Select} />
