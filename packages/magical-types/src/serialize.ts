@@ -15,7 +15,6 @@ let weakMemoize = function<Arg, Return>(
   // @ts-ignore
   return arg => {
     if (cache.has(arg)) {
-      // $FlowFixMe
       return cache.get(arg);
     }
     let ret = func(arg);
