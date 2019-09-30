@@ -38,6 +38,7 @@ export function serializeNodes(rootNodes: MagicalNode[]) {
     let currentNode = queue.shift()!;
 
     visitedNodes.add(currentNode);
+    // console.log(currentNode);
 
     // we don't want to open any nodes deeper than 5 nodes by default
     let childPositionedNodes = getChildPositionedMagicalNodes({
