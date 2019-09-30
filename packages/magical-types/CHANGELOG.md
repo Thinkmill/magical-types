@@ -1,5 +1,12 @@
 # magical-types
 
+## 0.0.8
+
+### Patch Changes
+
+- 5cbd61c: Remove a console.log
+- cb0bc74: Improve performance of hovering on brackets
+
 ## 0.0.7
 
 ### Patch Changes
