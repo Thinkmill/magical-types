@@ -7,7 +7,10 @@ import { ComponentType } from "react";
 import { addNamed } from "@babel/helper-module-imports";
 import { getTypes } from "./get-types";
 
-export let PropTypes = (props: { component: ComponentType<any> }) => {
+export let PropTypes = (props: {
+  component: ComponentType<any>;
+  graph?: boolean;
+}) => {
   return null;
 };
 

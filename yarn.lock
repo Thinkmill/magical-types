@@ -1980,6 +1980,13 @@ autodll-webpack-plugin@0.4.2:
     webpack-merge "^4.1.0"
     webpack-sources "^1.0.1"
 
+avsdf-base@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/avsdf-base/-/avsdf-base-1.0.0.tgz#80c437d7d15d2bd201d9c31804e7b7a15a84781a"
+  integrity sha512-APhZNUFJwIwrLsSfE95QjobEntdUhFQgfNtC/BrYmjUpwHh5Y2fbRv8lxAlMr1hdf/CuQYsqJxK3dRzcCL77qw==
+  dependencies:
+    layout-base "^1.0.0"
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -2946,6 +2953,21 @@ cyclist@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"
   integrity sha1-GzN5LhHpFKL9bW7WRHRkRE5fpkA=
+
+cytoscape-avsdf@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-avsdf/-/cytoscape-avsdf-1.0.0.tgz#6f079948021433e32fc30b1b0bcbf595f4b65ab0"
+  integrity sha512-Wzd2wmJgr4dK5avHy4nKHp3D8TBZ8H/+5Hq5o24bRdVTvXlhSDzQhAMtzOuhRPYwHcWB+cBhEAXboAK8n7zPTQ==
+  dependencies:
+    avsdf-base "^1.0.0"
+
+cytoscape@^3.10.1, cytoscape@^3.2.19:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.10.1.tgz#59da32ab6b0e478326fb19207ea7914b05ac9f52"
+  integrity sha512-uNId+LR2YlqrM6BuNMI44gA1iGg6NHGoSzYufIN5XkaeJCVNB5iDodYcqguDsTrEW30ckuchZl1axoUbrUfGTg==
+  dependencies:
+    heap "^0.2.6"
+    lodash.debounce "^4.0.8"
 
 dashdash@^1.12.0:
   version "1.14.1"
@@ -3998,6 +4020,11 @@ hash.js@^1.0.0, hash.js@^1.0.3:
   dependencies:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
+
+heap@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
+  integrity sha1-CH4fELBGky/IWU3Z5tN4r8nR5aw=
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -5101,6 +5128,11 @@ launch-editor@2.2.1:
     chalk "^2.3.0"
     shell-quote "^1.6.1"
 
+layout-base@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/layout-base/-/layout-base-1.0.1.tgz#247175d33c2a1da1fcaecfc9e2127ef47ff851fd"
+  integrity sha512-ROrEqaKkA3IIOEgtsRE4qk4XWTXRhJq54CvWr+5EqMjMWBtxc/yngFOGXwG8iztipot6sTujXS5zjUOU6OZnnQ==
+
 lcid@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/lcid/-/lcid-2.0.0.tgz#6ef5d2df60e52f82eb228a4c373e8d1f397253cf"
@@ -5187,6 +5219,11 @@ lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha1-soqmKIorn8ZRA1x3EfZathkDMaY=
+
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
 lodash.get@~4.4.2:
   version "4.4.2"
@@ -6593,6 +6630,14 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-cytoscapejs@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-cytoscapejs/-/react-cytoscapejs-1.2.0.tgz#fa05bdd7efa26f93219d756b48d123b907dc3a70"
+  integrity sha512-VhOhICJbI+X377RvTX7X+lpMSLWiI2Y7O6xJOc82u2dIF2qrtksP9H4IMGoo2TYL6otLuYV81RfFyywk4KCxBg==
+  dependencies:
+    cytoscape "^3.2.19"
+    prop-types "^15.6.2"
+
 react-dom@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
@@ -6653,6 +6698,11 @@ react-select@^3.0.4:
     raf "^3.4.0"
     react-input-autosize "^2.2.1"
     react-transition-group "^2.2.1"
+
+react-sigma@^1.2.30:
+  version "1.2.30"
+  resolved "https://registry.yarnpkg.com/react-sigma/-/react-sigma-1.2.30.tgz#794f88e796c4f763158afe404d10d9635f848846"
+  integrity sha512-8KVwKwHO9vrX1VohusZZm8ldMab32EHLZKkU1TrAnvSOHv6it6EEMwPOOtkJZOirnydKM0cXpxfFQv2LdBFAqQ==
 
 react-transition-group@^2.2.1:
   version "2.9.0"

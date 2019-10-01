@@ -514,7 +514,7 @@ let getMagicalNode = (props: any): MagicalNode => {
   return flatted.parse((props as any).__types);
 };
 
-let renderTypes = (node: MagicalNode) => {
+export let renderTypes = (node: MagicalNode) => {
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);
@@ -557,11 +557,22 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
   return node;
 }
 
+import dynamic from "next/dynamic";
+
+let Graph = dynamic<{ node: MagicalNode }>(
+  () => import("./graph").then(x => x.Graph),
+  { ssr: false }
+);
+
 export let PropTypes = (props: {
   component: ComponentType<any>;
   heading?: string;
+  graph?: boolean;
 }) => {
   let node = getMagicalNode(props);
+  if (props.graph) {
+    return <Graph node={node} />;
+  }
   let finalNode = simplifyIntersection(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
@@ -597,7 +608,7 @@ export let FunctionTypes = (props: {
   return renderTypes(getMagicalNode(props));
 };
 
-export function RawTypes<Type>(props: {}) {
+export function RawTypes<Type>(props: { graph?: boolean }) {
   return renderTypes(getMagicalNode(props));
 }
 

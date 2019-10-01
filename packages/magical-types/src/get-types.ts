@@ -222,6 +222,7 @@ export function getTypes(
       if (!type) {
         throw new InternalError(`falsy type at path: ${path}`);
       }
+
       if (
         (type as any).intrinsicName &&
         (type as any).intrinsicName !== "error"

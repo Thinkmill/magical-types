@@ -8,7 +8,12 @@ import Select from "react-select/base";
 
 type Status = "notstarted" | "started" | "inprogress" | "completed";
 
-type Task = { id: string; status: Status; title: string; task: Task };
+type Task = {
+  id: string;
+  status: Status;
+  title: string;
+  task: Task;
+};
 
 let thing = {
   wow: "string"
@@ -32,14 +37,9 @@ function myFunc(someArg: { thing?: string }, another: typeof thing) {}
 export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
-      <h1>Hey there! This is magical-types.</h1>
-      <p>
-        It's pretty work in progress right now but below you can see all the
-        prop types for react-select
-      </p>
-      {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
+      {/* <PropTypes graph component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={Select} />
+      <PropTypes graph component={Select} />
     </div>
   );
 };
