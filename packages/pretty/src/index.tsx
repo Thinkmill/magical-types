@@ -11,7 +11,7 @@ import {
   SignatureNode,
   PositionedMagicalNode,
   Parameter
-} from "./types";
+} from "@magical-types/types";
 import {
   Type,
   Indent,
@@ -600,5 +600,3 @@ export let FunctionTypes = (props: {
 export function RawTypes<Type>(props: {}) {
   return renderTypes(getMagicalNode(props));
 }
-
-export * from "./types";

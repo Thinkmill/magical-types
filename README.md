@@ -21,13 +21,13 @@ yarn add babel-plugin-macros
 ### Installing magical-types
 
 ```bash
-yarn add magical-types
+yarn add @magical-types/macro
 ```
 
 ### Using it
 
 ```tsx
-import { PropTypes, FunctionTypes, RawTypes } from "magical-types/macro";
+import { PropTypes, FunctionTypes, RawTypes } from "@magical-types/macro";
 
 type Props = {
   someProp: string;

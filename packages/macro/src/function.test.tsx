@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { FunctionTypes } from "magical-types/macro";
+import { FunctionTypes } from "@magical-types/macro";
 
 test("it works", () => {
   function someThing(thing: boolean) {}

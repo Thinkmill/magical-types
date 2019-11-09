@@ -1,4 +1,4 @@
-import { PositionedMagicalNode } from "./types";
+import { PositionedMagicalNode } from "@magical-types/types";
 
 export function getChildPositionedMagicalNodes({
   node,

@@ -1,7 +1,7 @@
 import React from "react";
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import { PropTypes, FunctionTypes } from "magical-types/macro";
+import { PropTypes, FunctionTypes } from "@magical-types/macro";
 import Select from "react-select/base";
 
 // type Thing = (firstArg: string) => number;
