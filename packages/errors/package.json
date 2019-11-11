@@ -2,5 +2,8 @@
   "name": "@magical-types/errors",
   "version": "0.0.0",
   "main": "dist/errors.cjs.js",
-  "module": "dist/errors.esm.js"
+  "module": "dist/errors.esm.js",
+  "dependencies": {
+    "@babel/runtime": "^7.7.2"
+  }
 }

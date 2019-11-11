@@ -27,7 +27,6 @@ import AddBrackets, {
 import { getChildPositionedMagicalNodes, flatMap } from "./utils";
 import PropTypeHeading from "./pretty-proptypes/Prop/Heading";
 import PropsWrapper from "./pretty-proptypes/Props/Wrapper";
-import * as flatted from "flatted";
 
 const Arrow = () => (
   <span
@@ -510,11 +509,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   return pathsThatShouldBeExpandedByDefault;
 }
 
-let getMagicalNode = (props: any): MagicalNode => {
-  return flatted.parse((props as any).__types);
-};
-
-let renderTypes = (node: MagicalNode) => {
+export let renderTypes = (node: MagicalNode) => {
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);
@@ -557,11 +552,17 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
   return node;
 }
 
-export let PropTypes = (props: {
-  component: ComponentType<any>;
+export function Types({ node }: { node: MagicalNode }) {
+  return renderTypes(node);
+}
+
+export function PropTypes({
+  node,
+  heading
+}: {
+  node: MagicalNode;
   heading?: string;
-}) => {
-  let node = getMagicalNode(props);
+}) {
   let finalNode = simplifyIntersection(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
@@ -569,7 +570,7 @@ export let PropTypes = (props: {
   if (finalNode.type === "Object") {
     return (
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
-        <PropsWrapper heading={props.heading}>
+        <PropsWrapper heading={heading}>
           {finalNode.properties.map((prop, index) => {
             return (
               <PropTypeWrapper key={index}>
@@ -587,16 +588,5 @@ export let PropTypes = (props: {
       </PathExpansionContext.Provider>
     );
   }
-
   return renderTypes(node);
-};
-
-export let FunctionTypes = (props: {
-  function: (...args: Array<any>) => any;
-}) => {
-  return renderTypes(getMagicalNode(props));
-};
-
-export function RawTypes<Type>(props: {}) {
-  return renderTypes(getMagicalNode(props));
 }
