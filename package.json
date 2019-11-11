@@ -8,7 +8,7 @@
     "changeset": "changeset",
     "release": "preconstruct build && changeset release",
     "site": "cd test-app && yarn next dev",
-    "test": "jest"
+    "test": "jest --no-cache"
   },
   "preconstruct": {
     "packages": [

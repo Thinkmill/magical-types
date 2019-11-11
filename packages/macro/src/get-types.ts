@@ -39,10 +39,11 @@ export function getTypes(
     number,
     Map<
       number,
-      {
-        exportName: "PropTypes" | "FunctionTypes" | "RawTypes";
-        path: NodePath<BabelTypes.JSXOpeningElement>;
-      }
+      | {
+          exportName: "PropTypes" | "FunctionTypes" | "RawTypes";
+          path: NodePath<BabelTypes.JSXOpeningElement>;
+        }
+      | { exportName: "getNode"; path: NodePath<BabelTypes.CallExpression> }
     >
   >,
   numOfThings: number
@@ -70,77 +71,98 @@ export function getTypes(
       let map = things.get(node.pos);
 
       if (map) {
-        let val = map.get(node.end);
+        const val = map.get(node.end);
         if (val) {
-          let { exportName, path } = val;
           num++;
-          if (!typescript.isJsxOpeningLikeElement(node.parent)) {
-            throw new InternalError("is not a jsx opening element");
-          }
-          let jsxOpening = node.parent;
-          let type: typescript.Type;
-          if (exportName === "PropTypes" || exportName === "FunctionTypes") {
-            let componentAttrib = jsxOpening.attributes.properties.find(
-              x =>
-                typescript.isJsxAttribute(x) &&
-                x.name.escapedText ===
-                  (exportName === "PropTypes" ? "component" : "function")
-            );
+          if (
+            typescript.isJsxOpeningLikeElement(node.parent) &&
+            val.exportName !== "getNode"
+          ) {
+            let jsxOpening = node.parent;
+            let type: typescript.Type;
             if (
-              !(
-                componentAttrib &&
-                typescript.isJsxAttribute(componentAttrib) &&
-                componentAttrib.initializer &&
-                typescript.isJsxExpression(componentAttrib.initializer) &&
-                componentAttrib.initializer.expression
-              )
+              val.exportName === "PropTypes" ||
+              val.exportName === "FunctionTypes"
             ) {
-              throw new InternalError("could not find component attrib");
-            }
-            let nodeForType = componentAttrib.initializer.expression;
-
-            let symbol = typeChecker.getSymbolAtLocation(nodeForType);
-
-            if (!symbol) {
-              throw new InternalError("could not find symbol");
-            }
-            type = typeChecker.getTypeOfSymbolAtLocation(
-              symbol,
-              symbol.valueDeclaration || symbol.declarations![0]
-            );
-
-            if (exportName === "PropTypes") {
-              let propsSymbol =
-                getFunctionComponentProps(type) || getClassComponentProps(type);
-
-              if (!propsSymbol) {
-                throw new InternalError("could not find props symbol");
+              let componentAttrib = jsxOpening.attributes.properties.find(
+                x =>
+                  typescript.isJsxAttribute(x) &&
+                  x.name.escapedText ===
+                    (val.exportName === "PropTypes" ? "component" : "function")
+              );
+              if (
+                !(
+                  componentAttrib &&
+                  typescript.isJsxAttribute(componentAttrib) &&
+                  componentAttrib.initializer &&
+                  typescript.isJsxExpression(componentAttrib.initializer) &&
+                  componentAttrib.initializer.expression
+                )
+              ) {
+                throw new InternalError("could not find component attrib");
               }
+              let nodeForType = componentAttrib.initializer.expression;
 
+              let symbol = typeChecker.getSymbolAtLocation(nodeForType);
+
+              if (!symbol) {
+                throw new InternalError("could not find symbol");
+              }
               type = typeChecker.getTypeOfSymbolAtLocation(
-                propsSymbol,
-                propsSymbol.valueDeclaration || propsSymbol.declarations![0]
+                symbol,
+                symbol.valueDeclaration || symbol.declarations![0]
+              );
+
+              if (val.exportName === "PropTypes") {
+                let propsSymbol =
+                  getFunctionComponentProps(type) ||
+                  getClassComponentProps(type);
+
+                if (!propsSymbol) {
+                  throw new InternalError("could not find props symbol");
+                }
+
+                type = typeChecker.getTypeOfSymbolAtLocation(
+                  propsSymbol,
+                  propsSymbol.valueDeclaration || propsSymbol.declarations![0]
+                );
+              }
+            } else {
+              if (!jsxOpening.typeArguments) {
+                throw new InternalError("no type arguments on RawTypes");
+              }
+              if (!jsxOpening.typeArguments[0]) {
+                throw new InternalError("no type argument on RawTypes");
+              }
+              type = typeChecker.getTypeFromTypeNode(
+                jsxOpening.typeArguments[0]
               );
             }
-          } else {
-            if (!jsxOpening.typeArguments) {
-              throw new InternalError("no type arguments on RawTypes");
-            }
-            if (!jsxOpening.typeArguments[0]) {
-              throw new InternalError("no type argument on RawTypes");
-            }
-            type = typeChecker.getTypeFromTypeNode(jsxOpening.typeArguments[0]);
-          }
-          let converted = convertType(type, []);
-          debugger;
-          path.node.attributes.push(
-            BabelTypes.jsxAttribute(
-              BabelTypes.jsxIdentifier("__types"),
-              BabelTypes.jsxExpressionContainer(
-                BabelTypes.stringLiteral(flatted.stringify(converted))
+            let converted = convertType(type, []);
+            val.path.node.attributes.push(
+              BabelTypes.jsxAttribute(
+                BabelTypes.jsxIdentifier("__types"),
+                BabelTypes.jsxExpressionContainer(
+                  BabelTypes.stringLiteral(flatted.stringify(converted))
+                )
               )
-            )
-          );
+            );
+          } else if (
+            typescript.isCallExpression(node.parent) &&
+            val.exportName === "getNode"
+          ) {
+            let callExpression = node.parent;
+            let type = typeChecker.getTypeFromTypeNode(
+              callExpression.typeArguments![0]
+            );
+            let converted = convertType(type, []);
+
+            val.path.node.arguments.push(
+              BabelTypes.stringLiteral(flatted.stringify(converted))
+            );
+          } else {
+            throw new InternalError("unexpected node type");
+          }
         }
       }
 

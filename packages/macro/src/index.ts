@@ -6,6 +6,8 @@ import { ComponentType } from "react";
 // @ts-ignore
 import { addNamed } from "@babel/helper-module-imports";
 import { getTypes } from "./get-types";
+import { MagicalNode } from "@magical-types/types";
+import { InternalError } from "@magical-types/errors";
 
 export let PropTypes = (props: { component: ComponentType<any> }) => {
   return null;
@@ -19,6 +21,10 @@ export let FunctionTypes = (props: {
 
 export let RawTypes = <Type>(props: {}) => {
   return null;
+};
+
+export let getNode = <Type>(): MagicalNode => {
+  return null as any;
 };
 
 type MacroArgs = {
@@ -36,15 +42,21 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
       number,
       Map<
         number,
-        {
-          exportName: typeof comps[number];
-          path: NodePath<BabelTypes.JSXOpeningElement>;
-        }
+        | {
+            exportName: typeof comps[number];
+            path: NodePath<BabelTypes.JSXOpeningElement>;
+          }
+        | { exportName: "getNode"; path: NodePath<BabelTypes.CallExpression> }
       >
     > = new Map();
     let num = 0;
 
-    for (let exportName of comps) {
+    for (let exportName of [
+      "PropTypes",
+      "FunctionTypes",
+      "RawTypes",
+      "getNode"
+    ] as const) {
       if (references[exportName] && references[exportName].length) {
         let identifierName: string = addNamed(
           references[exportName][0],
@@ -55,7 +67,11 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
         references[exportName].forEach(reference => {
           let { parentPath } = reference;
 
-          if (parentPath.isJSXOpeningElement()) {
+          if (
+            parentPath.isJSXOpeningElement() ||
+            (parentPath.isCallExpression() &&
+              parentPath.node.callee === reference.node)
+          ) {
             if (reference.node.start === null || reference.node.end === null) {
               throw new Error("start and end not found");
             }
@@ -64,12 +80,27 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
             }
             let map = things.get(reference.node.start);
             if (!map) {
-              throw new Error("this should never happen");
+              throw new InternalError("this should never happen");
             }
             num++;
-            map.set(reference.node.end, { exportName, path: parentPath });
+            if (parentPath.isCallExpression() && exportName === "getNode") {
+              map.set(reference.node.end, { exportName, path: parentPath });
+            } else if (
+              parentPath.isJSXOpeningElement() &&
+              (exportName === "PropTypes" ||
+                exportName === "RawTypes" ||
+                exportName === "FunctionTypes")
+            ) {
+              map.set(reference.node.end, { exportName, path: parentPath });
+            } else {
+              throw new InternalError("macro used in wrong spot");
+            }
           }
-          reference.replaceWith(t.jsxIdentifier(identifierName));
+          if (reference.isJSXIdentifier()) {
+            reference.replaceWith(t.jsxIdentifier(identifierName));
+          } else if (reference.isIdentifier()) {
+            reference.replaceWith(t.identifier(identifierName));
+          }
         });
       }
     }

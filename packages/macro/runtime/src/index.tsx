@@ -3,8 +3,17 @@ import * as React from "react";
 import { MagicalNode } from "@magical-types/types";
 import flatted from "flatted";
 
+function parseStringified(val: string): MagicalNode {
+  try {
+    return flatted.parse(val);
+  } catch (err) {
+    console.error("error parsing stringified node:", val);
+    throw err;
+  }
+}
+
 let getMagicalNode = (props: any): MagicalNode => {
-  return flatted.parse((props as any).__types);
+  return parseStringified((props as any).__types);
 };
 
 export let FunctionTypes = (props: {
@@ -24,3 +33,7 @@ export let PropTypes = (props: {
   let node = getMagicalNode(props);
   return <PrettyPropTypes node={node} heading={props.heading} />;
 };
+
+export function getNode<Type>() {
+  return parseStringified(arguments[0]);
+}
