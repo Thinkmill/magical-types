@@ -1,7 +1,7 @@
 import React from "react";
 /** @jsx jsx */
 import { jsx, CSSObject } from "@emotion/core";
-import { RawTypes } from "magical-types/macro";
+import { RawTypes } from "@magical-types/macro";
 
 type Something = "a" | "b";
 

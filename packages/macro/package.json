@@ -1,8 +1,8 @@
 {
-  "name": "magical-types",
+  "name": "@magical-types/macro",
   "version": "0.0.8",
-  "main": "dist/magical-types.cjs.js",
-  "module": "dist/magical-types.esm.js",
+  "main": "dist/macro.cjs.js",
+  "module": "dist/macro.esm.js",
   "license": "MIT",
   "files": [
     "macro",
@@ -16,7 +16,7 @@
   "preconstruct": {
     "entrypoints": [
       ".",
-      "macro"
+      "runtime"
     ]
   },
   "dependencies": {

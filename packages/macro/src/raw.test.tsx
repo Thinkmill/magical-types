@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { RawTypes } from "magical-types/macro";
+import { RawTypes } from "@magical-types/macro";
 
 test("it works", () => {
   type Something = { thing: boolean };

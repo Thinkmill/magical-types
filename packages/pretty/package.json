@@ -1,0 +1,6 @@
+{
+  "name": "@magical-types/pretty",
+  "version": "0.0.0",
+  "main": "dist/pretty.cjs.js",
+  "module": "dist/pretty.esm.js"
+}

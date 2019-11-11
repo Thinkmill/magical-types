@@ -1,5 +1,3 @@
-import { typeParameter } from "@babel/types";
-
 export type SignatureNode = {
   type: "Signature";
   return: MagicalNode;

@@ -1,7 +1,7 @@
 // @ts-ignore
-import { createMacro, MacroError } from "babel-plugin-macros";
+import { createMacro } from "babel-plugin-macros";
 import * as BabelTypes from "@babel/types";
-import { Visitor, NodePath } from "@babel/traverse";
+import { NodePath } from "@babel/traverse";
 import { ComponentType } from "react";
 // @ts-ignore
 import { addNamed } from "@babel/helper-module-imports";
@@ -49,7 +49,7 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
         let identifierName: string = addNamed(
           references[exportName][0],
           exportName,
-          "magical-types"
+          "@magical-types/macro/runtime"
         ).name;
 
         references[exportName].forEach(reference => {

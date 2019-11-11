@@ -2,7 +2,6 @@
 import { jsx, css } from "@emotion/core";
 import React from "react";
 import { colors, gridSize, borderRadius } from "../components/constants";
-import { MagicalNode, ObjectNode } from "../../types";
 
 const Heading = (props: React.HTMLAttributes<HTMLHeadingElement>) => (
   <h3
