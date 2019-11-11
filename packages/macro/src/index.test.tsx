@@ -24,86 +24,183 @@ test("it works", () => {
     <PropTypes component={MyComponentThatDoesStuff} />
   );
   expect(container).toMatchInlineSnapshot(`
+    .emotion-36 {
+      margin-top: 12px;
+      font-family: sans-serif;
+    }
+
+    @media (min-width:780px) {
+      .emotion-36 {
+        margin-bottom: 24px;
+        margin-top: 24px;
+      }
+    }
+
+    .emotion-0 {
+      margin-top: 1em;
+    }
+
+    .emotion-5 {
+      margin-top: 32px;
+    }
+
+    .emotion-3 {
+      border-bottom: 2px solid #F4F5F7;
+      font-size: 0.9rem;
+      font-weight: normal;
+      line-height: 1.4;
+      margin: 0 0 8px 0;
+      padding-bottom: 8px;
+    }
+
+    .emotion-1 {
+      background: #DEEBFF;
+      color: #0747A6;
+      border-radius: 3px;
+      display: inline-block;
+      margin-right: 0.8em;
+      padding: 0 0.2em;
+    }
+
+    .emotion-2 {
+      color: #BF2600;
+    }
+
+    .emotion-4 {
+      background-color: #EAE6FF;
+      border-radius: 3px;
+      color: #403294;
+      display: inline-block;
+      margin: 2px 0;
+      padding: 0 0.2em;
+    }
+
+    .emotion-14 {
+      background-color: #EAE6FF;
+      border-radius: 3px;
+      color: #403294;
+      display: inline-block;
+      margin: 2px 0;
+      padding: 0 0.2em;
+      background-color: #E3FCEF;
+      color: #006644;
+    }
+
+    .emotion-19 {
+      background-color: #EAE6FF;
+      border-radius: 3px;
+      color: #403294;
+      display: inline-block;
+      margin: 2px 0;
+      padding: 0 0.2em;
+      background-color: #F4F5F7;
+      color: #5E6C84;
+    }
+
+    .emotion-20 {
+      background-color: #F4F5F7;
+      color: #5E6C84;
+      border: 0;
+      font-size: 14px;
+      font-family: sans-serif;
+      line-height: 20px;
+      width: auto;
+      margin: 2px 0;
+      padding: 0 0.2em;
+    }
+
+    .emotion-20:hover {
+      cursor: pointer;
+    }
+
+    .emotion-23 {
+      padding-left: 1.3em;
+    }
+
+    .emotion-33 {
+      color: #006644;
+    }
+
     <div>
       <div
-        class="css-4nkp0a-Wrapper"
+        class="emotion-36"
       >
         <h2
-          class="css-o41ti2"
+          class="emotion-0"
         >
           Props
         </h2>
         <div
-          class="css-oh232t-PropTypeWrapper"
+          class="emotion-5"
         >
           <h3
-            class="css-z92blb-Heading"
+            class="emotion-3"
           >
             <code
-              class="css-f88zer-HeadingName"
+              class="emotion-1"
             >
               a
             </code>
              
             <code
-              class="css-nu8k78-HeadingRequired"
+              class="emotion-2"
             >
                required
             </code>
           </h3>
           
           <span
-            class="css-fr8k13-Type"
+            class="emotion-4"
           >
             boolean
           </span>
         </div>
         <div
-          class="css-oh232t-PropTypeWrapper"
+          class="emotion-5"
         >
           <h3
-            class="css-z92blb-Heading"
+            class="emotion-3"
           >
             <code
-              class="css-f88zer-HeadingName"
+              class="emotion-1"
             >
               b
             </code>
              
             <code
-              class="css-nu8k78-HeadingRequired"
+              class="emotion-2"
             >
                required
             </code>
           </h3>
           
           <span
-            class="css-fr8k13-Type"
+            class="emotion-4"
           >
             any
           </span>
         </div>
         <div
-          class="css-oh232t-PropTypeWrapper"
+          class="emotion-5"
         >
           <h3
-            class="css-z92blb-Heading"
+            class="emotion-3"
           >
             <code
-              class="css-f88zer-HeadingName"
+              class="emotion-1"
             >
               c
             </code>
              
             <code
-              class="css-nu8k78-HeadingRequired"
+              class="emotion-2"
             >
                required
             </code>
           </h3>
           
           <span
-            class="css-d46q2u-StringType"
+            class="emotion-14"
           >
             "
             some string
@@ -111,19 +208,19 @@ test("it works", () => {
           </span>
         </div>
         <div
-          class="css-oh232t-PropTypeWrapper"
+          class="emotion-5"
         >
           <h3
-            class="css-z92blb-Heading"
+            class="emotion-3"
           >
             <code
-              class="css-f88zer-HeadingName"
+              class="emotion-1"
             >
               d
             </code>
              
             <code
-              class="css-nu8k78-HeadingRequired"
+              class="emotion-2"
             >
                required
             </code>
@@ -131,24 +228,24 @@ test("it works", () => {
           
           <span>
             <span
-              class="css-yekgsh-TypeMeta"
+              class="emotion-19"
             >
               
               One of
                
             </span>
             <button
-              class="css-e509v-StateBit"
+              class="emotion-20"
               type="button"
             >
               &lt;
             </button>
             <div
-              class="css-1x0u41u-Indent"
+              class="emotion-23"
             >
               <div>
                 <span
-                  class="css-d46q2u-StringType"
+                  class="emotion-14"
                 >
                   "
                   some string
@@ -158,7 +255,7 @@ test("it works", () => {
               </div>
               <div>
                 <span
-                  class="css-d46q2u-StringType"
+                  class="emotion-14"
                 >
                   "
                   something
@@ -168,7 +265,7 @@ test("it works", () => {
               </div>
             </div>
             <button
-              class="css-e509v-StateBit"
+              class="emotion-20"
               type="button"
             >
               &gt;
@@ -176,19 +273,19 @@ test("it works", () => {
           </span>
         </div>
         <div
-          class="css-oh232t-PropTypeWrapper"
+          class="emotion-5"
         >
           <h3
-            class="css-z92blb-Heading"
+            class="emotion-3"
           >
             <code
-              class="css-f88zer-HeadingName"
+              class="emotion-1"
             >
               e
             </code>
              
             <code
-              class="css-nu8k78-HeadingRequired"
+              class="emotion-2"
             >
                required
             </code>
@@ -197,13 +294,13 @@ test("it works", () => {
           <span>
             
             <button
-              class="css-e509v-StateBit"
+              class="emotion-20"
               type="button"
             >
               (
             </button>
             <span
-              class="css-fr8k13-Type"
+              class="emotion-4"
             >
               firstArg
               
@@ -211,24 +308,24 @@ test("it works", () => {
                
             </span>
             <span
-              class="css-fr8k13-Type"
+              class="emotion-4"
             >
               string
             </span>
             
             <button
-              class="css-e509v-StateBit"
+              class="emotion-20"
               type="button"
             >
               )
             </button>
             <span
-              class="css-ftc9nv-Arrow"
+              class="emotion-33"
             >
                =&gt; 
             </span>
             <span
-              class="css-fr8k13-Type"
+              class="emotion-4"
             >
               number
             </span>

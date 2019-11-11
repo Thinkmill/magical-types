@@ -42,9 +42,15 @@
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
     "jest": "^24.8.0",
+    "jest-emotion": "^10.0.17",
     "react": "^16.11.0",
     "react-select": "^3.0.4",
     "ts-morph": "^5.0.0",
     "typescript": "^3.7.2"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "jest-emotion"
+    ]
   }
 }

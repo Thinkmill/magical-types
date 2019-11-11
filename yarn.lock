@@ -1863,6 +1863,11 @@
   resolved "https://registry.yarnpkg.com/@types/jest-diff/-/jest-diff-20.0.1.tgz#35cc15b9c4f30a18ef21852e255fdb02f6d59b89"
   integrity sha512-yALhelO3i0hqZwhjtcr6dYyaLoCHbAMshwtj6cGxTvHZAKXHsYGdff6E8EPw3xLKY0ELUTQ69Q1rQiJENnccMA==
 
+"@types/jest@^23.0.2":
+  version "23.3.14"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.14.tgz#37daaf78069e7948520474c87b80092ea912520a"
+  integrity sha512-Q5hTcfdudEL2yOmluA1zaSyPbzWPmJ3XfSWeP3RyoYvS9hnje1ZyagrZOuQ6+1nQC1Gw+7gap3pLNL3xL6UBug==
+
 "@types/jest@^24.0.15":
   version "24.0.15"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.15.tgz#6c42d5af7fe3b44ffff7cc65de7bf741e8fa427f"
@@ -3318,7 +3323,7 @@ crypto-browserify@^3.11.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
-css@2.2.4:
+css@2.2.4, css@^2.2.1:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/css/-/css-2.2.4.tgz#c646755c73971f2bba6a601e2cf2fd71b1298929"
   integrity sha512-oUnjmWpy0niI3x/mPL8dVEI1l7MnG3+HHyRPHf+YFSbK+svOhXpmSOcDURUh2aOCgl2grzrOPt1nHLuCVFULLw==
@@ -5134,6 +5139,16 @@ jest-each@^24.8.0:
     jest-get-type "^24.8.0"
     jest-util "^24.8.0"
     pretty-format "^24.8.0"
+
+jest-emotion@^10.0.17:
+  version "10.0.17"
+  resolved "https://registry.yarnpkg.com/jest-emotion/-/jest-emotion-10.0.17.tgz#e65a881771f522c123d61721d9bb0095dcb6cf40"
+  integrity sha512-Z0SqaeXGr9dshhY5z9ctfPiw2qTw5BRbCsbBWziTtSdiLnqFprj2NuF38lMrpSMFKjNY+q+rioRI5gVyQZrrxA==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@types/jest" "^23.0.2"
+    chalk "^2.4.1"
+    css "^2.2.1"
 
 jest-environment-jsdom@^24.8.0:
   version "24.8.0"
