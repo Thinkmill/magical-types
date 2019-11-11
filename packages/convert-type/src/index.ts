@@ -166,7 +166,7 @@ function typeFlagsToString(type: typescript.Type) {
 }
 
 function getTypeChecker(type: typescript.Type) {
-  return (type as any) as typescript.TypeChecker;
+  return (type as any).checker as typescript.TypeChecker;
 }
 
 export let convertType = wrapInCache(

@@ -49,7 +49,7 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
         let identifierName: string = addNamed(
           references[exportName][0],
           exportName,
-          "magical-types"
+          "@magical-types/macro/runtime"
         ).name;
 
         references[exportName].forEach(reference => {

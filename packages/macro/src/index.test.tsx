@@ -26,7 +26,7 @@ test("it works", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
-        class="css-r69ve0-Wrapper"
+        class="css-4nkp0a-Wrapper"
       >
         <h2
           class="css-o41ti2"
@@ -52,15 +52,11 @@ test("it works", () => {
             </code>
           </h3>
           
-          <div
-            class="css-1cf4d7"
+          <span
+            class="css-fr8k13-Type"
           >
-            <span
-              class="css-fr8k13-Type"
-            >
-              boolean
-            </span>
-          </div>
+            boolean
+          </span>
         </div>
         <div
           class="css-oh232t-PropTypeWrapper"
@@ -81,15 +77,11 @@ test("it works", () => {
             </code>
           </h3>
           
-          <div
-            class="css-1cf4d7"
+          <span
+            class="css-fr8k13-Type"
           >
-            <span
-              class="css-fr8k13-Type"
-            >
-              any
-            </span>
-          </div>
+            any
+          </span>
         </div>
         <div
           class="css-oh232t-PropTypeWrapper"
@@ -110,17 +102,13 @@ test("it works", () => {
             </code>
           </h3>
           
-          <div
-            class="css-1cf4d7"
+          <span
+            class="css-d46q2u-StringType"
           >
-            <span
-              class="css-d46q2u-StringType"
-            >
-              "
-              some string
-              "
-            </span>
-          </div>
+            "
+            some string
+            "
+          </span>
         </div>
         <div
           class="css-oh232t-PropTypeWrapper"
@@ -141,55 +129,51 @@ test("it works", () => {
             </code>
           </h3>
           
-          <div
-            class="css-1cf4d7"
-          >
-            <span>
-              <span
-                class="css-yekgsh-TypeMeta"
-              >
-                
-                One of
-                 
-              </span>
-              <button
-                class="css-e509v-StateBit"
-                type="button"
-              >
-                &lt;
-              </button>
-              <div
-                class="css-1x0u41u-Indent"
-              >
-                <div>
-                  <span
-                    class="css-d46q2u-StringType"
-                  >
-                    "
-                    some string
-                    "
-                  </span>
-                  , 
-                </div>
-                <div>
-                  <span
-                    class="css-d46q2u-StringType"
-                  >
-                    "
-                    something
-                    "
-                  </span>
-                  
-                </div>
-              </div>
-              <button
-                class="css-e509v-StateBit"
-                type="button"
-              >
-                &gt;
-              </button>
+          <span>
+            <span
+              class="css-yekgsh-TypeMeta"
+            >
+              
+              One of
+               
             </span>
-          </div>
+            <button
+              class="css-e509v-StateBit"
+              type="button"
+            >
+              &lt;
+            </button>
+            <div
+              class="css-1x0u41u-Indent"
+            >
+              <div>
+                <span
+                  class="css-d46q2u-StringType"
+                >
+                  "
+                  some string
+                  "
+                </span>
+                , 
+              </div>
+              <div>
+                <span
+                  class="css-d46q2u-StringType"
+                >
+                  "
+                  something
+                  "
+                </span>
+                
+              </div>
+            </div>
+            <button
+              class="css-e509v-StateBit"
+              type="button"
+            >
+              &gt;
+            </button>
+          </span>
         </div>
         <div
           class="css-oh232t-PropTypeWrapper"
@@ -210,49 +194,45 @@ test("it works", () => {
             </code>
           </h3>
           
-          <div
-            class="css-1cf4d7"
-          >
-            <span>
+          <span>
+            
+            <button
+              class="css-e509v-StateBit"
+              type="button"
+            >
+              (
+            </button>
+            <span
+              class="css-fr8k13-Type"
+            >
+              firstArg
               
-              <button
-                class="css-e509v-StateBit"
-                type="button"
-              >
-                (
-              </button>
-              <span
-                class="css-fr8k13-Type"
-              >
-                firstArg
-                
-                :
-                 
-              </span>
-              <span
-                class="css-fr8k13-Type"
-              >
-                string
-              </span>
-              
-              <button
-                class="css-e509v-StateBit"
-                type="button"
-              >
-                )
-              </button>
-              <span
-                class="css-ftc9nv-Arrow"
-              >
-                 =&gt; 
-              </span>
-              <span
-                class="css-fr8k13-Type"
-              >
-                number
-              </span>
+              :
+               
             </span>
-          </div>
+            <span
+              class="css-fr8k13-Type"
+            >
+              string
+            </span>
+            
+            <button
+              class="css-e509v-StateBit"
+              type="button"
+            >
+              )
+            </button>
+            <span
+              class="css-ftc9nv-Arrow"
+            >
+               =&gt; 
+            </span>
+            <span
+              class="css-fr8k13-Type"
+            >
+              number
+            </span>
+          </span>
         </div>
       </div>
     </div>
