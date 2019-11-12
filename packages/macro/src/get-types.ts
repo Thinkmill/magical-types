@@ -68,16 +68,16 @@ export function getTypes(
   let num = 0;
   let visit = (node: typescript.Node) => {
     typescript.forEachChild(node, node => {
-      let map = things.get(node.pos);
+      let map = things.get(node.getStart());
 
       if (map) {
         const val = map.get(node.end);
         if (val) {
           num++;
-          if (
-            typescript.isJsxOpeningLikeElement(node.parent) &&
-            val.exportName !== "getNode"
-          ) {
+          if (val.exportName !== "getNode") {
+            if (!typescript.isJsxOpeningLikeElement(node.parent)) {
+              throw new InternalError("not jsx opening element");
+            }
             let jsxOpening = node.parent;
             let type: typescript.Type;
             if (
@@ -147,10 +147,10 @@ export function getTypes(
                 )
               )
             );
-          } else if (
-            typescript.isCallExpression(node.parent) &&
-            val.exportName === "getNode"
-          ) {
+          } else if (val.exportName === "getNode") {
+            if (!typescript.isCallExpression(node.parent)) {
+              throw new InternalError("not call expression for getNode");
+            }
             let callExpression = node.parent;
             let type = typeChecker.getTypeFromTypeNode(
               callExpression.typeArguments![0]

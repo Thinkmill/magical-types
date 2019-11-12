@@ -1,6 +1,7 @@
 import * as typescript from "typescript";
 import { MagicalNode, Property, TypeParameterNode } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
+import { symbol } from "prop-types";
 
 let wrapInCache = <Arg extends object, Return>(
   arg: (type: Arg, path: Array<string | number>) => Return
@@ -24,7 +25,7 @@ let wrapInCache = <Arg extends object, Return>(
           "The following error occurred while trying to stringify"
         )
       ) {
-        err.message = `The following error occurred while trying to stringify the following path: ${path} :${err.message}`;
+        err.message = `The following error occurred while trying to stringify the following path: ${path}: ${err.message}`;
       }
       throw err;
     }
@@ -102,6 +103,8 @@ function convertProperty(
   } else if ((symbol as any).type) {
     type = (symbol as any).type;
   } else {
+    let x = symbolFlagsToString(symbol);
+    debugger;
     throw new InternalError("type not found for property");
   }
 
@@ -156,6 +159,13 @@ function getNameForType(type: typescript.Type): string | null {
     return type.aliasSymbol.getName();
   }
   return null;
+}
+
+function symbolFlagsToString(type: typescript.Symbol) {
+  return Object.keys(typescript.SymbolFlags).filter(
+    // @ts-ignore
+    flagName => type.flags & typescript.SymbolFlags[flagName]
+  );
 }
 
 function typeFlagsToString(type: typescript.Type) {
@@ -285,9 +295,13 @@ export let convertType = wrapInCache(
         thisNode: type.thisType
           ? convertType(type.thisType, path.concat("thisType"))
           : null,
-        properties: type.getProperties().map((symbol, index) => {
-          return convertProperty(symbol, path, typeChecker);
-        })
+        properties: type
+          .getProperties()
+          // this is most definitely wrong but it works
+          .filter(symbol => symbol.getName() !== "prototype")
+          .map((symbol, index) => {
+            return convertProperty(symbol, path, typeChecker);
+          })
       };
     }
 
@@ -323,17 +337,35 @@ export let convertType = wrapInCache(
               path.concat("getCallSignatures()", index)
             )
           ),
-        properties: type.getProperties().map((symbol, index) => {
-          return convertProperty(symbol, path, typeChecker);
-        })
+        properties: type
+          .getProperties()
+          // this is most definitely wrong but it works
+          .filter(symbol => symbol.getName() !== "prototype")
+          .map((symbol, index) => {
+            return convertProperty(symbol, path, typeChecker);
+          })
       };
     }
+
     if (type.isTypeParameter()) {
       return {
         type: "TypeParameter",
         value: type.symbol.getName()
       };
     }
+
+    // @ts-ignore
+    if (type.flags & typescript.TypeFlags.Index) {
+      let indexType = type as typescript.IndexType;
+      return convertType(indexType.type, path.concat("type"));
+    }
+
+    // // @ts-ignore
+    // if (type.flags & typescript.TypeFlags.Substitution) {
+    //   // let substitutionType = type as typescript.SubstitutionType;
+    //   // return convertType(substitutionType.type, path.concat("type"));
+    // }
+
     // @ts-ignore
     if (type.flags & typescript.TypeFlags.IndexedAccess) {
       let indexedAccessType = type as typescript.IndexedAccessType;

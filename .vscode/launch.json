@@ -5,11 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/packages/magical-types/experiment/dist/magical-types.cjs.js",
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand",
+        "--no-cache"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
     },
     {
       "type": "node",

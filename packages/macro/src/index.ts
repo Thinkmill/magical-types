@@ -100,6 +100,8 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
             reference.replaceWith(t.jsxIdentifier(identifierName));
           } else if (reference.isIdentifier()) {
             reference.replaceWith(t.identifier(identifierName));
+          } else {
+            throw new Error("reference is not an identifier");
           }
         });
       }
