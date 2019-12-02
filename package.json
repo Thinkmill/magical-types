@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "preconstruct dev && manypkg check",
     "changeset": "changeset",
-    "release": "preconstruct build && changeset release",
+    "release": "preconstruct build && changeset publish",
     "site": "cd test-app && yarn next dev",
     "test": "jest --no-cache"
   },
