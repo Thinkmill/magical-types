@@ -2,7 +2,7 @@ import React from "react";
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
 import { PropTypes, FunctionTypes } from "@magical-types/macro";
-import Select from "react-select/base";
+import { components } from "react-select";
 
 // type Thing = (firstArg: string) => number;
 
@@ -39,7 +39,7 @@ export default () => {
       </p>
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={Select} />
+      <PropTypes component={components.Control} />
     </div>
   );
 };

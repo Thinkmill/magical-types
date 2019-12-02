@@ -114,9 +114,21 @@ export function getTypes(
               );
 
               if (val.exportName === "PropTypes") {
-                let propsSymbol =
-                  getFunctionComponentProps(type) ||
-                  getClassComponentProps(type);
+                let propsSymbol;
+                if (type.isUnion()) {
+                  for (let typeInUnion of type.types) {
+                    propsSymbol =
+                      getFunctionComponentProps(typeInUnion) ||
+                      getClassComponentProps(typeInUnion);
+                    if (propsSymbol) {
+                      break;
+                    }
+                  }
+                } else {
+                  propsSymbol =
+                    getFunctionComponentProps(type) ||
+                    getClassComponentProps(type);
+                }
 
                 if (!propsSymbol) {
                   throw new InternalError("could not find props symbol");
