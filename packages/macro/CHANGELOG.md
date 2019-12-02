@@ -1,5 +1,20 @@
 # magical-types
 
+## 0.1.0
+
+### Minor Changes
+
+- [`d147d9c`](https://github.com/mitchellhamilton/magical-types/commit/d147d9c1e35f662ecb0794c1e39f76da9d81b43c) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Add `getNode` function which accepts a type argument and returns the MagicalNode for that type
+
+### Patch Changes
+
+- [`86f1bf4`](https://github.com/mitchellhamilton/magical-types/commit/86f1bf4d4b17ec791bffd0a9841311152ebb5614) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Initial release
+- Updated dependencies [[`86f1bf4`](https://github.com/mitchellhamilton/magical-types/commit/86f1bf4d4b17ec791bffd0a9841311152ebb5614)]:
+  - @magical-types/convert-type@0.0.1
+  - @magical-types/errors@0.0.1
+  - @magical-types/pretty@0.0.1
+  - @magical-types/types@0.0.1
+
 ## 0.0.8
 
 ### Patch Changes
