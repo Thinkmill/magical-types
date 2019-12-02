@@ -39,6 +39,7 @@ export type MagicalNode =
   | { type: "ReadonlyArray"; value: MagicalNode }
   | { type: "Union"; types: Array<MagicalNode>; name: string | null }
   | { type: "Intersection"; types: Array<MagicalNode> }
+  | { type: "Symbol"; name: string }
   | {
       type: "Conditional";
       true: MagicalNode;

@@ -400,6 +400,19 @@ export let convertType = wrapInCache(
       };
     }
     let flags = typeFlagsToString(type);
+    if ((type as any).flags & typescript.TypeFlags.Substitution) {
+      let substitutionType: typescript.SubstitutionType = type;
+      return convertType(
+        substitutionType.substitute,
+        path.concat("substitute")
+      );
+    }
+    if ((type as any).flags & typescript.TypeFlags.UniqueESSymbol) {
+      return {
+        type: "Symbol",
+        name: (type as typescript.UniqueESSymbolType).escapedName.toString()
+      };
+    }
     debugger;
 
     throw new InternalError(

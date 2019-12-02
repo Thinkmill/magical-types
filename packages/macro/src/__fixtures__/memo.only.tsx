@@ -1,4 +1,8 @@
 import { getNode } from "@magical-types/macro";
-import { Component } from "react";
+import { ComponentProps, JSXElementConstructor } from "react";
 
-let x = getNode<{ thing: typeof Component }>();
+let x = getNode<{
+  thing: <
+    T extends keyof JSX.IntrinsicElements | JSXElementConstructor<any>
+  >() => ComponentProps<T>;
+}>();

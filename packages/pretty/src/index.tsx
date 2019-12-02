@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useMemo, useContext } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { ComponentType } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   MagicalNode,
@@ -447,6 +446,16 @@ function renderNode(
           {renderNode(node.true, path.concat("true"))}
           <TypeMeta> : </TypeMeta>
           {renderNode(node.false, path.concat("false"))}
+        </span>
+      );
+    }
+    case "Symbol": {
+      return (
+        <span>
+          <TypeMeta>
+            Symbol(
+            <span css={{ color: colors.P300 }}>{node.name}</span>)
+          </TypeMeta>
         </span>
       );
     }

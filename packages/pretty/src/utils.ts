@@ -14,6 +14,7 @@ export function getChildPositionedMagicalNodes({
     return { node: obj[key], path: path.concat(key as string | number) };
   }
   switch (node.type) {
+    case "Symbol":
     case "StringLiteral":
     case "NumberLiteral":
     case "TypeParameter":
