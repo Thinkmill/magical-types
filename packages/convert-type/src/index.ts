@@ -1,7 +1,6 @@
 import * as typescript from "typescript";
-import { MagicalNode, Property, TypeParameterNode } from "@magical-types/types";
+import { MagicalNode, Property, MagicalNodes } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
-import { symbol } from "prop-types";
 
 let wrapInCache = <Arg extends object, Return>(
   arg: (type: Arg, path: Array<string | number>) => Return
@@ -81,7 +80,7 @@ let convertSignature = wrapInCache(
           convertType(
             x,
             path.concat("typeParameters", index)
-          ) as TypeParameterNode
+          ) as MagicalNodes["TypeParameter"]
       )
     } as const;
   }

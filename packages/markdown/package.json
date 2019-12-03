@@ -1,0 +1,15 @@
+{
+  "name": "@magical-types/markdown",
+  "version": "0.0.0",
+  "main": "dist/markdown.cjs.js",
+  "module": "dist/markdown.esm.js",
+  "bin": {
+    "magical-types-markdown": "bin.js"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      ".",
+      "cli"
+    ]
+  }
+}

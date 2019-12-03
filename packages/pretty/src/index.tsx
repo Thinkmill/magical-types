@@ -4,9 +4,7 @@ import { css, jsx } from "@emotion/core";
 import ReactMarkdown from "react-markdown";
 import {
   MagicalNode,
-  ObjectNode,
-  ClassNode,
-  TypeParameterNode,
+  MagicalNodes,
   SignatureNode,
   PositionedMagicalNode,
   Parameter
@@ -51,7 +49,7 @@ function Properties({
   node,
   path
 }: {
-  node: ClassNode;
+  node: MagicalNodes["Class"];
   path: Array<number | string>;
 }) {
   return (
@@ -83,7 +81,7 @@ function PrettyObject({
   node,
   path
 }: {
-  node: ObjectNode;
+  node: MagicalNodes["Object"];
   path: Array<number | string>;
 }) {
   return (
@@ -128,13 +126,17 @@ function PrettyObject({
   );
 }
 let cache = new Map<
-  TypeParameterNode,
+  MagicalNodes["TypeParameter"],
   { listeners: Array<(...args: any) => any>; value: boolean }
 >();
 
 // yes, i know this is bad
 
-function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
+function PrettyTypeParameter({
+  node
+}: {
+  node: MagicalNodes["TypeParameter"];
+}) {
   let [, forceUpdate] = useReducer(() => ({}), {});
   let val = cache.get(node);
   if (!val) {
@@ -547,7 +549,7 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
   }
   let types = node.types;
   if (types.every(value => value.type === "Object")) {
-    let objectNodes = types as ObjectNode[];
+    let objectNodes = types as MagicalNodes["Object"][];
     return {
       type: "Object",
       callSignatures: flatMap(objectNodes, x => x.callSignatures),

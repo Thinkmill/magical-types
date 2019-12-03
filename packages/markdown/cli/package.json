@@ -1,0 +1,4 @@
+{
+  "main": "dist/markdown.cjs.js",
+  "module": "dist/markdown.esm.js"
+}
