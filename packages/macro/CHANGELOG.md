@@ -1,5 +1,12 @@
 # magical-types
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`4c5ad1c`](https://github.com/mitchellhamilton/magical-types/commit/4c5ad1cf79e4c97e634a9bf98235945f09fa6226)]:
+  - @magical-types/convert-type@0.0.2
+
 ## 0.1.0
 
 ### Minor Changes
