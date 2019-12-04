@@ -2,7 +2,7 @@ import { loader as LoaderType } from "webpack";
 import * as typescript from "typescript";
 import flatted from "flatted";
 import { Project } from "ts-morph";
-import { convertType } from "@magical-types/convert-type/src";
+import { convertType } from "@magical-types/convert-type";
 
 let projectCache = new Map<string, Project>();
 
