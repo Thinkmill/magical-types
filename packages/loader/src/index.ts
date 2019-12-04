@@ -48,3 +48,5 @@ let loader: LoaderType.Loader = function() {
 
   return code;
 };
+
+export default loader;
