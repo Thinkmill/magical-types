@@ -41,8 +41,8 @@ let loader: LoaderType.Loader = function() {
   let code = `import * as __flatted from '@magical-types/loader/flatted'\n`;
   for (let [exportName, declaration] of exportDeclarations) {
     let type = declaration[0].getType();
-    code += `export var ${exportName} = __flatted.parse(${flatted.stringify(
-      convertType((type as any) as typescript.Type, [])
+    code += `export var ${exportName} = __flatted.parse(${JSON.stringify(
+      flatted.stringify(convertType(type.compilerType, []))
     )})\n`;
   }
 
