@@ -1,6 +1,36 @@
 import * as typescript from "typescript";
 import { MagicalNode, Property, TypeParameterNode } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
+import { TypeChecker } from "ts-morph";
+
+function getObjectFlags(type: typescript.Type) {
+  return type.flags & typescript.TypeFlags.Object
+    ? (type as typescript.ObjectType).objectFlags
+    : 0;
+}
+
+function isTupleType(
+  type: typescript.Type
+): type is typescript.TupleTypeReference {
+  return !!(
+    getObjectFlags(type) & typescript.ObjectFlags.Reference &&
+    (type as typescript.TypeReference).target.objectFlags &
+      typescript.ObjectFlags.Tuple
+  );
+}
+
+function getGlobalType(
+  name: string,
+  typeChecker: typescript.TypeChecker
+): typescript.Type {
+  let globalSymbol: typescript.Symbol = (typeChecker as any).resolveName(
+    name,
+    undefined,
+    typescript.SymbolFlags.Type,
+    false
+  );
+  return typeChecker.getDeclaredTypeOfSymbol(globalSymbol);
+}
 
 let wrapInCache = <Arg extends object, Return>(
   arg: (type: Arg, path: Array<string | number>) => Return
@@ -183,6 +213,7 @@ export let convertType = wrapInCache(
     if (!type) {
       throw new InternalError(`falsy type at path: ${path}`);
     }
+    let typeChecker = getTypeChecker(type);
 
     if (
       (type as any).intrinsicName &&
@@ -260,10 +291,12 @@ export let convertType = wrapInCache(
         )
       };
     }
-    let typeChecker = getTypeChecker(type);
 
-    if ((typeChecker as any).isArrayType(type)) {
-      // TODO: fix ReadonlyArray
+    if (
+      !!(getObjectFlags(type) & typescript.ObjectFlags.Reference) &&
+      (type as typescript.TypeReference).target ===
+        getGlobalType("Array", typeChecker)
+    ) {
       return {
         type: "Array",
         value: convertType(
@@ -272,8 +305,21 @@ export let convertType = wrapInCache(
         )
       };
     }
+    if (
+      !!(getObjectFlags(type) & typescript.ObjectFlags.Reference) &&
+      (type as typescript.TypeReference).target ===
+        getGlobalType("ReadonlyArray", typeChecker)
+    ) {
+      return {
+        type: "ReadonlyArray",
+        value: convertType(
+          (type as any).typeArguments[0],
+          path.concat("typeArguments", 0)
+        )
+      };
+    }
 
-    if ((typeChecker as any).isTupleType(type)) {
+    if (isTupleType(type)) {
       return {
         type: "Tuple",
         value: ((type as any) as {
