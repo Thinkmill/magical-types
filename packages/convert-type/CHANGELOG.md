@@ -1,5 +1,11 @@
 # @magical-types/convert-type
 
+## 0.0.3
+
+### Patch Changes
+
+- [`7f098d1`](https://github.com/mitchellhamilton/magical-types/commit/7f098d14214a446c78847e339779c7a268c4f507) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Fix bugs with Array related nodes
+
 ## 0.0.2
 
 ### Patch Changes
