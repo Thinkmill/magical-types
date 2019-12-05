@@ -7,6 +7,7 @@ import { convertType } from "@magical-types/convert-type";
 let projectCache = new Map<string, Project>();
 
 let loader: LoaderType.Loader = function() {
+  this._compilation;
   let filename = this.resourcePath;
   let configFileName = typescript.findConfigFile(
     filename,
