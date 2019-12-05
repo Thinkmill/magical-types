@@ -1,5 +1,11 @@
 # @magical-types/loader
 
+## 0.0.4
+
+### Patch Changes
+
+- [`557a2f4`](https://github.com/mitchellhamilton/magical-types/commit/557a2f404ee07917afbeddd7e195e2638ba2f1c9) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Pass the correct type information to convertType
+
 ## 0.0.3
 
 ### Patch Changes
