@@ -4,34 +4,7 @@ import * as BabelTypes from "@babel/types";
 import { InternalError } from "@magical-types/errors";
 import { Project } from "ts-morph";
 import * as flatted from "flatted";
-import { convertType } from "@magical-types/convert-type";
-
-function getFunctionComponentProps(type: typescript.Type) {
-  const callSignatures = type.getCallSignatures();
-
-  if (callSignatures.length) {
-    for (const sig of callSignatures) {
-      const params = sig.getParameters();
-      if (params.length !== 0) {
-        return params[0];
-      }
-    }
-  }
-}
-
-function getClassComponentProps(type: typescript.Type) {
-  const constructSignatures = type.getConstructSignatures();
-
-  if (constructSignatures.length) {
-    for (const sig of constructSignatures) {
-      const instanceType = sig.getReturnType();
-      const props = instanceType.getProperty("props");
-      if (props) {
-        return props;
-      }
-    }
-  }
-}
+import { convertType, getPropTypesType } from "@magical-types/convert-type";
 
 export function getTypes(
   filename: string,
@@ -114,30 +87,7 @@ export function getTypes(
               );
 
               if (val.exportName === "PropTypes") {
-                let propsSymbol;
-                if (type.isUnion()) {
-                  for (let typeInUnion of type.types) {
-                    propsSymbol =
-                      getFunctionComponentProps(typeInUnion) ||
-                      getClassComponentProps(typeInUnion);
-                    if (propsSymbol) {
-                      break;
-                    }
-                  }
-                } else {
-                  propsSymbol =
-                    getFunctionComponentProps(type) ||
-                    getClassComponentProps(type);
-                }
-
-                if (!propsSymbol) {
-                  throw new InternalError("could not find props symbol");
-                }
-
-                type = typeChecker.getTypeOfSymbolAtLocation(
-                  propsSymbol,
-                  propsSymbol.valueDeclaration || propsSymbol.declarations![0]
-                );
+                type = getPropTypesType(type);
               }
             } else {
               if (!jsxOpening.typeArguments) {

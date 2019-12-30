@@ -1,8 +1,8 @@
 import { loader as LoaderType } from "webpack";
 import * as typescript from "typescript";
 import flatted from "flatted";
-import { Project } from "ts-morph";
-import { convertType } from "@magical-types/convert-type";
+import { Project, FileSystemRefreshResult } from "ts-morph";
+import { convertType, getPropTypesType } from "@magical-types/convert-type";
 
 let projectCache = new Map<string, Project>();
 
@@ -15,12 +15,9 @@ let loader: LoaderType.Loader = function() {
   if (!configFileName) {
     throw new Error("No tsconfig.json file could be found");
   }
-  let isFreshProject = false;
   if (!projectCache.has(configFileName)) {
-    isFreshProject = true;
     const cachedProject = new Project({
       tsConfigFilePath: configFileName,
-      addFilesFromTsConfig: false,
       compilerOptions: {
         noEmit: false
       }
@@ -28,25 +25,20 @@ let loader: LoaderType.Loader = function() {
     projectCache.set(configFileName, cachedProject);
   }
   let project = projectCache.get(configFileName)!;
-  let sourceFile = project.addExistingSourceFile(filename);
-  project.resolveSourceFileDependencies();
-  let sourceFiles = project.getSourceFiles();
-  for (let sourceFile of sourceFiles) {
-    if (!isFreshProject) {
-      sourceFile.refreshFromFileSystemSync();
-    }
-    this.addDependency(sourceFile.getFilePath());
-  }
+  let sourceFile = project.getSourceFileOrThrow(filename);
   let exportDeclarations = sourceFile.getExportedDeclarations();
   let code = `import * as __flatted from '@magical-types/loader/flatted'\n`;
   for (let [exportName, declaration] of exportDeclarations) {
-    let type = declaration[0].getType();
+    let type = declaration[0].getType().compilerType;
+    if (exportName[0].toUpperCase() === exportName[0]) {
+      type = getPropTypesType(type);
+    }
     code += `export var ${exportName} = __flatted.parse(${JSON.stringify(
-      flatted.stringify(convertType(type.compilerType, []))
+      flatted.stringify(convertType(type, []))
     )})\n`;
   }
 
-  return code;
+  return `export var thing = true`;
 };
 
 export default loader;

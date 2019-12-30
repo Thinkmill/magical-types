@@ -1,7 +1,59 @@
 import * as typescript from "typescript";
 import { MagicalNode, Property, TypeParameterNode } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
-import { TypeChecker } from "ts-morph";
+
+function getFunctionComponentProps(type: typescript.Type) {
+  const callSignatures = type.getCallSignatures();
+
+  if (callSignatures.length) {
+    for (const sig of callSignatures) {
+      const params = sig.getParameters();
+      if (params.length !== 0) {
+        return params[0];
+      }
+    }
+  }
+}
+
+function getClassComponentProps(type: typescript.Type) {
+  const constructSignatures = type.getConstructSignatures();
+
+  if (constructSignatures.length) {
+    for (const sig of constructSignatures) {
+      const instanceType = sig.getReturnType();
+      const props = instanceType.getProperty("props");
+      if (props) {
+        return props;
+      }
+    }
+  }
+}
+
+export function getPropTypesType(type: typescript.Type) {
+  let propsSymbol;
+  if (type.isUnion()) {
+    for (let typeInUnion of type.types) {
+      propsSymbol =
+        getFunctionComponentProps(typeInUnion) ||
+        getClassComponentProps(typeInUnion);
+      if (propsSymbol) {
+        break;
+      }
+    }
+  } else {
+    propsSymbol =
+      getFunctionComponentProps(type) || getClassComponentProps(type);
+  }
+
+  if (!propsSymbol) {
+    throw new InternalError("could not find props symbol");
+  }
+
+  return getTypeChecker(type).getTypeOfSymbolAtLocation(
+    propsSymbol,
+    propsSymbol.valueDeclaration || propsSymbol.declarations![0]
+  );
+}
 
 function getObjectFlags(type: typescript.Type) {
   return type.flags & typescript.TypeFlags.Object
@@ -283,15 +335,6 @@ export let convertType = wrapInCache(
         types
       };
     }
-    if (type.isIntersection()) {
-      return {
-        type: "Intersection",
-        types: type.types.map((type, index) =>
-          convertType(type, path.concat("types", index))
-        )
-      };
-    }
-
     if (
       !!(getObjectFlags(type) & typescript.ObjectFlags.Reference) &&
       (type as typescript.TypeReference).target ===
@@ -458,6 +501,17 @@ export let convertType = wrapInCache(
         name: (type as typescript.UniqueESSymbolType).escapedName.toString()
       };
     }
+    // @ts-ignore
+    if (type.isIntersection()) {
+      return {
+        type: "Intersection",
+        // @ts-ignore
+        types: type.types.map((type, index) =>
+          convertType(type, path.concat("types", index))
+        )
+      };
+    }
+
     debugger;
 
     throw new InternalError(
