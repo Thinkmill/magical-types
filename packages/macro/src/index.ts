@@ -51,6 +51,8 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
     > = new Map();
     let num = 0;
 
+    let programPath: NodePath<BabelTypes.Program>;
+
     for (let exportName of [
       "PropTypes",
       "FunctionTypes",
@@ -65,6 +67,10 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
         ).name;
 
         references[exportName].forEach(reference => {
+          if (!programPath) {
+            // @ts-ignore
+            programPath = reference.findParent(x => x.isProgram());
+          }
           let { parentPath } = reference;
 
           if (
@@ -107,7 +113,13 @@ export default createMacro(({ references, state, babel }: MacroArgs) => {
       }
     }
     if (things.size) {
-      getTypes(state.filename, things, num);
+      getTypes(
+        state.filename,
+        things,
+        num,
+        // @ts-ignore
+        programPath
+      );
     }
   } catch (err) {
     console.error(err);

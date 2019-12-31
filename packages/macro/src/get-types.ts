@@ -3,8 +3,9 @@ import { NodePath } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { InternalError } from "@magical-types/errors";
 import { Project } from "ts-morph";
-import * as flatted from "flatted";
 import { convertType, getPropTypesType } from "@magical-types/convert-type";
+import { MagicalNode, MagicalNodeIndex } from "@magical-types/types/src";
+import { serializeNodes } from "./serialize";
 
 export function getTypes(
   filename: string,
@@ -19,7 +20,8 @@ export function getTypes(
       | { exportName: "getNode"; path: NodePath<BabelTypes.CallExpression> }
     >
   >,
-  numOfThings: number
+  numOfThings: number,
+  babelProgram: NodePath<BabelTypes.Program>
 ) {
   let configFileName = typescript.findConfigFile(
     filename,
@@ -37,6 +39,20 @@ export function getTypes(
 
   let sourceFile = project.getSourceFileOrThrow(filename).compilerNode;
   let typeChecker = project.getTypeChecker().compilerObject;
+
+  let rootNodes: MagicalNode[] = [];
+  let callbacks: ((
+    nodesArrayReference: string,
+    index: MagicalNodeIndex
+  ) => void)[] = [];
+
+  let insertNode = (
+    node: MagicalNode,
+    cb: (nodesArrayReference: string, index: MagicalNodeIndex) => void
+  ) => {
+    rootNodes.push(node);
+    callbacks.push(cb);
+  };
 
   let num = 0;
   let visit = (node: typescript.Node) => {
@@ -101,14 +117,22 @@ export function getTypes(
               );
             }
             let converted = convertType(type, []);
-            val.path.node.attributes.push(
-              BabelTypes.jsxAttribute(
-                BabelTypes.jsxIdentifier("__types"),
-                BabelTypes.jsxExpressionContainer(
-                  BabelTypes.stringLiteral(flatted.stringify(converted))
+            insertNode(converted, (nodesArrayReference, index) => {
+              val.path.node.attributes.push(
+                BabelTypes.jsxAttribute(
+                  BabelTypes.jsxIdentifier("__typeIndex"),
+                  BabelTypes.jsxExpressionContainer(
+                    BabelTypes.numericLiteral(index)
+                  )
+                ),
+                BabelTypes.jsxAttribute(
+                  BabelTypes.jsxIdentifier("__types"),
+                  BabelTypes.jsxExpressionContainer(
+                    BabelTypes.identifier(nodesArrayReference)
+                  )
                 )
-              )
-            );
+              );
+            });
           } else if (val.exportName === "getNode") {
             if (!typescript.isCallExpression(node.parent)) {
               throw new InternalError("not call expression for getNode");
@@ -119,9 +143,12 @@ export function getTypes(
             );
             let converted = convertType(type, []);
 
-            val.path.node.arguments.push(
-              BabelTypes.stringLiteral(flatted.stringify(converted))
-            );
+            insertNode(converted, (nodesArrayReference, index) => {
+              val.path.node.arguments.push(
+                BabelTypes.identifier(nodesArrayReference),
+                BabelTypes.numericLiteral(index)
+              );
+            });
           } else {
             throw new InternalError("unexpected node type");
           }
@@ -135,4 +162,23 @@ export function getTypes(
   if (num !== numOfThings) {
     throw new InternalError("num !== numOfThings");
   }
+  let { nodes, nodesToIndex } = serializeNodes(rootNodes);
+  let id = babelProgram.scope.generateDeclaredUidIdentifier();
+  babelProgram.node.body.unshift(
+    BabelTypes.variableDeclaration("var", [
+      BabelTypes.variableDeclarator(
+        id,
+        BabelTypes.callExpression(
+          BabelTypes.memberExpression(
+            BabelTypes.identifier("JSON"),
+            BabelTypes.identifier("parse")
+          ),
+          [BabelTypes.stringLiteral(JSON.stringify(nodes))]
+        )
+      )
+    ])
+  );
+  callbacks.forEach((cb, i) => {
+    cb(id.name, nodesToIndex.get(rootNodes[i])!);
+  });
 }

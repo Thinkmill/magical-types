@@ -1,5 +1,4 @@
 export type SignatureNode = {
-  type: "Signature";
   return: MagicalNode;
   parameters: Array<Parameter>;
   typeParameters: Array<TypeParameterNode>;
@@ -70,3 +69,19 @@ export type Parameter = {
   type: MagicalNode;
   required: boolean;
 };
+
+export type MagicalNodeIndex = number & { __magicalNodeIndex: any };
+
+type InnerReplace<Thing> = Thing extends MagicalNode
+  ? MagicalNodeIndex
+  : Thing extends object
+  ? ReplaceMagicalNode<Thing>
+  : Thing;
+
+type ReplaceMagicalNode<Thing> = {
+  [Key in keyof Thing]: Thing[Key] extends Array<infer Element>
+    ? Array<InnerReplace<Element>>
+    : InnerReplace<Thing[Key]>;
+};
+
+export type MagicalNodeWithIndexes = ReplaceMagicalNode<MagicalNode>;
