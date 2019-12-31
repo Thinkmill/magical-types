@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/types",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/types.cjs.js",
   "module": "dist/types.esm.js"
 }

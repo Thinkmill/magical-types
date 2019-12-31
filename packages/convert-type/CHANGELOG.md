@@ -1,5 +1,13 @@
 # @magical-types/convert-type
 
+## 0.0.4
+
+### Patch Changes
+
+- [`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Add `getPropTypesType` to get the TypeScript Type of a component type
+- Updated dependencies [[`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698)]:
+  - @magical-types/types@0.0.2
+
 ## 0.0.3
 
 ### Patch Changes

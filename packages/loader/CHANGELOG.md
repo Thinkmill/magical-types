@@ -1,5 +1,13 @@
 # @magical-types/loader
 
+## 0.0.5
+
+### Patch Changes
+
+- [`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Bump to test - this version does not work
+- Updated dependencies [[`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698)]:
+  - @magical-types/convert-type@0.0.4
+
 ## 0.0.4
 
 ### Patch Changes

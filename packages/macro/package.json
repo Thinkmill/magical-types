@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/macro",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "dist/macro.cjs.js",
   "module": "dist/macro.esm.js",
   "license": "MIT",
@@ -23,10 +23,10 @@
     "@babel/helper-module-imports": "^7.0.0",
     "@babel/runtime": "^7.7.2",
     "@babel/types": "^7.5.0",
-    "@magical-types/convert-type": "^0.0.3",
+    "@magical-types/convert-type": "^0.0.4",
     "@magical-types/errors": "^0.0.1",
     "@magical-types/pretty": "^0.0.1",
-    "@magical-types/types": "^0.0.1",
+    "@magical-types/types": "^0.0.2",
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
     "ts-morph": "^5.0.0"
