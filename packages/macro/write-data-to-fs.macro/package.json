@@ -1,4 +1,7 @@
 {
   "main": "dist/macro.cjs.js",
-  "module": "dist/macro.esm.js"
+  "module": "dist/macro.esm.js",
+  "preconstruct": {
+    "source": "../src/write-data-to-fs"
+  }
 }
