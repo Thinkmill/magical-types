@@ -31,8 +31,8 @@
     "@magical-types/types": "^0.0.2",
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
-    "ts-morph": "^5.0.0",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^8.1.0",
+    "ts-morph": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.8.6",
