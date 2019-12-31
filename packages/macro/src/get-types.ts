@@ -6,6 +6,8 @@ import { Project } from "ts-morph";
 import { convertType, getPropTypesType } from "@magical-types/convert-type";
 import { MagicalNode, MagicalNodeIndex } from "@magical-types/types/src";
 import { serializeNodes } from "./serialize";
+import * as fs from "fs-extra";
+import path from "path";
 
 export function getTypes(
   filename: string,
@@ -21,7 +23,8 @@ export function getTypes(
     >
   >,
   numOfThings: number,
-  babelProgram: NodePath<BabelTypes.Program>
+  babelProgram: NodePath<BabelTypes.Program>,
+  writeToFs: boolean
 ) {
   let configFileName = typescript.findConfigFile(
     filename,
@@ -164,20 +167,38 @@ export function getTypes(
   }
   let { nodes, nodesToIndex } = serializeNodes(rootNodes);
   let id = babelProgram.scope.generateDeclaredUidIdentifier();
-  babelProgram.node.body.unshift(
-    BabelTypes.variableDeclaration("var", [
-      BabelTypes.variableDeclarator(
-        id,
-        BabelTypes.callExpression(
-          BabelTypes.memberExpression(
-            BabelTypes.identifier("JSON"),
-            BabelTypes.identifier("parse")
-          ),
-          [BabelTypes.stringLiteral(JSON.stringify(nodes))]
-        )
+  if (writeToFs) {
+    let relative = path.join(
+      "node_modules",
+      "@magical-types",
+      "generated",
+      path.basename(filename) + ".json"
+    );
+    let genFilename = path.join(path.dirname(filename), relative);
+    fs.ensureFileSync(genFilename);
+    fs.writeJsonSync(genFilename, nodes);
+    babelProgram.node.body.unshift(
+      BabelTypes.importDeclaration(
+        [BabelTypes.importDefaultSpecifier(id)],
+        BabelTypes.stringLiteral(`./${relative}`)
       )
-    ])
-  );
+    );
+  } else {
+    babelProgram.node.body.unshift(
+      BabelTypes.variableDeclaration("var", [
+        BabelTypes.variableDeclarator(
+          id,
+          BabelTypes.callExpression(
+            BabelTypes.memberExpression(
+              BabelTypes.identifier("JSON"),
+              BabelTypes.identifier("parse")
+            ),
+            [BabelTypes.stringLiteral(JSON.stringify(nodes))]
+          )
+        )
+      ])
+    );
+  }
   callbacks.forEach((cb, i) => {
     cb(id.name, nodesToIndex.get(rootNodes[i])!);
   });

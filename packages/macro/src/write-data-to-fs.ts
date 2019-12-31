@@ -2,4 +2,4 @@ import { makeMacro } from "./make-macro";
 
 export * from "./stub-client-implemention";
 
-export default makeMacro(false);
+export default makeMacro(true);
