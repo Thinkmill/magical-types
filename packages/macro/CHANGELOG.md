@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.3.0
+
+### Minor Changes
+
+- [`20c86ac`](https://github.com/mitchellhamilton/magical-types/commit/20c86ac940bb6aeff50a2f0cd26c7582b253367b) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Add `@magical-types/macro/write-data-to-fs.macro` which writes the type data to a json file instead of inlining the content in the file
+
 ## 0.2.0
 
 ### Minor Changes
