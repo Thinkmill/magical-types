@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.3.1
+
+### Patch Changes
+
+- [`de3cae7`](https://github.com/mitchellhamilton/magical-types/commit/de3cae791f93c7906cf3d21ae15fdb7fd4386f53) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Fix import declaration for json data import in `@magical-types/macro/write-data-to-fs.macro`
+
 ## 0.3.0
 
 ### Minor Changes
