@@ -166,7 +166,7 @@ export function getTypes(
     throw new InternalError("num !== numOfThings");
   }
   let { nodes, nodesToIndex } = serializeNodes(rootNodes);
-  let id = babelProgram.scope.generateDeclaredUidIdentifier();
+  let id = babelProgram.scope.generateUidIdentifier();
   if (writeToFs) {
     let relative = path.join(
       "node_modules",
