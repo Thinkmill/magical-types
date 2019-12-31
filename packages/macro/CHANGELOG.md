@@ -1,5 +1,18 @@
 # magical-types
 
+## 0.2.0
+
+### Minor Changes
+
+- [`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Share common nodes within a single module
+
+### Patch Changes
+
+- [`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Extract some internals into @magical-types/convert-type
+- Updated dependencies [[`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698), [`6b9d0c2`](https://github.com/mitchellhamilton/magical-types/commit/6b9d0c2b479558aeb583b3ee7a9492748b9f6698)]:
+  - @magical-types/convert-type@0.0.4
+  - @magical-types/types@0.0.2
+
 ## 0.1.2
 
 ### Patch Changes
