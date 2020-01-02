@@ -12,12 +12,14 @@
   },
   "preconstruct": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "test-script"
     ]
   },
   "workspaces": [
     "packages/*",
-    "test-app"
+    "test-app",
+    "test-script"
   ],
   "dependencies": {
     "@babel/cli": "^7.5.0",

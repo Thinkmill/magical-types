@@ -33,6 +33,13 @@
       "program": "${workspaceFolder}/node_modules/.bin/babel",
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "args": ["./comp.tsx"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Test Script",
+      "program": "${workspaceFolder}/test-script/dist/test-script.cjs.js",
+      "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]
 }
