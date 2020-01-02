@@ -9,6 +9,8 @@ import { serializeNodes } from "./serialize";
 import * as fs from "fs-extra";
 import path from "path";
 
+let projectCache = new Map<string, Project>();
+
 export function getTypes(
   filename: string,
   things: Map<
@@ -33,12 +35,26 @@ export function getTypes(
   if (!configFileName) {
     throw new Error("No tsconfig.json file could be found");
   }
-  const project = new Project({
-    tsConfigFilePath: configFileName,
-    addFilesFromTsConfig: false
-  });
+
+  let isFreshProject = false;
+  if (!projectCache.has(configFileName)) {
+    isFreshProject = true;
+    const cachedProject = new Project({
+      tsConfigFilePath: configFileName,
+      addFilesFromTsConfig: false
+    });
+    projectCache.set(configFileName, cachedProject);
+  }
+  let project = projectCache.get(configFileName)!;
   project.addExistingSourceFile(filename);
   project.resolveSourceFileDependencies();
+
+  if (!isFreshProject) {
+    let sourceFiles = project.getSourceFiles();
+    for (let sourceFile of sourceFiles) {
+      sourceFile.refreshFromFileSystemSync();
+    }
+  }
 
   let sourceFile = project.getSourceFileOrThrow(filename).compilerNode;
   let typeChecker = project.getTypeChecker().compilerObject;
