@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.3.2
+
+### Patch Changes
+
+- [`a99f8e6`](https://github.com/mitchellhamilton/magical-types/commit/a99f8e64ede4022f9ba5cf2364a3bbe46865076a) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Cache ts-morph Projects
+
 ## 0.3.1
 
 ### Patch Changes
