@@ -3,30 +3,31 @@
 import { jsx, css } from "@emotion/core";
 import React, { Component, Fragment, useContext, useState } from "react";
 import { colors } from "../components/constants";
+import { MagicalNode } from "@magical-types/types";
 
 export let bracketStyle = ({ isHovered }: { isHovered: boolean }) => css`
   background-color: ${isHovered ? colors.P300 : colors.N20};
   color: ${isHovered ? "white" : colors.subtleText};
   border: 0;
   font-size: 14px;
-  font-family: sans-serif;
   line-height: 20px;
   width: auto;
   margin: 2px 0;
   padding: 0 0.2em;
 `;
 
-const StateBit = ({
-  isHovered,
-  ...props
-}: { isHovered: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+const StateBit = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
   <button
+    className="state-bit"
     type="button"
     css={[
-      bracketStyle({ isHovered }),
+      bracketStyle({ isHovered: false }),
       css`
-        :hover {
-          cursor: pointer;
+        &:hover,
+        &:hover ~ .state-bit,
+        .state-bit ~ &:hover {
+          background-color: ${colors.P300};
+          color: white;
         }
       `
     ]}
@@ -40,11 +41,7 @@ type Props = {
   children: React.ReactElement;
   closedContent?: React.ReactNode;
   initialIsShown?: boolean | Array<string | number>;
-};
-
-type State = {
-  isHovered: boolean;
-  isShown: boolean;
+  nodes: MagicalNode[] | null;
 };
 
 export let PathExpansionContext = React.createContext(new Set<string>());
@@ -54,32 +51,37 @@ export default function AddBrackets({
   closeBracket = ")",
   closedContent = "...",
   initialIsShown = false,
-  children
+  children,
+  nodes
 }: Props) {
-  let [isHovered, setIsHovered] = useState(false);
   let defaultPathExpansions = useContext(PathExpansionContext);
-  let [isShown, setIsShown] = useState(
+
+  let calculatedInitialIsShown =
     typeof initialIsShown === "boolean"
       ? initialIsShown
-      : defaultPathExpansions.has(initialIsShown.join(":"))
-  );
+      : defaultPathExpansions.has(initialIsShown.join(":")) ||
+        (nodes !== null &&
+          nodes.every(
+            x =>
+              x.type === "Intrinsic" ||
+              x.type === "StringLiteral" ||
+              x.type === "NumberLiteral"
+          ) &&
+          nodes.length <= 5);
+  let [isShown, setIsShown] = useState(calculatedInitialIsShown);
 
   let props = {
-    isHovered,
     onClick: () => {
       setIsShown(!isShown);
-      setIsHovered(isShown);
-    },
-    onMouseEnter: () => setIsHovered(true),
-    onMouseLeave: () => setIsHovered(false)
+    }
   };
 
   return isShown ? (
-    <Fragment>
+    <React.Fragment>
       <StateBit {...props}>{openBracket}</StateBit>
       {children}
       <StateBit {...props}>{closeBracket}</StateBit>
-    </Fragment>
+    </React.Fragment>
   ) : (
     <StateBit {...props}>
       {openBracket}

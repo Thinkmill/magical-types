@@ -193,7 +193,7 @@ function Parameters({
           ) : (
             undefined
           )}
-          {renderNode(param.type, path.concat("parameters", index))}
+          {renderNode(param.type, path.concat("parameters", index, "type"))}
           {array.length - 1 === index ? "" : ", "}
         </React.Fragment>
       ))}
@@ -225,7 +225,7 @@ function PrettySignatureButDifferent({
           <span css={bracketStyle({ isHovered: false })}>{">"}</span>
         </span>
       )}
-      <AddBrackets initialIsShown>
+      <AddBrackets nodes={null} initialIsShown>
         <Parameters parameters={node.parameters} path={path} />
       </AddBrackets>
       <span
@@ -264,7 +264,7 @@ function PrettySignature({
           <span css={bracketStyle({ isHovered: false })}>{">"}</span>
         </span>
       )}
-      <AddBrackets initialIsShown>
+      <AddBrackets nodes={null} initialIsShown>
         <Parameters path={path} parameters={node.parameters} />
       </AddBrackets>
       <Arrow />
@@ -301,7 +301,6 @@ function renderNode(
     case "NumberLiteral": {
       return <Type>{node.value}</Type>;
     }
-
     case "ReadonlyArray":
     case "Promise":
     case "Array": {
@@ -311,6 +310,7 @@ function renderNode(
         <span>
           <TypeMeta>{node.type}</TypeMeta>
           <AddBrackets
+            nodes={[node.value]}
             initialIsShown={newPath}
             openBracket="<"
             closeBracket=">"
@@ -327,7 +327,12 @@ function renderNode(
       return (
         <span>
           <TypeMeta>Tuple</TypeMeta>
-          <AddBrackets initialIsShown={path} openBracket="[" closeBracket="]">
+          <AddBrackets
+            nodes={node.value}
+            initialIsShown={path}
+            openBracket="["
+            closeBracket="]"
+          >
             <LazyRender>
               {() =>
                 node.value.map((node, index, array) => (
@@ -359,7 +364,12 @@ function renderNode(
           <TypeMeta>
             {node.name === null ? "" : `${node.name} `}One of{" "}
           </TypeMeta>
-          <AddBrackets initialIsShown={path} openBracket="<" closeBracket=">">
+          <AddBrackets
+            nodes={node.types}
+            initialIsShown={path}
+            openBracket="<"
+            closeBracket=">"
+          >
             <LazyRender>
               {() => (
                 <Indent>
@@ -420,9 +430,20 @@ function renderNode(
       return (
         <span>
           <TypeMeta>{node.name}</TypeMeta>
-          <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
-            <PrettyObject path={path} node={node} />
-          </AddBrackets>
+          {node.callSignatures.length &&
+          node.constructSignatures.length &&
+          node.properties.length ? (
+            <AddBrackets
+              nodes={null}
+              initialIsShown={path}
+              openBracket="{"
+              closeBracket="}"
+            >
+              <PrettyObject path={path} node={node} />
+            </AddBrackets>
+          ) : (
+            <span css={bracketStyle({ isHovered: false })}>{"{}"}</span>
+          )}
         </span>
       );
     }
@@ -430,7 +451,12 @@ function renderNode(
       return (
         <span>
           <TypeMeta>class {node.name}</TypeMeta>
-          <AddBrackets initialIsShown={path} openBracket="{" closeBracket="}">
+          <AddBrackets
+            nodes={null}
+            initialIsShown={path}
+            openBracket="{"
+            closeBracket="}"
+          >
             <Properties path={path} node={node} />
           </AddBrackets>
         </span>
@@ -524,7 +550,12 @@ export let renderTypes = (node: MagicalNode) => {
   }, [node]);
 
   return (
-    <div css={{ fontFamily: "sans-serif" }}>
+    <div
+      css={{
+        fontFamily:
+          "source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace"
+      }}
+    >
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
         {renderNode(node, [])}
       </PathExpansionContext.Provider>
@@ -572,15 +603,15 @@ export function PropTypes({
   node: MagicalNode;
   heading?: string;
 }) {
-  let finalNode = simplifyIntersection(node);
+  node = simplifyIntersection(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
-  }, [finalNode]);
-  if (finalNode.type === "Object") {
+  }, [node]);
+  if (node.type === "Object") {
     return (
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
         <PropsWrapper heading={heading}>
-          {finalNode.properties.map((prop, index) => {
+          {node.properties.map((prop, index) => {
             return (
               <PropTypeWrapper key={index}>
                 <PropTypeHeading name={prop.key} required={prop.required} />
