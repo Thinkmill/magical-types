@@ -1,5 +1,12 @@
 # magical-types
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [[`d5f98c2`](https://github.com/mitchellhamilton/magical-types/commit/d5f98c2d28d81dcee07ba403c9336e7439f559c3)]:
+  - @magical-types/pretty@0.1.0
+
 ## 0.3.2
 
 ### Patch Changes
