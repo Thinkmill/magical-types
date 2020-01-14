@@ -5,7 +5,7 @@ import {
   PropTypes,
   FunctionTypes
 } from "@magical-types/macro/write-data-to-fs.macro";
-import { components } from "react-select";
+import Select from "react-select";
 
 // type Thing = (firstArg: string) => number;
 
@@ -42,7 +42,7 @@ export default () => {
       </p>
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={components.Control} />
+      <PropTypes component={Select} />
     </div>
   );
 };

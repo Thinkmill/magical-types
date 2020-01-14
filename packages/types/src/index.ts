@@ -27,6 +27,12 @@ export type ClassNode = {
   properties: Array<Property>;
 };
 
+export type LazyNode = {
+  type: "Lazy";
+  loader: () => Promise<void> | void;
+  value?: MagicalNode;
+};
+
 export type TypeParameterNode = { type: "TypeParameter"; value: string };
 
 export type MagicalNode =
@@ -50,11 +56,13 @@ export type MagicalNode =
   | IndexedAccessNode
   | { type: "Tuple"; value: Array<MagicalNode> }
   | ClassNode
-  | ObjectNode;
+  | ObjectNode
+  | LazyNode;
 
 export type PositionedMagicalNode = {
   path: Array<string | number>;
   node: MagicalNode;
+  depth: number;
 };
 
 export type Property = {
@@ -75,13 +83,17 @@ export type MagicalNodeIndex = number & { __magicalNodeIndex: any };
 type InnerReplace<Thing> = Thing extends MagicalNode
   ? MagicalNodeIndex
   : Thing extends object
-  ? ReplaceMagicalNode<Thing>
+  ? Thing extends LazyNode
+    ? Thing
+    : ReplaceMagicalNode<Thing>
   : Thing;
 
-type ReplaceMagicalNode<Thing> = {
-  [Key in keyof Thing]: Thing[Key] extends Array<infer Element>
-    ? Array<InnerReplace<Element>>
-    : InnerReplace<Thing[Key]>;
-};
+type ReplaceMagicalNode<Thing> = Thing extends LazyNode
+  ? Thing
+  : {
+      [Key in keyof Thing]: Thing[Key] extends Array<infer Element>
+        ? Array<InnerReplace<Element>>
+        : InnerReplace<Thing[Key]>;
+    };
 
 export type MagicalNodeWithIndexes = ReplaceMagicalNode<MagicalNode>;

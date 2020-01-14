@@ -1,17 +1,24 @@
 import { PositionedMagicalNode } from "@magical-types/types";
+import { InternalError } from "@magical-types/errors";
 
-export function getChildPositionedMagicalNodes({
-  node,
-  path
-}: PositionedMagicalNode): Array<PositionedMagicalNode> {
+type Options = {
+  ignoreUnloadedLazyNodes?: boolean;
+};
+
+export function getChildPositionedMagicalNodes(
+  { node, path, depth }: PositionedMagicalNode,
+  { ignoreUnloadedLazyNodes = false }: Options = {}
+): Array<PositionedMagicalNode> {
+  depth++;
   function getPositionedNodeFromKey<Obj, Key extends keyof Obj>(
     obj: Obj,
     key: Key
   ): {
     node: Obj[Key];
     path: Array<string | number>;
+    depth: number;
   } {
-    return { node: obj[key], path: path.concat(key as string | number) };
+    return { node: obj[key], path: path.concat(key as string | number), depth };
   }
   switch (node.type) {
     case "Symbol":
@@ -24,31 +31,42 @@ export function getChildPositionedMagicalNodes({
     case "Union":
     case "Intersection": {
       return node.types.map((node, index) => {
-        return { node, path: path.concat("types", index) };
+        return { node, path: path.concat("types", index), depth };
       });
     }
     case "Array":
     case "Promise":
     case "ReadonlyArray": {
-      return [{ node: node.value, path: path.concat("value") }];
+      return [{ node: node.value, path: path.concat("value"), depth }];
     }
     case "Tuple": {
       return node.value.map((node, index) => {
-        return { node, path: path.concat("value", index) };
+        return { node, path: path.concat("value", index), depth };
       });
     }
     case "IndexedAccess": {
       return [
-        { node: node.object, path: path.concat("object") },
-        { node: node.index, path: path.concat("index") }
+        getPositionedNodeFromKey(node, "object"),
+        getPositionedNodeFromKey(node, "index")
       ];
     }
     case "Class": {
       return [
+        ...(node.thisNode
+          ? [{ node: node.thisNode, path: path.concat("thisNode"), depth }]
+          : []),
+        ...node.typeParameters.map((param, index) => {
+          return {
+            node: param,
+            path: path.concat("typeParameters", index),
+            depth
+          };
+        }),
         ...node.properties.map((param, index) => {
           return {
             node: param.value,
-            path: path.concat("properties", index, "value")
+            path: path.concat("properties", index, "value"),
+            depth
           };
         })
       ];
@@ -59,15 +77,18 @@ export function getChildPositionedMagicalNodes({
           return [
             ...signature.typeParameters.map(x => ({
               node: x,
-              path: path.concat("callSignatures", "typeParameters", index)
+              path: path.concat("callSignatures", "typeParameters", index),
+              depth
             })),
             ...signature.parameters.map(x => ({
               node: x.type,
-              path: path.concat("callSignatures", "parameters", index, "type")
+              path: path.concat("callSignatures", "parameters", index, "type"),
+              depth
             })),
             {
               node: signature.return,
-              path: path.concat("callSignatures", "return")
+              path: path.concat("callSignatures", "return"),
+              depth
             }
           ];
         }),
@@ -75,26 +96,31 @@ export function getChildPositionedMagicalNodes({
           return [
             ...signature.typeParameters.map(x => ({
               node: x,
-              path: path.concat("callSignatures", "typeParameters", index)
+              path: path.concat("callSignatures", "typeParameters", index),
+              depth
             })),
             ...signature.parameters.map(x => ({
               node: x.type,
-              path: path.concat("callSignatures", "parameters", index, "type")
+              path: path.concat("callSignatures", "parameters", index, "type"),
+              depth
             })),
             {
               node: signature.return,
-              path: path.concat("constructSignatures", "return")
+              path: path.concat("constructSignatures", "return"),
+              depth
             }
           ];
         }),
         ...node.aliasTypeArguments.map((node, index) => ({
           node,
-          path: path.concat("aliasTypeArguments", index)
+          path: path.concat("aliasTypeArguments", index),
+          depth
         })),
         ...node.properties.map((param, index) => {
           return {
             node: param.value,
-            path: path.concat("properties", index, "value")
+            path: path.concat("properties", index, "value"),
+            depth
           };
         })
       ];
@@ -107,11 +133,23 @@ export function getChildPositionedMagicalNodes({
         getPositionedNodeFromKey(node, "extends")
       ];
     }
+    case "Lazy": {
+      if (!node.value) {
+        throw new InternalError(
+          "Lazy nodes should be loaded before being used in getChildPositionedMagicalNodes"
+        );
+      }
+      return getChildPositionedMagicalNodes({
+        node: node.value,
+        path,
+        depth: depth - 1
+      });
+    }
 
     default: {
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
       // @ts-ignore
-      throw new Error("this should never happen: " + node.type);
+      throw new InternalError("this should never happen: " + node.type);
     }
   }
 }

@@ -4,17 +4,48 @@ import {
   MagicalNode,
   MagicalNodeWithIndexes,
   MagicalNodeIndex,
-  TypeParameterNode
+  TypeParameterNode,
+  LazyNode
 } from "@magical-types/types";
+import { InternalError } from "@magical-types/errors/src";
 
-let wrapInCache = <Arg extends object, Return>(arg: (type: Arg) => Return) => {
-  let cache = new WeakMap<Arg, Return>();
-  return (type: Arg): Return => {
+let cache = new WeakMap<MagicalNodeWithIndexes, MagicalNode>();
+
+let weakMemoize = function<Arg extends object, Return>(
+  func: (arg: Arg) => Return
+): (arg: Arg) => Return {
+  let cache: WeakMap<Arg, Return> = new WeakMap();
+  return arg => {
+    if (cache.has(arg)) {
+      return cache.get(arg)!;
+    }
+    let ret = func(arg);
+    cache.set(arg, ret);
+    return ret;
+  };
+};
+
+let memoize = function<Arg extends string | number, Return>(
+  func: (arg: Arg) => Return
+): (arg: Arg) => Return {
+  let cache: Map<Arg, Return> = new Map();
+  return arg => {
+    if (cache.has(arg)) {
+      return cache.get(arg)!;
+    }
+    let ret = func(arg);
+    cache.set(arg, ret);
+    return ret;
+  };
+};
+
+let wrapInCache = (arg: (type: MagicalNodeWithIndexes) => MagicalNode) => {
+  return (type: MagicalNodeWithIndexes): MagicalNode => {
     let cachedNode = cache.get(type);
     if (cachedNode !== undefined) {
       return cachedNode;
     }
-    let obj = {} as Return;
+    let obj = {} as MagicalNode;
     cache.set(type, obj);
     let node = arg(type);
     Object.assign(obj, node);
@@ -22,18 +53,53 @@ let wrapInCache = <Arg extends object, Return>(arg: (type: Arg) => Return) => {
   };
 };
 
-function parseStringified(
-  nodes: MagicalNodeWithIndexes[],
-  index: MagicalNodeIndex
-): MagicalNode {
-  let getMagicalNodeWithIndexes = wrapInCache(
+let promiseCache = new Map();
+let valueCache = new Map();
+
+function loadCachedLazyValue<Value>(
+  loader: () => Promise<Value>
+): Promise<void> {
+  if (promiseCache.has(loader)) {
+    return promiseCache.get(loader);
+  }
+  let promise = loader().then(value => {
+    valueCache.set(loader, value);
+  });
+  promiseCache.set(loader, promise);
+  return promise;
+}
+
+type NodeGroups =
+  | MagicalNodeWithIndexes[]
+  | [
+      MagicalNodeWithIndexes[],
+      () => Promise<{ default: MagicalNodeWithIndexes[] }>
+    ]
+  | [
+      MagicalNodeWithIndexes[],
+      () => Promise<{ default: MagicalNodeWithIndexes[] }>,
+      () => Promise<{ default: MagicalNodeWithIndexes[] }>
+    ];
+
+function readFromValueCache<Value>(
+  loader: () => Promise<Value>
+): Value | undefined {
+  return valueCache.get(loader);
+}
+
+let parseStringified = weakMemoize(function parseStringified(
+  nodeGroups: NodeGroups
+): (node: MagicalNodeIndex) => MagicalNode {
+  let getMagicalNode = wrapInCache(
     (node: MagicalNodeWithIndexes): MagicalNode => {
       switch (node.type) {
+        case "Lazy":
         case "StringLiteral":
         case "NumberLiteral":
         case "TypeParameter":
         case "Symbol":
         case "Intrinsic": {
+          // @ts-ignore
           return node;
         }
         case "Union": {
@@ -136,33 +202,105 @@ function parseStringified(
     }
   );
 
-  let getNodeFromIndex = (index: MagicalNodeIndex) =>
-    getMagicalNodeWithIndexes(nodes[index]);
-  return getNodeFromIndex(index);
-}
+  let nodes = (Array.isArray(nodeGroups[0])
+    ? nodeGroups[0]
+    : nodeGroups) as MagicalNodeWithIndexes[];
 
-let getMagicalNode = (props: any): MagicalNode => {
-  return parseStringified((props as any).__types, props.__typeIndex);
+  let getLazyNode = memoize((index: MagicalNodeIndex) => {
+    let lazyNode: LazyNode = {
+      type: "Lazy",
+      loader: () => {
+        if (lazyNode.value) {
+          return;
+        }
+        let secondGroupLoader = (nodeGroups[1] as any) as () => Promise<{
+          default: MagicalNodeWithIndexes[];
+        }>;
+        // an important thing we know here:
+        // if the first group of lazy loaded nodes has not been loaded yet
+        // then the node we are trying to get _will_ be in that
+        let secondGroupValue = readFromValueCache(secondGroupLoader);
+        let indexOnSecondGroup = index - nodes.length + 1;
+        if (secondGroupValue === undefined) {
+          return loadCachedLazyValue(secondGroupLoader).then(() => {
+            let secondGroupNodes = readFromValueCache(secondGroupLoader);
+            if (!secondGroupNodes) {
+              throw new InternalError("no second group nodes");
+            }
+            if (!secondGroupNodes.default[indexOnSecondGroup]) {
+              throw new InternalError("no node found on second group nodes");
+            }
+            lazyNode.value = getMagicalNode(
+              secondGroupNodes.default[indexOnSecondGroup]
+            );
+          });
+        }
+        if (index < nodes.length + secondGroupValue.default.length - 2) {
+          lazyNode.value = getMagicalNode(
+            secondGroupValue.default[indexOnSecondGroup]
+          );
+          return;
+        }
+        let thirdGroupLoader = (nodeGroups[2] as any) as () => Promise<{
+          default: MagicalNodeWithIndexes[];
+        }>;
+        let thirdGroupValue = readFromValueCache(thirdGroupLoader);
+        let indexOnThirdGroup =
+          index - nodes.length - secondGroupValue.default.length + 2;
+        if (thirdGroupValue === undefined) {
+          return loadCachedLazyValue(thirdGroupLoader).then(() => {
+            let thirdGroupNodes = readFromValueCache(thirdGroupLoader);
+            if (!thirdGroupNodes) {
+              throw new InternalError("no second group nodes");
+            }
+            if (!thirdGroupNodes.default[indexOnThirdGroup]) {
+              throw new InternalError("no node found on second group nodes");
+            }
+            lazyNode.value = getMagicalNode(
+              thirdGroupNodes.default[indexOnThirdGroup]
+            );
+          });
+        }
+        lazyNode.value = getMagicalNode(
+          thirdGroupValue.default[indexOnThirdGroup]
+        );
+      }
+    };
+    return lazyNode;
+  });
+
+  let getNodeFromIndex = (index: MagicalNodeIndex) => {
+    let node: MagicalNodeWithIndexes = nodes[index];
+    if (node === undefined) {
+      return getLazyNode(index);
+    }
+    return getMagicalNode(node);
+  };
+  return getNodeFromIndex;
+});
+
+let parseMagicalNodeFromProps = (props: any): MagicalNode => {
+  return parseStringified((props as any).__types)(props.__typeIndex);
 };
 
 export let FunctionTypes = (props: {
   function: (...args: Array<any>) => any;
 }) => {
-  return <Types node={getMagicalNode(props)} />;
+  return <Types node={parseMagicalNodeFromProps(props)} />;
 };
 
 export function RawTypes<Type>(props: {}) {
-  return <Types node={getMagicalNode(props)} />;
+  return <Types node={parseMagicalNodeFromProps(props)} />;
 }
 
 export let PropTypes = (props: {
   component: React.ComponentType<any>;
   heading?: string;
 }) => {
-  let node = getMagicalNode(props);
+  let node = parseMagicalNodeFromProps(props);
   return <PrettyPropTypes node={node} heading={props.heading} />;
 };
 
 export function getNode<Type>() {
-  return parseStringified(arguments[0], arguments[1]);
+  return parseStringified(arguments[0])(arguments[1]);
 }

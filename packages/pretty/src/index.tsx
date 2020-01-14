@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useMemo, useContext } from "react";
+import React, { useEffect, useReducer, useMemo, useState } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import ReactMarkdown from "react-markdown";
@@ -9,7 +9,9 @@ import {
   TypeParameterNode,
   SignatureNode,
   PositionedMagicalNode,
-  Parameter
+  Parameter,
+  MagicalNodeWithIndexes,
+  LazyNode
 } from "@magical-types/types";
 import {
   Type,
@@ -23,7 +25,7 @@ import AddBrackets, {
   bracketStyle,
   PathExpansionContext
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
-import { getChildPositionedMagicalNodes, flatMap } from "./utils";
+import { getChildPositionedMagicalNodes, flatMap } from "@magical-types/utils";
 import PropTypeHeading from "./pretty-proptypes/Prop/Heading";
 import PropsWrapper from "./pretty-proptypes/Props/Wrapper";
 
@@ -291,6 +293,9 @@ function renderNode(
   node: MagicalNode,
   path: Array<string | number>
 ): React.ReactNode {
+  if (path.length > 20) {
+    return "below 20 path";
+  }
   switch (node.type) {
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
@@ -427,15 +432,20 @@ function renderNode(
           />
         );
       }
+
       return (
         <span>
           <TypeMeta>{node.name}</TypeMeta>
-          {node.callSignatures.length &&
-          node.constructSignatures.length &&
+          {node.callSignatures.length ||
+          node.constructSignatures.length ||
           node.properties.length ? (
             <AddBrackets
-              nodes={null}
-              initialIsShown={path}
+              nodes={getChildPositionedMagicalNodes({
+                node,
+                path: [],
+                depth: 0
+              }).map(x => x.node)}
+              initialIsShown={false}
               openBracket="{"
               closeBracket="}"
             >
@@ -485,10 +495,39 @@ function renderNode(
         </span>
       );
     }
+    case "Lazy": {
+      return <LazyNodeView node={node} path={path} />;
+    }
     default: {
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
     }
   }
+}
+
+function LazyNodeView({
+  node,
+  path
+}: {
+  node: LazyNode;
+  path: Array<number | string>;
+}) {
+  let value = node.value;
+  let [, setState] = useState({});
+
+  let promise = node.loader();
+
+  useEffect(() => {
+    if (promise !== undefined) {
+      promise.then(() => {
+        setState({});
+      });
+    }
+  }, [promise]);
+
+  if (value !== undefined) {
+    return renderNode(value, path) as React.ReactElement;
+  }
+  return <React.Fragment>Loading...</React.Fragment>;
 }
 
 // what are we doing here?
@@ -506,7 +545,9 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   // because of circular references, we don't want to visit a node more than once
   let visitedNodes = new Set<MagicalNode>();
 
-  let queue: Array<PositionedMagicalNode> = [{ node: rootNode, path: [] }];
+  let queue: Array<PositionedMagicalNode> = [
+    { node: rootNode, path: [], depth: 0 }
+  ];
 
   while (queue.length) {
     let currentPositionedNode = queue.shift()!;
@@ -529,14 +570,11 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
       );
     }
     // we don't want to open any nodes deeper than 5 nodes by default
-    if (currentPositionedNode.path.length < 5) {
+    if (currentPositionedNode.depth < 3) {
       let childPositionedNodes = getChildPositionedMagicalNodes(
         currentPositionedNode
       ).filter(({ node }) => !visitedNodes.has(node));
-      if (
-        childPositionedNodes.length < 40 ||
-        currentPositionedNode.path.length < 2
-      ) {
+      if (childPositionedNodes.length < 20 || currentPositionedNode.depth < 2) {
         queue.push(...childPositionedNodes);
       }
     }
