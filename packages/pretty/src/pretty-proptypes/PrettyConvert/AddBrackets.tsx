@@ -38,7 +38,7 @@ const StateBit = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
 type Props = {
   openBracket?: string;
   closeBracket?: string;
-  children: React.ReactElement;
+  children: React.ReactNode;
   closedContent?: React.ReactNode;
   initialIsShown?: boolean | Array<string | number>;
   nodes: MagicalNode[] | null;

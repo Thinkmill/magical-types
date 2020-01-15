@@ -1,4 +1,10 @@
-import React, { useEffect, useReducer, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useReducer,
+  useMemo,
+  useState,
+  useDebugValue
+} from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import ReactMarkdown from "react-markdown";
@@ -18,7 +24,8 @@ import {
   Indent,
   StringType,
   TypeMeta,
-  Description
+  Description,
+  Required
 } from "./pretty-proptypes/components";
 import { colors, gridSize } from "./pretty-proptypes/components/constants";
 import AddBrackets, {
@@ -69,11 +76,11 @@ function Properties({
             <TypeMinWidth>
               <Type>{prop.key}</Type>
             </TypeMinWidth>
-
-            {/* {type.optional ? null : (
-          <components.Required> required</components.Required>
-        )}{" "} */}
-            {renderNode(prop.value, path.concat("properties", index, "value"))}
+            {prop.required ? <Required> required</Required> : null}{" "}
+            <RenderNode
+              node={prop.value}
+              path={path.concat("properties", index, "value")}
+            />
           </div>
         );
       })}
@@ -121,8 +128,10 @@ function PrettyObject({
             <TypeMinWidth>
               <Type>{prop.key + (prop.required ? "" : "?")}</Type>
             </TypeMinWidth>
-
-            {renderNode(prop.value, path.concat("properties", index, "value"))}
+            <RenderNode
+              node={prop.value}
+              path={path.concat("properties", index, "value")}
+            />
           </div>
         );
       })}
@@ -195,7 +204,10 @@ function Parameters({
           ) : (
             undefined
           )}
-          {renderNode(param.type, path.concat("parameters", index, "type"))}
+          <RenderNode
+            node={param.type}
+            path={path.concat("parameters", index, "type")}
+          />
           {array.length - 1 === index ? "" : ", "}
         </React.Fragment>
       ))}
@@ -220,7 +232,10 @@ function PrettySignatureButDifferent({
           <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
           {node.typeParameters.map((param, index, array) => (
             <React.Fragment key={index}>
-              {renderNode(param, path.concat("typeParameters", index))}
+              <RenderNode
+                node={param}
+                path={path.concat("typeParameters", index)}
+              />
               {array.length - 1 === index ? "" : ", "}
             </React.Fragment>
           ))}
@@ -237,7 +252,7 @@ function PrettySignatureButDifferent({
       >
         {": "}
       </span>
-      {renderNode(node.return, path.concat("return"))}
+      <RenderNode node={node.return} path={path.concat("return")} />
     </span>
   );
 }
@@ -259,7 +274,10 @@ function PrettySignature({
           <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
           {node.typeParameters.map((param, index, array) => (
             <React.Fragment key={index}>
-              {renderNode(param, path.concat("typeParameters", index))}
+              <RenderNode
+                node={param}
+                path={path.concat("typeParameters", index)}
+              />
               {array.length - 1 === index ? "" : ", "}
             </React.Fragment>
           ))}
@@ -270,32 +288,15 @@ function PrettySignature({
         <Parameters path={path} parameters={node.parameters} />
       </AddBrackets>
       <Arrow />
-      {renderNode(node.return, path.concat("return"))}
+      <RenderNode node={node.return} path={path.concat("return")} />
     </span>
   );
 }
 
-function RenderNode({
-  node,
-  path
-}: {
+let RenderNode: (props: {
   node: MagicalNode;
   path: Array<string | number>;
-}): React.ReactElement {
-  return renderNode(node, path) as React.ReactElement;
-}
-
-function LazyRender({ children }: { children: () => React.ReactNode }) {
-  return children() as React.ReactElement;
-}
-
-function renderNode(
-  node: MagicalNode,
-  path: Array<string | number>
-): React.ReactNode {
-  if (path.length > 20) {
-    return "below 20 path";
-  }
+}) => React.ReactElement = function RenderNode({ node, path }): any {
   switch (node.type) {
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
@@ -338,16 +339,12 @@ function renderNode(
             openBracket="["
             closeBracket="]"
           >
-            <LazyRender>
-              {() =>
-                node.value.map((node, index, array) => (
-                  <React.Fragment key={index}>
-                    {renderNode(node, path.concat("value", index))}
-                    {array.length - 1 === index ? "" : ", "}
-                  </React.Fragment>
-                ))
-              }
-            </LazyRender>
+            {node.value.map((node, index, array) => (
+              <React.Fragment key={index}>
+                <RenderNode node={node} path={path.concat("value", index)} />
+                {array.length - 1 === index ? "" : ", "}
+              </React.Fragment>
+            ))}
           </AddBrackets>
         </span>
       );
@@ -355,8 +352,12 @@ function renderNode(
     case "IndexedAccess": {
       return (
         <span>
-          <div>{renderNode(node.object, path.concat("object"))}</div>
-          <div>[{renderNode(node.index, path.concat("index"))}]</div>
+          <div>
+            <RenderNode node={node.object} path={path.concat("object")} />
+          </div>
+          <div>
+            [<RenderNode node={node.index} path={path.concat("index")} />]
+          </div>
         </span>
       );
     }
@@ -375,18 +376,14 @@ function renderNode(
             openBracket="<"
             closeBracket=">"
           >
-            <LazyRender>
-              {() => (
-                <Indent>
-                  {node.types.map((n, index, array) => (
-                    <div key={index}>
-                      {renderNode(n, path.concat("types", index))}
-                      {array.length - 1 === index ? "" : ", "}
-                    </div>
-                  ))}
-                </Indent>
-              )}
-            </LazyRender>
+            <Indent>
+              {node.types.map((n, index, array) => (
+                <div key={index}>
+                  <RenderNode node={n} path={path.concat("types", index)} />
+                  {array.length - 1 === index ? "" : ", "}
+                </div>
+              ))}
+            </Indent>
           </AddBrackets>
         </span>
       );
@@ -396,7 +393,7 @@ function renderNode(
       node.types.forEach((type, index) => {
         arr.push(
           <span key={index}>
-            {renderNode(type, path.concat("types", index))}
+            <RenderNode node={type} path={path.concat("types", index)} />
           </span>
         );
         if (index < node.types.length - 1) {
@@ -475,13 +472,13 @@ function renderNode(
     case "Conditional": {
       return (
         <span>
-          {renderNode(node.check, path.concat("check"))}{" "}
+          <RenderNode node={node.check} path={path.concat("check")} />{" "}
           <TypeMeta>extends</TypeMeta>{" "}
-          {renderNode(node.extends, path.concat("extends"))}{" "}
+          <RenderNode node={node.extends} path={path.concat("extends")} />{" "}
           <TypeMeta> ? </TypeMeta>
-          {renderNode(node.true, path.concat("true"))}
+          <RenderNode node={node.true} path={path.concat("true")} />
           <TypeMeta> : </TypeMeta>
-          {renderNode(node.false, path.concat("false"))}
+          <RenderNode node={node.false} path={path.concat("false")} />
         </span>
       );
     }
@@ -502,7 +499,7 @@ function renderNode(
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
     }
   }
-}
+};
 
 function LazyNodeView({
   node,
@@ -511,21 +508,25 @@ function LazyNodeView({
   node: LazyNode;
   path: Array<number | string>;
 }) {
+  let promise = node.loader();
+
   let value = node.value;
   let [, setState] = useState({});
-
-  let promise = node.loader();
 
   useEffect(() => {
     if (promise !== undefined) {
       promise.then(() => {
+        console.log(node.value);
+        debugger;
         setState({});
       });
     }
   }, [promise]);
 
+  useDebugValue(promise);
+
   if (value !== undefined) {
-    return renderNode(value, path) as React.ReactElement;
+    return <RenderNode node={value} path={path} />;
   }
   return <React.Fragment>Loading...</React.Fragment>;
 }
@@ -595,7 +596,7 @@ export let renderTypes = (node: MagicalNode) => {
       }}
     >
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
-        {renderNode(node, [])}
+        <RenderNode node={node} path={[]} />
       </PathExpansionContext.Provider>
     </div>
   );
@@ -658,7 +659,10 @@ export function PropTypes({
                     <ReactMarkdown source={prop.description} />
                   </Description>
                 )}
-                {renderNode(prop.value, ["properties", index, "value"])}
+                <RenderNode
+                  node={prop.value}
+                  path={["properties", index, "value"]}
+                />
               </PropTypeWrapper>
             );
           })}
