@@ -26,7 +26,7 @@ test("it works", () => {
   expect(container).toMatchInlineSnapshot(`
     .emotion-36 {
       margin-top: 12px;
-      font-family: sans-serif;
+      font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New, monospace;
     }
 
     @media (min-width:780px) {
@@ -102,15 +102,17 @@ test("it works", () => {
       color: #5E6C84;
       border: 0;
       font-size: 14px;
-      font-family: sans-serif;
       line-height: 20px;
       width: auto;
       margin: 2px 0;
       padding: 0 0.2em;
     }
 
-    .emotion-20:hover {
-      cursor: pointer;
+    .emotion-20:hover,
+    .emotion-20:hover ~ .state-bit,
+    .state-bit ~ .emotion-20:hover {
+      background-color: #6554C0;
+      color: white;
     }
 
     .emotion-23 {
@@ -235,7 +237,7 @@ test("it works", () => {
                
             </span>
             <button
-              class="emotion-20"
+              class="state-bit emotion-20"
               type="button"
             >
               &lt;
@@ -265,7 +267,7 @@ test("it works", () => {
               </div>
             </div>
             <button
-              class="emotion-20"
+              class="state-bit emotion-20"
               type="button"
             >
               &gt;
@@ -294,7 +296,7 @@ test("it works", () => {
           <span>
             
             <button
-              class="emotion-20"
+              class="state-bit emotion-20"
               type="button"
             >
               (
@@ -314,7 +316,7 @@ test("it works", () => {
             </span>
             
             <button
-              class="emotion-20"
+              class="state-bit emotion-20"
               type="button"
             >
               )
