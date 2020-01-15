@@ -138,6 +138,7 @@ function PrettyObject({
     </Indent>
   );
 }
+
 let cache = new Map<
   TypeParameterNode,
   { listeners: Array<(...args: any) => any>; value: boolean }
@@ -297,6 +298,10 @@ let RenderNode: (props: {
   node: MagicalNode;
   path: Array<string | number>;
 }) => React.ReactElement = function RenderNode({ node, path }): any {
+  if (path.length > 50) {
+    console.log(node);
+    return "is more than 50";
+  }
   switch (node.type) {
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
@@ -516,8 +521,6 @@ function LazyNodeView({
   useEffect(() => {
     if (promise !== undefined) {
       promise.then(() => {
-        console.log(node.value);
-        debugger;
         setState({});
       });
     }

@@ -23,6 +23,17 @@ type Props = {
   /** A function that will be called.
    * Important Note: this is the _changed_ tasks, **not** all of the new tasks.
    */
+  thing: {
+    thing: {
+      thing: {
+        thing: {
+          thing: {
+            thing: { something: (something: boolean) => string };
+          };
+        };
+      };
+    };
+  };
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
@@ -42,7 +53,7 @@ export default () => {
       </p>
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={Select} />
+      <PropTypes component={MyComponentThatDoesStuff} />
     </div>
   );
 };
