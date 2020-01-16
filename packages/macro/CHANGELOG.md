@@ -1,5 +1,16 @@
 # magical-types
 
+## 0.5.0
+
+### Minor Changes
+
+- [`571541e`](https://github.com/mitchellhamilton/magical-types/commit/571541e536b19dd825994e505584fc93addc8980) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Remove the heading prop from PropTypes
+
+### Patch Changes
+
+- Updated dependencies [[`571541e`](https://github.com/mitchellhamilton/magical-types/commit/571541e536b19dd825994e505584fc93addc8980)]:
+  - @magical-types/pretty@0.3.0
+
 ## 0.4.1
 
 ### Patch Changes
