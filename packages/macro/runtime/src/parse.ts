@@ -5,7 +5,7 @@ import {
   TypeParameterNode,
   LazyNode
 } from "@magical-types/types";
-import { InternalError } from "@magical-types/errors/src";
+import { InternalError } from "@magical-types/errors";
 
 let cache = new WeakMap<MagicalNodeWithIndexes, MagicalNode>();
 
