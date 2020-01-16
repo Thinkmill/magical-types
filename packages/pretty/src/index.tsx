@@ -604,13 +604,7 @@ export function Types({ node }: { node: MagicalNode }) {
   return renderTypes(node);
 }
 
-export function PropTypes({
-  node,
-  heading
-}: {
-  node: MagicalNode;
-  heading?: string;
-}) {
+export function PropTypes({ node }: { node: MagicalNode }) {
   node = simplifyIntersection(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
@@ -618,7 +612,7 @@ export function PropTypes({
   if (node.type === "Object") {
     return (
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
-        <PropsWrapper heading={heading}>
+        <PropsWrapper>
           {node.properties.map((prop, index) => {
             return (
               <PropTypeWrapper key={index}>

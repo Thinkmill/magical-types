@@ -28,19 +28,4 @@ const H2 = (props: React.HTMLAttributes<HTMLElement>) => (
   />
 );
 
-const PropsWrapper = ({
-  children,
-  heading
-}: {
-  children: React.ReactNode;
-  heading?: string;
-}) => (
-  <Wrapper>
-    {typeof heading === "string" && heading.length === 0 ? null : (
-      <H2>{heading || "Props"}</H2>
-    )}
-    {children}
-  </Wrapper>
-);
-
-export default PropsWrapper;
+export default Wrapper;

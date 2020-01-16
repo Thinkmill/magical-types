@@ -17,12 +17,9 @@ export function RawTypes<Type>(props: {}) {
   return <Types node={parseMagicalNodeFromProps(props)} />;
 }
 
-export let PropTypes = (props: {
-  component: React.ComponentType<any>;
-  heading?: string;
-}) => {
+export let PropTypes = (props: { component: React.ComponentType<any> }) => {
   let node = parseMagicalNodeFromProps(props);
-  return <PrettyPropTypes node={node} heading={props.heading} />;
+  return <PrettyPropTypes node={node} />;
 };
 
 export function getNode<Type>() {
