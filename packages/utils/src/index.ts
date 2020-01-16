@@ -1,5 +1,19 @@
-import { PositionedMagicalNode } from "@magical-types/types";
+import { PositionedMagicalNode, MagicalNode } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
+
+export let weakMemoize = function<Arg extends object, Return>(
+  func: (arg: Arg) => Return
+): (arg: Arg) => Return {
+  let cache: WeakMap<Arg, Return> = new WeakMap();
+  return arg => {
+    if (cache.has(arg)) {
+      return cache.get(arg)!;
+    }
+    let ret = func(arg);
+    cache.set(arg, ret);
+    return ret;
+  };
+};
 
 type Options = {
   ignoreUnloadedLazyNodes?: boolean;
@@ -135,13 +149,16 @@ export function getChildPositionedMagicalNodes(
     }
     case "Lazy": {
       if (!node.value) {
+        if (ignoreUnloadedLazyNodes) {
+          return [];
+        }
         throw new InternalError(
           "Lazy nodes should be loaded before being used in getChildPositionedMagicalNodes"
         );
       }
       return getChildPositionedMagicalNodes({
         node: node.value,
-        path,
+        path: path.concat("value"),
         depth: depth - 1
       });
     }

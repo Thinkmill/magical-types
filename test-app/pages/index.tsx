@@ -17,23 +17,15 @@ let thing = {
   wow: "string"
 } as const;
 
+type AThing = (something: AThing) => string;
+
 type Props = {
   /** The tasks that the board should render */
   tasks: Array<Task>;
   /** A function that will be called.
    * Important Note: this is the _changed_ tasks, **not** all of the new tasks.
    */
-  thing: {
-    thing: {
-      thing: {
-        thing: {
-          thing: {
-            thing: { something: (something: boolean) => string };
-          };
-        };
-      };
-    };
-  };
+  thing: { something: AThing };
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 

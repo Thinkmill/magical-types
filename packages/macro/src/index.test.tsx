@@ -24,13 +24,13 @@ test("it works", () => {
     <PropTypes component={MyComponentThatDoesStuff} />
   );
   expect(container).toMatchInlineSnapshot(`
-    .emotion-36 {
+    .emotion-38 {
       margin-top: 12px;
       font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New, monospace;
     }
 
     @media (min-width:780px) {
-      .emotion-36 {
+      .emotion-38 {
         margin-bottom: 24px;
         margin-top: 24px;
       }
@@ -125,7 +125,7 @@ test("it works", () => {
 
     <div>
       <div
-        class="emotion-36"
+        class="emotion-38"
       >
         <h2
           class="emotion-0"
@@ -326,11 +326,19 @@ test("it works", () => {
             >
                =&gt; 
             </span>
+            <button
+              class="state-bit emotion-20"
+              type="button"
+            />
             <span
               class="emotion-4"
             >
               number
             </span>
+            <button
+              class="state-bit emotion-20"
+              type="button"
+            />
           </span>
         </div>
       </div>

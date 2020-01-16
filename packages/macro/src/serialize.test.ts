@@ -535,6 +535,406 @@ test("it works", async () => {
                                   "value": Object {
                                     "loader": [Function],
                                     "type": "Lazy",
+                                    "value": Object {
+                                      "aliasTypeArguments": Array [],
+                                      "callSignatures": Array [],
+                                      "constructSignatures": Array [],
+                                      "name": "",
+                                      "properties": Array [
+                                        Object {
+                                          "description": "",
+                                          "key": "something",
+                                          "required": true,
+                                          "value": Object {
+                                            "loader": [Function],
+                                            "type": "Lazy",
+                                            "value": Object {
+                                              "aliasTypeArguments": Array [],
+                                              "callSignatures": Array [],
+                                              "constructSignatures": Array [],
+                                              "name": "",
+                                              "properties": Array [
+                                                Object {
+                                                  "description": "",
+                                                  "key": "something",
+                                                  "required": true,
+                                                  "value": Object {
+                                                    "loader": [Function],
+                                                    "type": "Lazy",
+                                                    "value": Object {
+                                                      "aliasTypeArguments": Array [],
+                                                      "callSignatures": Array [],
+                                                      "constructSignatures": Array [],
+                                                      "name": "",
+                                                      "properties": Array [
+                                                        Object {
+                                                          "description": "",
+                                                          "key": "something",
+                                                          "required": true,
+                                                          "value": Object {
+                                                            "loader": [Function],
+                                                            "type": "Lazy",
+                                                            "value": Object {
+                                                              "aliasTypeArguments": Array [],
+                                                              "callSignatures": Array [],
+                                                              "constructSignatures": Array [],
+                                                              "name": "",
+                                                              "properties": Array [
+                                                                Object {
+                                                                  "description": "",
+                                                                  "key": "something",
+                                                                  "required": true,
+                                                                  "value": Object {
+                                                                    "loader": [Function],
+                                                                    "type": "Lazy",
+                                                                    "value": Object {
+                                                                      "aliasTypeArguments": Array [],
+                                                                      "callSignatures": Array [],
+                                                                      "constructSignatures": Array [],
+                                                                      "name": "",
+                                                                      "properties": Array [
+                                                                        Object {
+                                                                          "description": "",
+                                                                          "key": "something",
+                                                                          "required": true,
+                                                                          "value": Object {
+                                                                            "loader": [Function],
+                                                                            "type": "Lazy",
+                                                                            "value": Object {
+                                                                              "aliasTypeArguments": Array [],
+                                                                              "callSignatures": Array [],
+                                                                              "constructSignatures": Array [],
+                                                                              "name": "",
+                                                                              "properties": Array [
+                                                                                Object {
+                                                                                  "description": "",
+                                                                                  "key": "something",
+                                                                                  "required": true,
+                                                                                  "value": Object {
+                                                                                    "loader": [Function],
+                                                                                    "type": "Lazy",
+                                                                                    "value": Object {
+                                                                                      "aliasTypeArguments": Array [],
+                                                                                      "callSignatures": Array [],
+                                                                                      "constructSignatures": Array [],
+                                                                                      "name": "",
+                                                                                      "properties": Array [
+                                                                                        Object {
+                                                                                          "description": "",
+                                                                                          "key": "something",
+                                                                                          "required": true,
+                                                                                          "value": Object {
+                                                                                            "loader": [Function],
+                                                                                            "type": "Lazy",
+                                                                                            "value": Object {
+                                                                                              "aliasTypeArguments": Array [],
+                                                                                              "callSignatures": Array [],
+                                                                                              "constructSignatures": Array [],
+                                                                                              "name": "",
+                                                                                              "properties": Array [
+                                                                                                Object {
+                                                                                                  "description": "",
+                                                                                                  "key": "something",
+                                                                                                  "required": true,
+                                                                                                  "value": Object {
+                                                                                                    "loader": [Function],
+                                                                                                    "type": "Lazy",
+                                                                                                    "value": Object {
+                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                      "callSignatures": Array [],
+                                                                                                      "constructSignatures": Array [],
+                                                                                                      "name": "",
+                                                                                                      "properties": Array [
+                                                                                                        Object {
+                                                                                                          "description": "",
+                                                                                                          "key": "something",
+                                                                                                          "required": true,
+                                                                                                          "value": Object {
+                                                                                                            "loader": [Function],
+                                                                                                            "type": "Lazy",
+                                                                                                            "value": Object {
+                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                              "callSignatures": Array [],
+                                                                                                              "constructSignatures": Array [],
+                                                                                                              "name": "",
+                                                                                                              "properties": Array [
+                                                                                                                Object {
+                                                                                                                  "description": "",
+                                                                                                                  "key": "something",
+                                                                                                                  "required": true,
+                                                                                                                  "value": Object {
+                                                                                                                    "loader": [Function],
+                                                                                                                    "type": "Lazy",
+                                                                                                                    "value": Object {
+                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                      "callSignatures": Array [],
+                                                                                                                      "constructSignatures": Array [],
+                                                                                                                      "name": "",
+                                                                                                                      "properties": Array [
+                                                                                                                        Object {
+                                                                                                                          "description": "",
+                                                                                                                          "key": "something",
+                                                                                                                          "required": true,
+                                                                                                                          "value": Object {
+                                                                                                                            "loader": [Function],
+                                                                                                                            "type": "Lazy",
+                                                                                                                            "value": Object {
+                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                              "callSignatures": Array [],
+                                                                                                                              "constructSignatures": Array [],
+                                                                                                                              "name": "",
+                                                                                                                              "properties": Array [
+                                                                                                                                Object {
+                                                                                                                                  "description": "",
+                                                                                                                                  "key": "something",
+                                                                                                                                  "required": true,
+                                                                                                                                  "value": Object {
+                                                                                                                                    "loader": [Function],
+                                                                                                                                    "type": "Lazy",
+                                                                                                                                    "value": Object {
+                                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                                      "callSignatures": Array [],
+                                                                                                                                      "constructSignatures": Array [],
+                                                                                                                                      "name": "",
+                                                                                                                                      "properties": Array [
+                                                                                                                                        Object {
+                                                                                                                                          "description": "",
+                                                                                                                                          "key": "something",
+                                                                                                                                          "required": true,
+                                                                                                                                          "value": Object {
+                                                                                                                                            "loader": [Function],
+                                                                                                                                            "type": "Lazy",
+                                                                                                                                            "value": Object {
+                                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                                              "callSignatures": Array [],
+                                                                                                                                              "constructSignatures": Array [],
+                                                                                                                                              "name": "",
+                                                                                                                                              "properties": Array [
+                                                                                                                                                Object {
+                                                                                                                                                  "description": "",
+                                                                                                                                                  "key": "something",
+                                                                                                                                                  "required": true,
+                                                                                                                                                  "value": Object {
+                                                                                                                                                    "loader": [Function],
+                                                                                                                                                    "type": "Lazy",
+                                                                                                                                                    "value": Object {
+                                                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                                                      "callSignatures": Array [],
+                                                                                                                                                      "constructSignatures": Array [],
+                                                                                                                                                      "name": "",
+                                                                                                                                                      "properties": Array [
+                                                                                                                                                        Object {
+                                                                                                                                                          "description": "",
+                                                                                                                                                          "key": "something",
+                                                                                                                                                          "required": true,
+                                                                                                                                                          "value": Object {
+                                                                                                                                                            "loader": [Function],
+                                                                                                                                                            "type": "Lazy",
+                                                                                                                                                            "value": Object {
+                                                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                                                              "callSignatures": Array [],
+                                                                                                                                                              "constructSignatures": Array [],
+                                                                                                                                                              "name": "",
+                                                                                                                                                              "properties": Array [
+                                                                                                                                                                Object {
+                                                                                                                                                                  "description": "",
+                                                                                                                                                                  "key": "something",
+                                                                                                                                                                  "required": true,
+                                                                                                                                                                  "value": Object {
+                                                                                                                                                                    "loader": [Function],
+                                                                                                                                                                    "type": "Lazy",
+                                                                                                                                                                    "value": Object {
+                                                                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                                                                      "callSignatures": Array [],
+                                                                                                                                                                      "constructSignatures": Array [],
+                                                                                                                                                                      "name": "",
+                                                                                                                                                                      "properties": Array [
+                                                                                                                                                                        Object {
+                                                                                                                                                                          "description": "",
+                                                                                                                                                                          "key": "something",
+                                                                                                                                                                          "required": true,
+                                                                                                                                                                          "value": Object {
+                                                                                                                                                                            "loader": [Function],
+                                                                                                                                                                            "type": "Lazy",
+                                                                                                                                                                            "value": Object {
+                                                                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                                                                              "callSignatures": Array [],
+                                                                                                                                                                              "constructSignatures": Array [],
+                                                                                                                                                                              "name": "",
+                                                                                                                                                                              "properties": Array [
+                                                                                                                                                                                Object {
+                                                                                                                                                                                  "description": "",
+                                                                                                                                                                                  "key": "something",
+                                                                                                                                                                                  "required": true,
+                                                                                                                                                                                  "value": Object {
+                                                                                                                                                                                    "loader": [Function],
+                                                                                                                                                                                    "type": "Lazy",
+                                                                                                                                                                                    "value": Object {
+                                                                                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                                                                                      "callSignatures": Array [],
+                                                                                                                                                                                      "constructSignatures": Array [],
+                                                                                                                                                                                      "name": "",
+                                                                                                                                                                                      "properties": Array [
+                                                                                                                                                                                        Object {
+                                                                                                                                                                                          "description": "",
+                                                                                                                                                                                          "key": "something",
+                                                                                                                                                                                          "required": true,
+                                                                                                                                                                                          "value": Object {
+                                                                                                                                                                                            "loader": [Function],
+                                                                                                                                                                                            "type": "Lazy",
+                                                                                                                                                                                            "value": Object {
+                                                                                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                                                                                              "callSignatures": Array [],
+                                                                                                                                                                                              "constructSignatures": Array [],
+                                                                                                                                                                                              "name": "",
+                                                                                                                                                                                              "properties": Array [
+                                                                                                                                                                                                Object {
+                                                                                                                                                                                                  "description": "",
+                                                                                                                                                                                                  "key": "something",
+                                                                                                                                                                                                  "required": true,
+                                                                                                                                                                                                  "value": Object {
+                                                                                                                                                                                                    "loader": [Function],
+                                                                                                                                                                                                    "type": "Lazy",
+                                                                                                                                                                                                    "value": Object {
+                                                                                                                                                                                                      "aliasTypeArguments": Array [],
+                                                                                                                                                                                                      "callSignatures": Array [],
+                                                                                                                                                                                                      "constructSignatures": Array [],
+                                                                                                                                                                                                      "name": "",
+                                                                                                                                                                                                      "properties": Array [
+                                                                                                                                                                                                        Object {
+                                                                                                                                                                                                          "description": "",
+                                                                                                                                                                                                          "key": "something",
+                                                                                                                                                                                                          "required": true,
+                                                                                                                                                                                                          "value": Object {
+                                                                                                                                                                                                            "loader": [Function],
+                                                                                                                                                                                                            "type": "Lazy",
+                                                                                                                                                                                                            "value": Object {
+                                                                                                                                                                                                              "aliasTypeArguments": Array [],
+                                                                                                                                                                                                              "callSignatures": Array [],
+                                                                                                                                                                                                              "constructSignatures": Array [],
+                                                                                                                                                                                                              "name": "",
+                                                                                                                                                                                                              "properties": Array [
+                                                                                                                                                                                                                Object {
+                                                                                                                                                                                                                  "description": "",
+                                                                                                                                                                                                                  "key": "something",
+                                                                                                                                                                                                                  "required": true,
+                                                                                                                                                                                                                  "value": Object {
+                                                                                                                                                                                                                    "loader": [Function],
+                                                                                                                                                                                                                    "type": "Lazy",
+                                                                                                                                                                                                                    "value": Object {
+                                                                                                                                                                                                                      "type": "Intrinsic",
+                                                                                                                                                                                                                      "value": "string",
+                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                  },
+                                                                                                                                                                                                                },
+                                                                                                                                                                                                              ],
+                                                                                                                                                                                                              "type": "Object",
+                                                                                                                                                                                                            },
+                                                                                                                                                                                                          },
+                                                                                                                                                                                                        },
+                                                                                                                                                                                                      ],
+                                                                                                                                                                                                      "type": "Object",
+                                                                                                                                                                                                    },
+                                                                                                                                                                                                  },
+                                                                                                                                                                                                },
+                                                                                                                                                                                              ],
+                                                                                                                                                                                              "type": "Object",
+                                                                                                                                                                                            },
+                                                                                                                                                                                          },
+                                                                                                                                                                                        },
+                                                                                                                                                                                      ],
+                                                                                                                                                                                      "type": "Object",
+                                                                                                                                                                                    },
+                                                                                                                                                                                  },
+                                                                                                                                                                                },
+                                                                                                                                                                              ],
+                                                                                                                                                                              "type": "Object",
+                                                                                                                                                                            },
+                                                                                                                                                                          },
+                                                                                                                                                                        },
+                                                                                                                                                                      ],
+                                                                                                                                                                      "type": "Object",
+                                                                                                                                                                    },
+                                                                                                                                                                  },
+                                                                                                                                                                },
+                                                                                                                                                              ],
+                                                                                                                                                              "type": "Object",
+                                                                                                                                                            },
+                                                                                                                                                          },
+                                                                                                                                                        },
+                                                                                                                                                      ],
+                                                                                                                                                      "type": "Object",
+                                                                                                                                                    },
+                                                                                                                                                  },
+                                                                                                                                                },
+                                                                                                                                              ],
+                                                                                                                                              "type": "Object",
+                                                                                                                                            },
+                                                                                                                                          },
+                                                                                                                                        },
+                                                                                                                                      ],
+                                                                                                                                      "type": "Object",
+                                                                                                                                    },
+                                                                                                                                  },
+                                                                                                                                },
+                                                                                                                              ],
+                                                                                                                              "type": "Object",
+                                                                                                                            },
+                                                                                                                          },
+                                                                                                                        },
+                                                                                                                      ],
+                                                                                                                      "type": "Object",
+                                                                                                                    },
+                                                                                                                  },
+                                                                                                                },
+                                                                                                              ],
+                                                                                                              "type": "Object",
+                                                                                                            },
+                                                                                                          },
+                                                                                                        },
+                                                                                                      ],
+                                                                                                      "type": "Object",
+                                                                                                    },
+                                                                                                  },
+                                                                                                },
+                                                                                              ],
+                                                                                              "type": "Object",
+                                                                                            },
+                                                                                          },
+                                                                                        },
+                                                                                      ],
+                                                                                      "type": "Object",
+                                                                                    },
+                                                                                  },
+                                                                                },
+                                                                              ],
+                                                                              "type": "Object",
+                                                                            },
+                                                                          },
+                                                                        },
+                                                                      ],
+                                                                      "type": "Object",
+                                                                    },
+                                                                  },
+                                                                },
+                                                              ],
+                                                              "type": "Object",
+                                                            },
+                                                          },
+                                                        },
+                                                      ],
+                                                      "type": "Object",
+                                                    },
+                                                  },
+                                                },
+                                              ],
+                                              "type": "Object",
+                                            },
+                                          },
+                                        },
+                                      ],
+                                      "type": "Object",
+                                    },
                                   },
                                 },
                               ],

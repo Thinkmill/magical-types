@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useReducer,
-  useMemo,
-  useState,
-  useDebugValue
-} from "react";
+import React, { useEffect, useReducer, useMemo, useState } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import ReactMarkdown from "react-markdown";
@@ -16,7 +10,6 @@ import {
   SignatureNode,
   PositionedMagicalNode,
   Parameter,
-  MagicalNodeWithIndexes,
   LazyNode
 } from "@magical-types/types";
 import {
@@ -99,9 +92,10 @@ function PrettyObject({
     <Indent>
       {node.constructSignatures.map((signature, index) => {
         return (
-          <PrettySignatureButDifferent
+          <PrettySignature
             key={index}
             node={signature}
+            funcType="colon"
             path={path.concat("constructSignatures", index)}
             type="construct"
           />
@@ -109,9 +103,10 @@ function PrettyObject({
       })}
       {node.callSignatures.map((signature, index) => {
         return (
-          <PrettySignatureButDifferent
+          <PrettySignature
             key={index}
             node={signature}
+            funcType="colon"
             path={path.concat("callSignatures", index)}
             type="call"
           />
@@ -216,56 +211,16 @@ function Parameters({
   );
 }
 
-function PrettySignatureButDifferent({
-  node,
-  path,
-  type
-}: {
-  node: SignatureNode;
-  path: Array<string | number>;
-  type: "construct" | "call";
-}) {
-  return (
-    <span>
-      {type === "construct" ? "new " : ""}
-      {node.typeParameters.length !== 0 && (
-        <span>
-          <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
-          {node.typeParameters.map((param, index, array) => (
-            <React.Fragment key={index}>
-              <RenderNode
-                node={param}
-                path={path.concat("typeParameters", index)}
-              />
-              {array.length - 1 === index ? "" : ", "}
-            </React.Fragment>
-          ))}
-          <span css={bracketStyle({ isHovered: false })}>{">"}</span>
-        </span>
-      )}
-      <AddBrackets nodes={null} initialIsShown>
-        <Parameters parameters={node.parameters} path={path} />
-      </AddBrackets>
-      <span
-        css={css`
-          color: ${colors.G500};
-        `}
-      >
-        {": "}
-      </span>
-      <RenderNode node={node.return} path={path.concat("return")} />
-    </span>
-  );
-}
-
 function PrettySignature({
   node,
   path,
-  type
+  type,
+  funcType
 }: {
   node: SignatureNode;
   path: Array<string | number>;
   type: "construct" | "call";
+  funcType: "arrow" | "colon";
 }) {
   return (
     <span>
@@ -285,11 +240,23 @@ function PrettySignature({
           <span css={bracketStyle({ isHovered: false })}>{">"}</span>
         </span>
       )}
-      <AddBrackets nodes={null} initialIsShown>
-        <Parameters path={path} parameters={node.parameters} />
+      <AddBrackets nodes={node.parameters.map(x => x.type)}>
+        <Parameters parameters={node.parameters} path={path} />
       </AddBrackets>
-      <Arrow />
-      <RenderNode node={node.return} path={path.concat("return")} />
+      {funcType === "arrow" ? (
+        <Arrow />
+      ) : (
+        <span
+          css={css`
+            color: ${colors.G500};
+          `}
+        >
+          {": "}
+        </span>
+      )}
+      <AddBrackets nodes={[node.return]} openBracket="" closeBracket="">
+        <RenderNode node={node.return} path={path.concat("return")} />
+      </AddBrackets>
     </span>
   );
 }
@@ -298,9 +265,8 @@ let RenderNode: (props: {
   node: MagicalNode;
   path: Array<string | number>;
 }) => React.ReactElement = function RenderNode({ node, path }): any {
-  if (path.length > 50) {
-    console.log(node);
-    return "is more than 50";
+  if (path.length > 2000) {
+    return "This node has a path of greater than 2000, this is mostly likely because of a bug in Magical Types";
   }
   switch (node.type) {
     case "Intrinsic": {
@@ -417,6 +383,7 @@ let RenderNode: (props: {
           <PrettySignature
             node={node.callSignatures[0]}
             type="call"
+            funcType="arrow"
             path={path.concat("callSignatures", 0)}
           />
         );
@@ -430,6 +397,7 @@ let RenderNode: (props: {
           <PrettySignature
             node={node.constructSignatures[0]}
             type="construct"
+            funcType="arrow"
             path={path.concat("constructSignatures", 0)}
           />
         );
@@ -526,10 +494,8 @@ function LazyNodeView({
     }
   }, [promise]);
 
-  useDebugValue(promise);
-
   if (value !== undefined) {
-    return <RenderNode node={value} path={path} />;
+    return <RenderNode node={value} path={path.concat("value")} />;
   }
   return <React.Fragment>Loading...</React.Fragment>;
 }

@@ -3,7 +3,11 @@
 import { jsx, css } from "@emotion/core";
 import React, { Component, Fragment, useContext, useState } from "react";
 import { colors } from "../components/constants";
-import { MagicalNode } from "@magical-types/types";
+import { MagicalNode, PositionedMagicalNode } from "@magical-types/types";
+import {
+  weakMemoize,
+  getChildPositionedMagicalNodes
+} from "@magical-types/utils";
 
 export let bracketStyle = ({ isHovered }: { isHovered: boolean }) => css`
   background-color: ${isHovered ? colors.P300 : colors.N20};
@@ -46,11 +50,59 @@ type Props = {
 
 export let PathExpansionContext = React.createContext(new Set<string>());
 
+// let nodeShouldDisplayImmediately = weakMemoize(function nodeHasCycles(
+//   rootNode: MagicalNode
+// ) {
+//   let pathsThatShouldBeExpandedByDefault = new Set<string>();
+
+//   // because of circular references, we don't want to visit a node more than once
+//   let visitedNodes = new Set<MagicalNode>();
+
+//   let queue: Array<PositionedMagicalNode> = [
+//     { node: rootNode, path: [], depth: 0 }
+//   ];
+
+//   while (queue.length) {
+//     let currentPositionedNode = queue.shift()!;
+//     if (currentPositionedNode.depth > 5) {
+//       return false;
+//     }
+
+//     visitedNodes.add(currentPositionedNode.node);
+//     if (
+//       ([
+//         "Object",
+//         "Array",
+//         "Tuple",
+//         "Class",
+//         "Promise",
+//         "Union",
+//         "TypeParameter",
+//         "Intrinsic"
+//       ] as Array<MagicalNode["type"]>).includes(currentPositionedNode.node.type)
+//     ) {
+//     } else {
+//       let childPositionedNodes = getChildPositionedMagicalNodes(
+//         currentPositionedNode,
+//         { ignoreUnloadedLazyNodes: true }
+//       );
+//       if (childPositionedNodes.some(x => visitedNodes.has(x.node))) {
+//         return false;
+//       }
+//       queue.push(...childPositionedNodes);
+//     }
+//     // we don't want to open any nodes deeper than 5 nodes by default
+//     if (currentPositionedNode.depth < 3) {
+//     }
+//   }
+//   return true;
+// });
+
 export default function AddBrackets({
   openBracket = "(",
   closeBracket = ")",
   closedContent = "...",
-  initialIsShown = false,
+  initialIsShown,
   children,
   nodes
 }: Props) {
@@ -59,13 +111,16 @@ export default function AddBrackets({
   let calculatedInitialIsShown =
     typeof initialIsShown === "boolean"
       ? initialIsShown
-      : defaultPathExpansions.has(initialIsShown.join(":")) ||
+      : (initialIsShown !== undefined &&
+          defaultPathExpansions.has(initialIsShown.join(":"))) ||
         (nodes !== null &&
           nodes.every(
             x =>
               x.type === "Intrinsic" ||
               x.type === "StringLiteral" ||
-              x.type === "NumberLiteral"
+              x.type === "NumberLiteral" ||
+              x.type === "Array" ||
+              x.type === "ReadonlyArray"
           ) &&
           nodes.length <= 5);
   let [isShown, setIsShown] = useState(calculatedInitialIsShown);

@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`function with circular param 1`] = `
+.emotion-5 {
+  font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+}
+
+.emotion-0 {
+  background-color: #F4F5F7;
+  color: #5E6C84;
+  border: 0;
+  font-size: 14px;
+  line-height: 20px;
+  width: auto;
+  margin: 2px 0;
+  padding: 0 0.2em;
+}
+
+.emotion-0:hover,
+.emotion-0:hover ~ .state-bit,
+.state-bit ~ .emotion-0:hover {
+  background-color: #6554C0;
+  color: white;
+}
+
+.emotion-1 {
+  color: #006644;
+}
+
+.emotion-3 {
+  background-color: #EAE6FF;
+  border-radius: 3px;
+  color: #403294;
+  display: inline-block;
+  margin: 2px 0;
+  padding: 0 0.2em;
+}
+
+<div>
+  <div
+    class="emotion-5"
+  >
+    <span>
+      
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      >
+        (
+        ...
+        )
+      </button>
+      <span
+        class="emotion-1"
+      >
+         =&gt; 
+      </span>
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      />
+      <span
+        class="emotion-3"
+      >
+        string
+      </span>
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      />
+    </span>
+  </div>
+</div>
+`;
+
+exports[`function with circular return 1`] = `
+.emotion-6 {
+  font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+}
+
+.emotion-0 {
+  background-color: #F4F5F7;
+  color: #5E6C84;
+  border: 0;
+  font-size: 14px;
+  line-height: 20px;
+  width: auto;
+  margin: 2px 0;
+  padding: 0 0.2em;
+}
+
+.emotion-0:hover,
+.emotion-0:hover ~ .state-bit,
+.state-bit ~ .emotion-0:hover {
+  background-color: #6554C0;
+  color: white;
+}
+
+.emotion-4 {
+  color: #006644;
+}
+
+.emotion-1 {
+  background-color: #EAE6FF;
+  border-radius: 3px;
+  color: #403294;
+  display: inline-block;
+  margin: 2px 0;
+  padding: 0 0.2em;
+}
+
+<div>
+  <div
+    class="emotion-6"
+  >
+    <span>
+      
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      >
+        (
+      </button>
+      <span
+        class="emotion-1"
+      >
+        thing
+        
+        :
+         
+      </span>
+      <span
+        class="emotion-1"
+      >
+        string
+      </span>
+      
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      >
+        )
+      </button>
+      <span
+        class="emotion-4"
+      >
+         =&gt; 
+      </span>
+      <button
+        class="state-bit emotion-0"
+        type="button"
+      >
+        
+        ...
+        
+      </button>
+    </span>
+  </div>
+</div>
+`;
