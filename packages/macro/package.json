@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/macro",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/macro.cjs.js",
   "module": "dist/macro.esm.js",
   "license": "MIT",
