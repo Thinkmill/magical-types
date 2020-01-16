@@ -1,5 +1,11 @@
 # magical-types
 
+## 0.4.1
+
+### Patch Changes
+
+- [`847cff7`](https://github.com/mitchellhamilton/magical-types/commit/847cff7e348127ac6ce19d5fcd56a84e13af1e92) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Fix an import
+
 ## 0.4.0
 
 ### Minor Changes
