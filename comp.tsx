@@ -1,7 +1,8 @@
 import React from "react";
 /** @jsx jsx */
 import { jsx, CSSObject } from "@emotion/core";
-import { RawTypes } from "@magical-types/macro";
+import { PropTypes } from "@magical-types/macro/write-data-to-fs.macro";
+import Select from "react-select";
 
 type Something = "a" | "b";
 
@@ -13,9 +14,9 @@ export default () => {
   return (
     <div css={{ fontFamily: "sans-serif" }}>
       something
-      {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
+      <PropTypes component={Select} />
       {/* <FunctionTypes function={myFunc} /> */}
-      <RawTypes<Thing> />
+      {/* <RawTypes<Thing> /> */}
     </div>
   );
 };

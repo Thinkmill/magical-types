@@ -29,6 +29,7 @@
     "@magical-types/errors": "^0.0.1",
     "@magical-types/pretty": "^0.1.0",
     "@magical-types/types": "^0.0.2",
+    "@magical-types/utils": "^0.0.0",
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
     "fs-extra": "^8.1.0",

@@ -1,35 +1,15 @@
-import * as ts from "typescript";
+import { Project } from "ts-morph";
+import { convertType } from "@magical-types/convert-type";
+import path from "path";
 
-const configPath = ts.findConfigFile("./", ts.sys.fileExists, "tsconfig.json");
-
-if (!configPath) {
-  throw new Error("no config found");
-}
-
-const tsconfig = ts.getParsedCommandLineOfConfigFile(
-  configPath,
-  {},
-  {
-    ...ts.sys,
-    onUnRecoverableConfigFileDiagnostic: e => console.error(e)
-  }
-);
-
-if (!tsconfig) {
-  throw new Error("could not read config");
-}
-
-let host = ts.createIncrementalCompilerHost(tsconfig.options, ts.sys);
-
-let program = ts.createIncrementalProgram({
-  rootNames: tsconfig.fileNames,
-  options: tsconfig.options,
-  host
+let project = new Project({
+  tsConfigFilePath: path.join(__dirname, "..", "..", "tsconfig.json")
 });
 
-let x = program.getSourceFiles();
+project.getSourceFiles("test-script/src/*.ts").forEach(file => {
+  file.getExportedDeclarations().forEach(([decl], name) => {
+    console.log(convertType(decl.getType().compilerType, [name]));
+  });
+});
 
-program.emit();
-// console.log(host.getSourceFile(path.join(__dirname, "a.ts")));
-
-console.log(1);
+setTimeout(() => {}, 10000000);

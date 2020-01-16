@@ -5,7 +5,7 @@ import {
   PropTypes,
   FunctionTypes
 } from "@magical-types/macro/write-data-to-fs.macro";
-import { components } from "react-select";
+import Select from "react-select";
 
 // type Thing = (firstArg: string) => number;
 
@@ -17,12 +17,15 @@ let thing = {
   wow: "string"
 } as const;
 
+type AThing = (something: AThing) => string;
+
 type Props = {
   /** The tasks that the board should render */
   tasks: Array<Task>;
   /** A function that will be called.
    * Important Note: this is the _changed_ tasks, **not** all of the new tasks.
    */
+  thing: { something: AThing };
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
 
@@ -42,7 +45,7 @@ export default () => {
       </p>
       {/* <PropTypes component={MyComponentThatDoesStuff} /> */}
       {/* <FunctionTypes function={myFunc} /> */}
-      <PropTypes component={components.Control} />
+      <PropTypes component={MyComponentThatDoesStuff} />
     </div>
   );
 };

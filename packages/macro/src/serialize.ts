@@ -1,47 +1,47 @@
 import {
   MagicalNode,
   MagicalNodeWithIndexes,
-  MagicalNodeIndex
+  MagicalNodeIndex,
+  PositionedMagicalNode
 } from "@magical-types/types";
-import { getChildPositionedMagicalNodes } from "./utils";
-
-let weakMemoize = function<Arg, Return>(
-  func: (arg: Arg) => Return
-): (arg: Arg) => Return {
-  // @ts-ignore
-  let cache: WeakMap<Arg, Return> = new WeakMap();
-  // @ts-ignore
-  return arg => {
-    if (cache.has(arg)) {
-      return cache.get(arg);
-    }
-    let ret = func(arg);
-    cache.set(arg, ret);
-    return ret;
-  };
-};
+import { InternalError } from "@magical-types/errors";
+import { getChildPositionedMagicalNodes } from "@magical-types/utils";
 
 export function serializeNodes(rootNodes: MagicalNode[]) {
   let i = 0;
-
   // because of circular references, we don't want to visit a node more than once
-  let visitedNodes = new Map<MagicalNode, MagicalNodeIndex>();
+  let visitedNodes = new Map<
+    MagicalNode,
+    { path: (string | number)[]; index: MagicalNodeIndex; depth: number }
+  >();
 
-  let queue = [...rootNodes];
+  let queue: PositionedMagicalNode[] = [...rootNodes].map(node => ({
+    node,
+    path: [],
+    depth: 0
+  }));
 
   while (queue.length) {
     let currentNode = queue.shift()!;
-    if (!visitedNodes.has(currentNode)) {
-      visitedNodes.set(currentNode, i++ as MagicalNodeIndex);
-
-      let childPositionedNodes = getChildPositionedMagicalNodes({
-        node: currentNode,
-        path: []
+    if (
+      currentNode.node.type === "TypeParameter" &&
+      currentNode.node.value === "VarDate"
+    ) {
+      debugger;
+    }
+    if (!visitedNodes.has(currentNode.node)) {
+      visitedNodes.set(currentNode.node, {
+        path: currentNode.path,
+        depth: currentNode.depth,
+        index: i++ as MagicalNodeIndex
       });
 
-      queue.push(...childPositionedNodes.map(x => x.node));
+      let childPositionedNodes = getChildPositionedMagicalNodes(currentNode);
+
+      queue.push(...childPositionedNodes);
     }
   }
+
   let newNodes: MagicalNodeWithIndexes[] = [];
   for (let [node] of visitedNodes) {
     newNodes.push(getMagicalNodeWithIndexes(node, visitedNodes));
@@ -51,10 +51,20 @@ export function serializeNodes(rootNodes: MagicalNode[]) {
 
 function getMagicalNodeWithIndexes(
   node: MagicalNode,
-  visitedNodes: Map<MagicalNode, MagicalNodeIndex>
+  visitedNodes: Map<
+    MagicalNode,
+    { path: (string | number)[]; index: MagicalNodeIndex }
+  >
 ): MagicalNodeWithIndexes {
-  let getIndexForNode: (node: MagicalNode) => MagicalNodeIndex = node =>
-    visitedNodes.get(node)!;
+  let getIndexForNode: (node: MagicalNode) => MagicalNodeIndex = node => {
+    let info = visitedNodes.get(node);
+    if (!info) {
+      throw new InternalError(
+        "Could not get index for node of type: " + node.type
+      );
+    }
+    return info.index;
+  };
   switch (node.type) {
     case "StringLiteral":
     case "NumberLiteral":
@@ -146,6 +156,9 @@ function getMagicalNodeWithIndexes(
         false: getIndexForNode(node.false),
         true: getIndexForNode(node.true)
       };
+    }
+    case "Lazy": {
+      throw new InternalError("Lazy nodes cannot be serialized");
     }
 
     default: {

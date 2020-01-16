@@ -4,10 +4,15 @@ import * as BabelTypes from "@babel/types";
 import { InternalError } from "@magical-types/errors";
 import { Project } from "ts-morph";
 import { convertType, getPropTypesType } from "@magical-types/convert-type";
-import { MagicalNode, MagicalNodeIndex } from "@magical-types/types/src";
+import {
+  MagicalNode,
+  MagicalNodeIndex,
+  PositionedMagicalNode
+} from "@magical-types/types";
 import { serializeNodes } from "./serialize";
 import * as fs from "fs-extra";
 import path from "path";
+import { getChildPositionedMagicalNodes } from "@magical-types/utils";
 
 let projectCache = new Map<string, Project>();
 
@@ -182,40 +187,104 @@ export function getTypes(
     throw new InternalError("num !== numOfThings");
   }
   let { nodes, nodesToIndex } = serializeNodes(rootNodes);
-  let id = babelProgram.scope.generateUidIdentifier();
+  let nodesBelow5 = 0;
+
+  let typeDataBabelNode;
   if (writeToFs) {
-    let relative = path.join(
+    let below5 = [];
+    let between5And10 = [];
+    let above10 = [];
+
+    for (let [, { depth, index }] of nodesToIndex) {
+      if (depth < 5) {
+        below5.push(nodes[index]);
+      } else if (depth <= 10) {
+        between5And10.push(nodes[index]);
+      } else {
+        above10.push(nodes[index]);
+      }
+    }
+    let dirname = path.dirname(filename);
+    let relativeBase = path.join(
       "node_modules",
       "@magical-types",
       "generated",
-      path.basename(filename) + ".json"
+      path.basename(filename)
     );
-    let genFilename = path.join(path.dirname(filename), relative);
-    fs.ensureFileSync(genFilename);
-    fs.writeJsonSync(genFilename, nodes);
+    let below5Filename = relativeBase + "1.json";
+    fs.ensureFileSync(path.join(dirname, below5Filename));
+
+    fs.writeJsonSync(path.join(dirname, below5Filename), below5);
+    let staticImportId = babelProgram.scope.generateUidIdentifier();
+
     babelProgram.node.body.unshift(
       BabelTypes.importDeclaration(
-        [BabelTypes.importDefaultSpecifier(id)],
-        BabelTypes.stringLiteral(`./${relative}`)
+        [BabelTypes.importDefaultSpecifier(staticImportId)],
+        BabelTypes.stringLiteral(`./${below5Filename}`)
       )
     );
-  } else {
-    babelProgram.node.body.unshift(
-      BabelTypes.variableDeclaration("var", [
-        BabelTypes.variableDeclarator(
-          id,
-          BabelTypes.callExpression(
-            BabelTypes.memberExpression(
-              BabelTypes.identifier("JSON"),
-              BabelTypes.identifier("parse")
-            ),
-            [BabelTypes.stringLiteral(JSON.stringify(nodes))]
-          )
+
+    let items: BabelTypes.Expression[] = [staticImportId];
+    if (between5And10.length) {
+      let between5And10Filename = relativeBase + "2.json";
+
+      fs.writeJsonSync(
+        path.join(dirname, between5And10Filename),
+        between5And10
+      );
+      items.push(
+        BabelTypes.functionExpression(
+          null,
+          [],
+          BabelTypes.blockStatement([
+            BabelTypes.returnStatement(
+              BabelTypes.callExpression(
+                (BabelTypes as any).import() as BabelTypes.Identifier,
+                [BabelTypes.stringLiteral(`./${between5And10Filename}`)]
+              )
+            )
+          ])
         )
-      ])
+      );
+      if (above10.length) {
+        let restFilename = relativeBase + "3.json";
+        fs.writeJsonSync(path.join(dirname, restFilename), above10);
+        items.push(
+          BabelTypes.functionExpression(
+            null,
+            [],
+            BabelTypes.blockStatement([
+              BabelTypes.returnStatement(
+                BabelTypes.callExpression(
+                  (BabelTypes as any).import() as BabelTypes.Identifier,
+                  [BabelTypes.stringLiteral(`./${between5And10Filename}`)]
+                )
+              )
+            ])
+          )
+        );
+      }
+    }
+
+    typeDataBabelNode =
+      items.length === 1 ? items[0] : BabelTypes.arrayExpression(items);
+  } else {
+    typeDataBabelNode = BabelTypes.callExpression(
+      BabelTypes.memberExpression(
+        BabelTypes.identifier("JSON"),
+        BabelTypes.identifier("parse")
+      ),
+      [BabelTypes.stringLiteral(JSON.stringify(nodes))]
     );
   }
+  let id = babelProgram.scope.generateUidIdentifier();
+
+  babelProgram.node.body.unshift(
+    BabelTypes.variableDeclaration("var", [
+      BabelTypes.variableDeclarator(id, typeDataBabelNode)
+    ])
+  );
   callbacks.forEach((cb, i) => {
-    cb(id.name, nodesToIndex.get(rootNodes[i])!);
+    cb(id.name, nodesToIndex.get(rootNodes[i])!.index);
   });
 }

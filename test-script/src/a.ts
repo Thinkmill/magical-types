@@ -1,5 +1,5 @@
 import { thing } from "./b";
 
-export function something() {
+export function something(): { thing: boolean } | { something: string } {
   return thing;
 }

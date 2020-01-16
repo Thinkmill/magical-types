@@ -6,8 +6,8 @@ test("it works", () => {
   function someThing(thing: boolean) {}
   let { container } = render(<FunctionTypes function={someThing} />);
   expect(container).toMatchInlineSnapshot(`
-    .emotion-6 {
-      font-family: sans-serif;
+    .emotion-8 {
+      font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
     }
 
     .emotion-0 {
@@ -15,15 +15,17 @@ test("it works", () => {
       color: #5E6C84;
       border: 0;
       font-size: 14px;
-      font-family: sans-serif;
       line-height: 20px;
       width: auto;
       margin: 2px 0;
       padding: 0 0.2em;
     }
 
-    .emotion-0:hover {
-      cursor: pointer;
+    .emotion-0:hover,
+    .emotion-0:hover ~ .state-bit,
+    .state-bit ~ .emotion-0:hover {
+      background-color: #6554C0;
+      color: white;
     }
 
     .emotion-1 {
@@ -41,12 +43,12 @@ test("it works", () => {
 
     <div>
       <div
-        class="emotion-6"
+        class="emotion-8"
       >
         <span>
           
           <button
-            class="emotion-0"
+            class="state-bit emotion-0"
             type="button"
           >
             (
@@ -66,7 +68,7 @@ test("it works", () => {
           </span>
           
           <button
-            class="emotion-0"
+            class="state-bit emotion-0"
             type="button"
           >
             )
@@ -76,11 +78,19 @@ test("it works", () => {
           >
              =&gt; 
           </span>
+          <button
+            class="state-bit emotion-0"
+            type="button"
+          />
           <span
             class="emotion-1"
           >
             void
           </span>
+          <button
+            class="state-bit emotion-0"
+            type="button"
+          />
         </span>
       </div>
     </div>
