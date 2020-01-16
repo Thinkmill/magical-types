@@ -1,5 +1,12 @@
 # @magical-types/convert-type
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`bcf7960`](https://github.com/mitchellhamilton/magical-types/commit/bcf7960fbe1da21c5c394ee3c707894966df4dfd)]:
+  - @magical-types/types@0.1.0
+
 ## 0.0.4
 
 ### Patch Changes
