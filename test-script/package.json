@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/test-script",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "main": "dist/test-script.cjs.js",
   "license": "MIT"

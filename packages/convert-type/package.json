@@ -1,12 +1,12 @@
 {
   "name": "@magical-types/convert-type",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/convert-type.cjs.js",
   "module": "dist/convert-type.esm.js",
   "dependencies": {
     "@babel/runtime": "^7.7.2",
     "@magical-types/errors": "^0.0.1",
-    "@magical-types/types": "^0.0.2"
+    "@magical-types/types": "^0.1.0"
   },
   "peerDependencies": {
     "typescript": "^3.7.0"

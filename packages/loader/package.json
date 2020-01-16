@@ -1,11 +1,11 @@
 {
   "name": "@magical-types/loader",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/loader.cjs.js",
   "module": "dist/loader.esm.js",
   "dependencies": {
     "@babel/runtime": "^7.7.2",
-    "@magical-types/convert-type": "^0.0.4",
+    "@magical-types/convert-type": "^0.0.5",
     "@types/webpack": "^4.41.0",
     "flatted": "^2.0.1",
     "ts-morph": "^5.0.0"
