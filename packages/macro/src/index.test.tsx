@@ -24,27 +24,23 @@ test("it works", () => {
     <PropTypes component={MyComponentThatDoesStuff} />
   );
   expect(container).toMatchInlineSnapshot(`
-    .emotion-38 {
+    .emotion-37 {
       margin-top: 12px;
       font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New, monospace;
     }
 
     @media (min-width:780px) {
-      .emotion-38 {
+      .emotion-37 {
         margin-bottom: 24px;
         margin-top: 24px;
       }
     }
 
-    .emotion-0 {
-      margin-top: 1em;
-    }
-
-    .emotion-5 {
+    .emotion-4 {
       margin-top: 32px;
     }
 
-    .emotion-3 {
+    .emotion-2 {
       border-bottom: 2px solid #F4F5F7;
       font-size: 0.9rem;
       font-weight: normal;
@@ -53,7 +49,7 @@ test("it works", () => {
       padding-bottom: 8px;
     }
 
-    .emotion-1 {
+    .emotion-0 {
       background: #DEEBFF;
       color: #0747A6;
       border-radius: 3px;
@@ -62,11 +58,11 @@ test("it works", () => {
       padding: 0 0.2em;
     }
 
-    .emotion-2 {
+    .emotion-1 {
       color: #BF2600;
     }
 
-    .emotion-4 {
+    .emotion-3 {
       background-color: #EAE6FF;
       border-radius: 3px;
       color: #403294;
@@ -75,7 +71,7 @@ test("it works", () => {
       padding: 0 0.2em;
     }
 
-    .emotion-14 {
+    .emotion-13 {
       background-color: #EAE6FF;
       border-radius: 3px;
       color: #403294;
@@ -86,7 +82,7 @@ test("it works", () => {
       color: #006644;
     }
 
-    .emotion-19 {
+    .emotion-18 {
       background-color: #EAE6FF;
       border-radius: 3px;
       color: #403294;
@@ -97,7 +93,7 @@ test("it works", () => {
       color: #5E6C84;
     }
 
-    .emotion-20 {
+    .emotion-19 {
       background-color: #F4F5F7;
       color: #5E6C84;
       border: 0;
@@ -108,101 +104,96 @@ test("it works", () => {
       padding: 0 0.2em;
     }
 
-    .emotion-20:hover,
-    .emotion-20:hover ~ .state-bit,
-    .state-bit ~ .emotion-20:hover {
+    .emotion-19:hover,
+    .emotion-19:hover ~ .state-bit,
+    .state-bit ~ .emotion-19:hover {
       background-color: #6554C0;
       color: white;
     }
 
-    .emotion-23 {
+    .emotion-22 {
       padding-left: 1.3em;
     }
 
-    .emotion-33 {
+    .emotion-32 {
       color: #006644;
     }
 
     <div>
       <div
-        class="emotion-38"
+        class="emotion-37"
       >
-        <h2
-          class="emotion-0"
-        >
-          Props
-        </h2>
         <div
-          class="emotion-5"
+          class="emotion-4"
         >
           <h3
-            class="emotion-3"
+            class="emotion-2"
           >
             <code
-              class="emotion-1"
+              class="emotion-0"
             >
               a
             </code>
              
             <code
-              class="emotion-2"
+              class="emotion-1"
             >
                required
             </code>
           </h3>
           
           <span
-            class="emotion-4"
+            class="emotion-3"
           >
             boolean
           </span>
         </div>
         <div
-          class="emotion-5"
+          class="emotion-4"
         >
           <h3
-            class="emotion-3"
+            class="emotion-2"
           >
             <code
-              class="emotion-1"
+              class="emotion-0"
             >
               b
             </code>
              
             <code
-              class="emotion-2"
+              class="emotion-1"
             >
                required
             </code>
           </h3>
           
           <span
-            class="emotion-4"
+            class="emotion-3"
           >
             any
           </span>
         </div>
         <div
-          class="emotion-5"
+          class="emotion-4"
         >
           <h3
-            class="emotion-3"
+            class="emotion-2"
           >
             <code
-              class="emotion-1"
+              class="emotion-0"
             >
               c
             </code>
              
             <code
-              class="emotion-2"
+              class="emotion-1"
             >
                required
             </code>
           </h3>
           
           <span
-            class="emotion-14"
+            class="emotion-13"
           >
             "
             some string
@@ -210,19 +201,19 @@ test("it works", () => {
           </span>
         </div>
         <div
-          class="emotion-5"
+          class="emotion-4"
         >
           <h3
-            class="emotion-3"
+            class="emotion-2"
           >
             <code
-              class="emotion-1"
+              class="emotion-0"
             >
               d
             </code>
              
             <code
-              class="emotion-2"
+              class="emotion-1"
             >
                required
             </code>
@@ -230,24 +221,24 @@ test("it works", () => {
           
           <span>
             <span
-              class="emotion-19"
+              class="emotion-18"
             >
               
               One of
                
             </span>
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             >
               &lt;
             </button>
             <div
-              class="emotion-23"
+              class="emotion-22"
             >
               <div>
                 <span
-                  class="emotion-14"
+                  class="emotion-13"
                 >
                   "
                   some string
@@ -257,7 +248,7 @@ test("it works", () => {
               </div>
               <div>
                 <span
-                  class="emotion-14"
+                  class="emotion-13"
                 >
                   "
                   something
@@ -267,7 +258,7 @@ test("it works", () => {
               </div>
             </div>
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             >
               &gt;
@@ -275,19 +266,19 @@ test("it works", () => {
           </span>
         </div>
         <div
-          class="emotion-5"
+          class="emotion-4"
         >
           <h3
-            class="emotion-3"
+            class="emotion-2"
           >
             <code
-              class="emotion-1"
+              class="emotion-0"
             >
               e
             </code>
              
             <code
-              class="emotion-2"
+              class="emotion-1"
             >
                required
             </code>
@@ -296,13 +287,13 @@ test("it works", () => {
           <span>
             
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             >
               (
             </button>
             <span
-              class="emotion-4"
+              class="emotion-3"
             >
               firstArg
               
@@ -310,33 +301,33 @@ test("it works", () => {
                
             </span>
             <span
-              class="emotion-4"
+              class="emotion-3"
             >
               string
             </span>
             
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             >
               )
             </button>
             <span
-              class="emotion-33"
+              class="emotion-32"
             >
                =&gt; 
             </span>
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             />
             <span
-              class="emotion-4"
+              class="emotion-3"
             >
               number
             </span>
             <button
-              class="state-bit emotion-20"
+              class="state-bit emotion-19"
               type="button"
             />
           </span>
