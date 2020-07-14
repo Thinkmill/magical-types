@@ -8,13 +8,13 @@
     "@magical-types/convert-type": "^0.0.5",
     "@types/webpack": "^4.41.0",
     "flatted": "^2.0.1",
-    "ts-morph": "^5.0.0"
+    "ts-morph": "^7.1.2"
   },
   "peerDependencies": {
     "typescript": "^3.7.0"
   },
   "devDependencies": {
-    "typescript": "^3.7.2"
+    "typescript": "^3.9.5"
   },
   "preconstruct": {
     "entrypoints": [

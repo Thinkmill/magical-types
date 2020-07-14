@@ -48,8 +48,8 @@
     "jest-in-case": "^1.0.2",
     "react": "^16.11.0",
     "react-select": "^3.0.4",
-    "ts-morph": "^5.0.0",
-    "typescript": "^3.7.2"
+    "ts-morph": "^7.1.2",
+    "typescript": "^3.9.5"
   },
   "jest": {
     "snapshotSerializers": [

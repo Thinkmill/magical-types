@@ -1,18 +1,12 @@
-import typescript from "typescript";
 import { NodePath } from "@babel/core";
 import * as BabelTypes from "@babel/types";
 import { InternalError } from "@magical-types/errors";
-import { Project } from "ts-morph";
+import { Project, ts as typescript } from "ts-morph";
 import { convertType, getPropTypesType } from "@magical-types/convert-type";
-import {
-  MagicalNode,
-  MagicalNodeIndex,
-  PositionedMagicalNode
-} from "@magical-types/types";
+import { MagicalNode, MagicalNodeIndex } from "@magical-types/types";
 import { serializeNodes } from "./serialize";
 import * as fs from "fs-extra";
 import path from "path";
-import { getChildPositionedMagicalNodes } from "@magical-types/utils";
 
 let projectCache = new Map<string, Project>();
 
@@ -46,12 +40,12 @@ export function getTypes(
     isFreshProject = true;
     const cachedProject = new Project({
       tsConfigFilePath: configFileName,
-      addFilesFromTsConfig: false
+      addFilesFromTsConfig: false,
     });
     projectCache.set(configFileName, cachedProject);
   }
   let project = projectCache.get(configFileName)!;
-  project.addExistingSourceFile(filename);
+  project.addSourceFileAtPath(filename);
   project.resolveSourceFileDependencies();
 
   if (!isFreshProject) {
@@ -80,7 +74,7 @@ export function getTypes(
 
   let num = 0;
   let visit = (node: typescript.Node) => {
-    typescript.forEachChild(node, node => {
+    typescript.forEachChild(node, (node) => {
       let map = things.get(node.getStart());
 
       if (map) {
@@ -98,7 +92,7 @@ export function getTypes(
               val.exportName === "FunctionTypes"
             ) {
               let componentAttrib = jsxOpening.attributes.properties.find(
-                x =>
+                (x) =>
                   typescript.isJsxAttribute(x) &&
                   x.name.escapedText ===
                     (val.exportName === "PropTypes" ? "component" : "function")
@@ -242,7 +236,7 @@ export function getTypes(
                 (BabelTypes as any).import() as BabelTypes.Identifier,
                 [BabelTypes.stringLiteral(`./${between5And10Filename}`)]
               )
-            )
+            ),
           ])
         )
       );
@@ -259,7 +253,7 @@ export function getTypes(
                   (BabelTypes as any).import() as BabelTypes.Identifier,
                   [BabelTypes.stringLiteral(`./${between5And10Filename}`)]
                 )
-              )
+              ),
             ])
           )
         );
@@ -281,7 +275,7 @@ export function getTypes(
 
   babelProgram.node.body.unshift(
     BabelTypes.variableDeclaration("var", [
-      BabelTypes.variableDeclarator(id, typeDataBabelNode)
+      BabelTypes.variableDeclarator(id, typeDataBabelNode),
     ])
   );
   callbacks.forEach((cb, i) => {

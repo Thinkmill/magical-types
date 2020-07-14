@@ -1,4 +1,4 @@
-import * as typescript from "typescript";
+import { ts as typescript } from "ts-morph";
 import { MagicalNode, Property, TypeParameterNode } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
 
@@ -132,7 +132,7 @@ let convertParameter = (
       type: convertType(
         typeChecker.getTypeFromTypeNode(declaration.type),
         path.concat("getParameters()", parameter.name)
-      )
+      ),
     };
   }
 
@@ -140,7 +140,7 @@ let convertParameter = (
   return {
     required: true,
     name: parameter.name,
-    type: convertType(type, path.concat("getParameters()", parameter.name))
+    type: convertType(type, path.concat("getParameters()", parameter.name)),
   };
 };
 
@@ -151,7 +151,7 @@ let convertSignature = wrapInCache(
     let typeParameters = callSignature.getTypeParameters() || [];
     let parameters = callSignature
       .getParameters()
-      .map(param => convertParameter(param, path, typeChecker));
+      .map((param) => convertParameter(param, path, typeChecker));
 
     return {
       type: "Signature",
@@ -163,7 +163,7 @@ let convertSignature = wrapInCache(
             x,
             path.concat("typeParameters", index)
           ) as TypeParameterNode
-      )
+      ),
     } as const;
   }
 );
@@ -199,19 +199,19 @@ function convertProperty(
   // ideally, we would have the type of the property without undefined unless it's actually a union of undefined and the type
   if (!isRequired && value.type === "Union") {
     value.types = value.types.filter(
-      x => !(x.type === "Intrinsic" && x.value === "undefined")
+      (x) => !(x.type === "Intrinsic" && x.value === "undefined")
     );
 
     if (
       value.types.length === 2 &&
       value.types.every(
-        x =>
+        (x) =>
           x.type === "Intrinsic" && (x.value === "true" || x.value === "false")
       )
     ) {
       value = {
         type: "Intrinsic",
-        value: "boolean"
+        value: "boolean",
       };
     } else if (value.types.length === 1) {
       value = value.types[0];
@@ -225,7 +225,7 @@ function convertProperty(
     description: thing,
     required: isRequired,
     key,
-    value: value
+    value: value,
   };
 }
 
@@ -245,14 +245,14 @@ function getNameForType(type: typescript.Type): string | null {
 function symbolFlagsToString(type: typescript.Symbol) {
   return Object.keys(typescript.SymbolFlags).filter(
     // @ts-ignore
-    flagName => type.flags & typescript.SymbolFlags[flagName]
+    (flagName) => type.flags & typescript.SymbolFlags[flagName]
   );
 }
 
 function typeFlagsToString(type: typescript.Type) {
   return Object.keys(typescript.TypeFlags).filter(
     // @ts-ignore
-    flagName => type.flags & typescript.TypeFlags[flagName]
+    (flagName) => type.flags & typescript.TypeFlags[flagName]
   );
 }
 
@@ -273,7 +273,7 @@ export let convertType = wrapInCache(
     ) {
       return {
         type: "Intrinsic",
-        value: (type as any).intrinsicName
+        value: (type as any).intrinsicName,
       };
     }
 
@@ -284,20 +284,20 @@ export let convertType = wrapInCache(
         value: convertType(
           (type as any).typeArguments[0],
           path.concat("typeArguments", 0)
-        )
+        ),
       };
     }
 
     if (type.isStringLiteral()) {
       return {
         type: "StringLiteral",
-        value: type.value
+        value: type.value,
       };
     }
     if (type.isNumberLiteral()) {
       return {
         type: "NumberLiteral",
-        value: type.value
+        value: type.value,
       };
     }
     if (type.isUnion()) {
@@ -306,7 +306,7 @@ export let convertType = wrapInCache(
       );
       if (
         types.filter(
-          x =>
+          (x) =>
             x.type === "Intrinsic" &&
             (x.value === "false" || x.value === "true")
         ).length === 2
@@ -332,7 +332,7 @@ export let convertType = wrapInCache(
       return {
         type: "Union",
         name: getNameForType(type),
-        types
+        types,
       };
     }
     if (
@@ -345,7 +345,7 @@ export let convertType = wrapInCache(
         value: convertType(
           (type as any).typeArguments[0],
           path.concat("typeArguments", 0)
-        )
+        ),
       };
     }
     if (
@@ -358,7 +358,7 @@ export let convertType = wrapInCache(
         value: convertType(
           (type as any).typeArguments[0],
           path.concat("typeArguments", 0)
-        )
+        ),
       };
     }
 
@@ -369,7 +369,7 @@ export let convertType = wrapInCache(
           typeArguments: Array<typescript.Type>;
         }).typeArguments.map((x, index) =>
           convertType(x, path.concat("typeArguments", index))
-        )
+        ),
       };
     }
 
@@ -386,10 +386,10 @@ export let convertType = wrapInCache(
         properties: type
           .getProperties()
           // this is most definitely wrong but it works
-          .filter(symbol => symbol.getName() !== "prototype")
+          .filter((symbol) => symbol.getName() !== "prototype")
           .map((symbol, index) => {
             return convertProperty(symbol, path, typeChecker);
-          })
+          }),
       };
     }
 
@@ -428,17 +428,17 @@ export let convertType = wrapInCache(
         properties: type
           .getProperties()
           // this is most definitely wrong but it works
-          .filter(symbol => symbol.getName() !== "prototype")
+          .filter((symbol) => symbol.getName() !== "prototype")
           .map((symbol, index) => {
             return convertProperty(symbol, path, typeChecker);
-          })
+          }),
       };
     }
 
     if (type.isTypeParameter()) {
       return {
         type: "TypeParameter",
-        value: type.symbol.getName()
+        value: type.symbol.getName(),
       };
     }
 
@@ -464,7 +464,7 @@ export let convertType = wrapInCache(
           indexedAccessType.objectType,
           path.concat("object")
         ),
-        index: convertType(indexedAccessType.indexType, path.concat("index"))
+        index: convertType(indexedAccessType.indexType, path.concat("index")),
       };
     }
     // @ts-ignore
@@ -484,7 +484,7 @@ export let convertType = wrapInCache(
         true: convertType(
           (conditionalType as any).root.trueType,
           path.concat("trueType")
-        )
+        ),
       };
     }
     let flags = typeFlagsToString(type);
@@ -498,7 +498,7 @@ export let convertType = wrapInCache(
     if ((type as any).flags & typescript.TypeFlags.UniqueESSymbol) {
       return {
         type: "Symbol",
-        name: (type as typescript.UniqueESSymbolType).escapedName.toString()
+        name: (type as typescript.UniqueESSymbolType).escapedName.toString(),
       };
     }
     // @ts-ignore
@@ -508,7 +508,7 @@ export let convertType = wrapInCache(
         // @ts-ignore
         types: type.types.map((type, index) =>
           convertType(type, path.concat("types", index))
-        )
+        ),
       };
     }
 

@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/react": "^16.8.23",
     "react": "^16.11.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.9.5"
   },
   "preconstruct": {
     "entrypoints": [
@@ -33,7 +33,7 @@
     "babel-plugin-macros": "^2.6.1",
     "flatted": "^2.0.1",
     "fs-extra": "^8.1.0",
-    "ts-morph": "^5.0.0"
+    "ts-morph": "^7.1.2"
   },
   "peerDependencies": {
     "react": "^16.8.6",
