@@ -1,5 +1,16 @@
 # magical-types
 
+## 0.6.0
+
+### Minor Changes
+
+- [`b7618a3`](https://github.com/Thinkmill/magical-types/commit/b7618a3e9a525b9ac4958f9585e04c88a23019e9) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Upgrade ts-morph
+
+### Patch Changes
+
+- Updated dependencies [[`b7618a3`](https://github.com/Thinkmill/magical-types/commit/b7618a3e9a525b9ac4958f9585e04c88a23019e9)]:
+  - @magical-types/convert-type@0.1.0
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/convert-type",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "main": "dist/convert-type.cjs.js",
   "module": "dist/convert-type.esm.js",
   "dependencies": {
