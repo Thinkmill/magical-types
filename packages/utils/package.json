@@ -1,11 +1,11 @@
 {
   "name": "@magical-types/utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/utils.cjs.js",
   "module": "dist/utils.esm.js",
   "dependencies": {
     "@babel/runtime": "^7.7.2",
     "@magical-types/errors": "^0.0.1",
-    "@magical-types/types": "^0.1.0"
+    "@magical-types/types": "^0.1.1"
   }
 }
