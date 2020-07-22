@@ -1,5 +1,11 @@
 # @magical-types/convert-type
 
+## 0.1.2
+
+### Patch Changes
+
+- [`0e21ee6`](https://github.com/Thinkmill/magical-types/commit/0e21ee64b150494848f21e86dca01cb5907407d1) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Emit an Error node instead of throwing an error in another case with properties
+
 ## 0.1.1
 
 ### Patch Changes
