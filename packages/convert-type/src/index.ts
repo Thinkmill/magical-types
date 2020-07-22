@@ -184,9 +184,16 @@ function convertProperty(
   } else if ((symbol as any).type) {
     type = (symbol as any).type;
   } else {
-    let x = symbolFlagsToString(symbol);
-    debugger;
-    throw new InternalError("type not found for property");
+    if (process.env.MAGICAL_TYPES_DEBUG) {
+      throw new InternalError("type not found for property");
+    }
+
+    return {
+      description: "",
+      key,
+      required: true,
+      value: { type: "Error" },
+    };
   }
 
   let isRequired = !(symbol.flags & typescript.SymbolFlags.Optional);
