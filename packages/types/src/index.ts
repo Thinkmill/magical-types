@@ -36,6 +36,7 @@ export type LazyNode = {
 export type TypeParameterNode = { type: "TypeParameter"; value: string };
 
 export type MagicalNode =
+  | { type: "Error" }
   | { type: "Intrinsic"; value: string }
   | { type: "Promise"; value: MagicalNode }
   | { type: "StringLiteral"; value: string }

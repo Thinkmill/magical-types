@@ -5,7 +5,7 @@ export let weakMemoize = function<Arg extends object, Return>(
   func: (arg: Arg) => Return
 ): (arg: Arg) => Return {
   let cache: WeakMap<Arg, Return> = new WeakMap();
-  return arg => {
+  return (arg) => {
     if (cache.has(arg)) {
       return cache.get(arg)!;
     }
@@ -39,6 +39,7 @@ export function getChildPositionedMagicalNodes(
     case "StringLiteral":
     case "NumberLiteral":
     case "TypeParameter":
+    case "Error":
     case "Intrinsic": {
       return [];
     }
@@ -61,7 +62,7 @@ export function getChildPositionedMagicalNodes(
     case "IndexedAccess": {
       return [
         getPositionedNodeFromKey(node, "object"),
-        getPositionedNodeFromKey(node, "index")
+        getPositionedNodeFromKey(node, "index"),
       ];
     }
     case "Class": {
@@ -73,70 +74,70 @@ export function getChildPositionedMagicalNodes(
           return {
             node: param,
             path: path.concat("typeParameters", index),
-            depth
+            depth,
           };
         }),
         ...node.properties.map((param, index) => {
           return {
             node: param.value,
             path: path.concat("properties", index, "value"),
-            depth
+            depth,
           };
-        })
+        }),
       ];
     }
     case "Object": {
       return [
         ...flatMap(node.callSignatures, (signature, index) => {
           return [
-            ...signature.typeParameters.map(x => ({
+            ...signature.typeParameters.map((x) => ({
               node: x,
               path: path.concat("callSignatures", "typeParameters", index),
-              depth
+              depth,
             })),
-            ...signature.parameters.map(x => ({
+            ...signature.parameters.map((x) => ({
               node: x.type,
               path: path.concat("callSignatures", "parameters", index, "type"),
-              depth
+              depth,
             })),
             {
               node: signature.return,
               path: path.concat("callSignatures", "return"),
-              depth
-            }
+              depth,
+            },
           ];
         }),
         ...flatMap(node.constructSignatures, (signature, index) => {
           return [
-            ...signature.typeParameters.map(x => ({
+            ...signature.typeParameters.map((x) => ({
               node: x,
               path: path.concat("callSignatures", "typeParameters", index),
-              depth
+              depth,
             })),
-            ...signature.parameters.map(x => ({
+            ...signature.parameters.map((x) => ({
               node: x.type,
               path: path.concat("callSignatures", "parameters", index, "type"),
-              depth
+              depth,
             })),
             {
               node: signature.return,
               path: path.concat("constructSignatures", "return"),
-              depth
-            }
+              depth,
+            },
           ];
         }),
         ...node.aliasTypeArguments.map((node, index) => ({
           node,
           path: path.concat("aliasTypeArguments", index),
-          depth
+          depth,
         })),
         ...node.properties.map((param, index) => {
           return {
             node: param.value,
             path: path.concat("properties", index, "value"),
-            depth
+            depth,
           };
-        })
+        }),
       ];
     }
     case "Conditional": {
@@ -144,7 +145,7 @@ export function getChildPositionedMagicalNodes(
         getPositionedNodeFromKey(node, "check"),
         getPositionedNodeFromKey(node, "true"),
         getPositionedNodeFromKey(node, "false"),
-        getPositionedNodeFromKey(node, "extends")
+        getPositionedNodeFromKey(node, "extends"),
       ];
     }
     case "Lazy": {
@@ -159,7 +160,7 @@ export function getChildPositionedMagicalNodes(
       return getChildPositionedMagicalNodes({
         node: node.value,
         path: path.concat("value"),
-        depth: depth - 1
+        depth: depth - 1,
       });
     }
 

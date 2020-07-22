@@ -512,14 +512,16 @@ export let convertType = wrapInCache(
       };
     }
 
-    debugger;
+    if (process.env.MAGICAL_TYPES_DEBUG) {
+      throw new InternalError(
+        `Could not stringify type with flags: ${JSON.stringify(
+          flags,
+          null,
+          2
+        )} and path: ${path}`
+      );
+    }
 
-    throw new InternalError(
-      `Could not stringify type with flags: ${JSON.stringify(
-        flags,
-        null,
-        2
-      )} and path: ${path}`
-    );
+    return { type: "Error" };
   }
 );

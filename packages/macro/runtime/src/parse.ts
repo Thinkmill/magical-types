@@ -3,7 +3,7 @@ import {
   MagicalNodeWithIndexes,
   MagicalNodeIndex,
   TypeParameterNode,
-  LazyNode
+  LazyNode,
 } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
 
@@ -13,7 +13,7 @@ let weakMemoize = function<Arg extends object, Return>(
   func: (arg: Arg) => Return
 ): (arg: Arg) => Return {
   let cache: WeakMap<Arg, Return> = new WeakMap();
-  return arg => {
+  return (arg) => {
     if (cache.has(arg)) {
       return cache.get(arg)!;
     }
@@ -27,7 +27,7 @@ let memoize = function<Arg extends string | number, Return>(
   func: (arg: Arg) => Return
 ): (arg: Arg) => Return {
   let cache: Map<Arg, Return> = new Map();
-  return arg => {
+  return (arg) => {
     if (cache.has(arg)) {
       return cache.get(arg)!;
     }
@@ -61,7 +61,7 @@ function loadCachedLazyValue<Value>(
     return promiseCache.get(loader);
   }
   // if (typeof loader !== "function") debugger;
-  let promise = loader().then(value => {
+  let promise = loader().then((value) => {
     valueCache.set(loader, value);
   });
   promiseCache.set(loader, promise);
@@ -97,21 +97,21 @@ export let parseStringified = weakMemoize(function parseStringified(
         case "NumberLiteral":
         case "TypeParameter":
         case "Symbol":
+        case "Error":
         case "Intrinsic": {
-          // @ts-ignore
           return node;
         }
         case "Union": {
           return {
             type: "Union",
-            types: node.types.map(x => getNodeFromIndex(x)),
-            name: node.name
+            types: node.types.map((x) => getNodeFromIndex(x)),
+            name: node.name,
           };
         }
         case "Intersection": {
           return {
             type: "Intersection",
-            types: node.types.map(x => getNodeFromIndex(x))
+            types: node.types.map((x) => getNodeFromIndex(x)),
           };
         }
         case "Array":
@@ -119,67 +119,67 @@ export let parseStringified = weakMemoize(function parseStringified(
         case "ReadonlyArray": {
           return {
             type: node.type,
-            value: getNodeFromIndex(node.value)
+            value: getNodeFromIndex(node.value),
           };
         }
         case "Tuple": {
           return {
             type: "Tuple",
-            value: node.value.map(x => getNodeFromIndex(x))
+            value: node.value.map((x) => getNodeFromIndex(x)),
           };
         }
         case "IndexedAccess": {
           return {
             type: "IndexedAccess",
             index: getNodeFromIndex(node.index),
-            object: getNodeFromIndex(node.object)
+            object: getNodeFromIndex(node.object),
           };
         }
         case "Class": {
           return {
             type: "Class",
             name: node.name,
-            properties: node.properties.map(x => {
+            properties: node.properties.map((x) => {
               return { ...x, value: getNodeFromIndex(x.value) };
             }),
             thisNode: node.thisNode ? getNodeFromIndex(node.thisNode) : null,
-            typeParameters: node.typeParameters.map(x => getNodeFromIndex(x))
+            typeParameters: node.typeParameters.map((x) => getNodeFromIndex(x)),
           };
         }
         case "Object": {
           return {
             type: "Object",
             name: node.name,
-            properties: node.properties.map(x => {
+            properties: node.properties.map((x) => {
               return { ...x, value: getNodeFromIndex(x.value) };
             }),
-            callSignatures: node.callSignatures.map(x => {
+            callSignatures: node.callSignatures.map((x) => {
               return {
                 return: getNodeFromIndex(x.return),
-                parameters: x.parameters.map(x => ({
+                parameters: x.parameters.map((x) => ({
                   ...x,
-                  type: getNodeFromIndex(x.type)
+                  type: getNodeFromIndex(x.type),
                 })),
-                typeParameters: x.typeParameters.map(x =>
+                typeParameters: x.typeParameters.map((x) =>
                   getNodeFromIndex(x)
-                ) as TypeParameterNode[]
+                ) as TypeParameterNode[],
               };
             }),
-            constructSignatures: node.constructSignatures.map(x => {
+            constructSignatures: node.constructSignatures.map((x) => {
               return {
                 return: getNodeFromIndex(x.return),
-                parameters: x.parameters.map(x => ({
+                parameters: x.parameters.map((x) => ({
                   ...x,
-                  type: getNodeFromIndex(x.type)
+                  type: getNodeFromIndex(x.type),
                 })),
-                typeParameters: x.typeParameters.map(x =>
+                typeParameters: x.typeParameters.map((x) =>
                   getNodeFromIndex(x)
-                ) as TypeParameterNode[]
+                ) as TypeParameterNode[],
               };
             }),
-            aliasTypeArguments: node.aliasTypeArguments.map(x =>
+            aliasTypeArguments: node.aliasTypeArguments.map((x) =>
               getNodeFromIndex(x)
-            ) as TypeParameterNode[]
+            ) as TypeParameterNode[],
           };
         }
         case "Conditional": {
@@ -188,7 +188,7 @@ export let parseStringified = weakMemoize(function parseStringified(
             check: getNodeFromIndex(node.check),
             extends: getNodeFromIndex(node.extends),
             false: getNodeFromIndex(node.false),
-            true: getNodeFromIndex(node.true)
+            true: getNodeFromIndex(node.true),
           };
         }
 
@@ -263,7 +263,7 @@ export let parseStringified = weakMemoize(function parseStringified(
         lazyNode.value = getMagicalNode(
           thirdGroupValue.default[indexOnThirdGroup]
         );
-      }
+      },
     };
     return lazyNode;
   });

@@ -2,7 +2,7 @@ import {
   MagicalNode,
   MagicalNodeWithIndexes,
   MagicalNodeIndex,
-  PositionedMagicalNode
+  PositionedMagicalNode,
 } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
 import { getChildPositionedMagicalNodes } from "@magical-types/utils";
@@ -15,10 +15,10 @@ export function serializeNodes(rootNodes: MagicalNode[]) {
     { path: (string | number)[]; index: MagicalNodeIndex; depth: number }
   >();
 
-  let queue: PositionedMagicalNode[] = [...rootNodes].map(node => ({
+  let queue: PositionedMagicalNode[] = [...rootNodes].map((node) => ({
     node,
     path: [],
-    depth: 0
+    depth: 0,
   }));
 
   while (queue.length) {
@@ -33,7 +33,7 @@ export function serializeNodes(rootNodes: MagicalNode[]) {
       visitedNodes.set(currentNode.node, {
         path: currentNode.path,
         depth: currentNode.depth,
-        index: i++ as MagicalNodeIndex
+        index: i++ as MagicalNodeIndex,
       });
 
       let childPositionedNodes = getChildPositionedMagicalNodes(currentNode);
@@ -56,7 +56,7 @@ function getMagicalNodeWithIndexes(
     { path: (string | number)[]; index: MagicalNodeIndex }
   >
 ): MagicalNodeWithIndexes {
-  let getIndexForNode: (node: MagicalNode) => MagicalNodeIndex = node => {
+  let getIndexForNode: (node: MagicalNode) => MagicalNodeIndex = (node) => {
     let info = visitedNodes.get(node);
     if (!info) {
       throw new InternalError(
@@ -70,20 +70,21 @@ function getMagicalNodeWithIndexes(
     case "NumberLiteral":
     case "TypeParameter":
     case "Symbol":
+    case "Error":
     case "Intrinsic": {
       return node;
     }
     case "Union": {
       return {
         type: "Union",
-        types: node.types.map(x => getIndexForNode(x)),
-        name: node.name
+        types: node.types.map((x) => getIndexForNode(x)),
+        name: node.name,
       };
     }
     case "Intersection": {
       return {
         type: "Intersection",
-        types: node.types.map(x => getIndexForNode(x))
+        types: node.types.map((x) => getIndexForNode(x)),
       };
     }
     case "Array":
@@ -91,61 +92,63 @@ function getMagicalNodeWithIndexes(
     case "ReadonlyArray": {
       return {
         type: node.type,
-        value: getIndexForNode(node.value)
+        value: getIndexForNode(node.value),
       };
     }
     case "Tuple": {
       return {
         type: "Tuple",
-        value: node.value.map(x => getIndexForNode(x))
+        value: node.value.map((x) => getIndexForNode(x)),
       };
     }
     case "IndexedAccess": {
       return {
         type: "IndexedAccess",
         index: getIndexForNode(node.index),
-        object: getIndexForNode(node.object)
+        object: getIndexForNode(node.object),
       };
     }
     case "Class": {
       return {
         type: "Class",
         name: node.name,
-        properties: node.properties.map(x => {
+        properties: node.properties.map((x) => {
           return { ...x, value: getIndexForNode(x.value) };
         }),
         thisNode: node.thisNode ? getIndexForNode(node.thisNode) : null,
-        typeParameters: node.typeParameters.map(x => getIndexForNode(x))
+        typeParameters: node.typeParameters.map((x) => getIndexForNode(x)),
       };
     }
     case "Object": {
       return {
         type: "Object",
         name: node.name,
-        properties: node.properties.map(x => {
+        properties: node.properties.map((x) => {
           return { ...x, value: getIndexForNode(x.value) };
         }),
-        callSignatures: node.callSignatures.map(x => {
+        callSignatures: node.callSignatures.map((x) => {
           return {
             return: getIndexForNode(x.return),
-            parameters: x.parameters.map(x => ({
+            parameters: x.parameters.map((x) => ({
               ...x,
-              type: getIndexForNode(x.type)
+              type: getIndexForNode(x.type),
             })),
-            typeParameters: x.typeParameters.map(x => getIndexForNode(x))
+            typeParameters: x.typeParameters.map((x) => getIndexForNode(x)),
           };
         }),
-        constructSignatures: node.constructSignatures.map(x => {
+        constructSignatures: node.constructSignatures.map((x) => {
           return {
             return: getIndexForNode(x.return),
-            parameters: x.parameters.map(x => ({
+            parameters: x.parameters.map((x) => ({
               ...x,
-              type: getIndexForNode(x.type)
+              type: getIndexForNode(x.type),
             })),
-            typeParameters: x.typeParameters.map(x => getIndexForNode(x))
+            typeParameters: x.typeParameters.map((x) => getIndexForNode(x)),
           };
         }),
-        aliasTypeArguments: node.aliasTypeArguments.map(x => getIndexForNode(x))
+        aliasTypeArguments: node.aliasTypeArguments.map((x) =>
+          getIndexForNode(x)
+        ),
       };
     }
     case "Conditional": {
@@ -154,7 +157,7 @@ function getMagicalNodeWithIndexes(
         check: getIndexForNode(node.check),
         extends: getIndexForNode(node.extends),
         false: getIndexForNode(node.false),
-        true: getIndexForNode(node.true)
+        true: getIndexForNode(node.true),
       };
     }
     case "Lazy": {

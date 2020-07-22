@@ -10,7 +10,7 @@ import {
   SignatureNode,
   PositionedMagicalNode,
   Parameter,
-  LazyNode
+  LazyNode,
 } from "@magical-types/types";
 import {
   Type,
@@ -18,12 +18,12 @@ import {
   StringType,
   TypeMeta,
   Description,
-  Required
+  Required,
 } from "./pretty-proptypes/components";
 import { colors, gridSize } from "./pretty-proptypes/components/constants";
 import AddBrackets, {
   bracketStyle,
-  PathExpansionContext
+  PathExpansionContext,
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
 import { getChildPositionedMagicalNodes, flatMap } from "@magical-types/utils";
 import PropTypeHeading from "./pretty-proptypes/Prop/Heading";
@@ -51,7 +51,7 @@ const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
 
 function Properties({
   node,
-  path
+  path,
 }: {
   node: ClassNode;
   path: Array<number | string>;
@@ -83,7 +83,7 @@ function Properties({
 
 function PrettyObject({
   node,
-  path
+  path,
 }: {
   node: ObjectNode;
   path: Array<number | string>;
@@ -155,7 +155,7 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
     workingValue.listeners.push(forceUpdate);
     return () => {
       workingValue.listeners = workingValue.listeners.filter(
-        x => x !== forceUpdate
+        (x) => x !== forceUpdate
       );
     };
   }, []);
@@ -165,13 +165,13 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
       css={bracketStyle({ isHovered: val.value })}
       onMouseEnter={() => {
         workingValue.value = true;
-        workingValue.listeners.forEach(listener => {
+        workingValue.listeners.forEach((listener) => {
           listener();
         });
       }}
       onMouseLeave={() => {
         workingValue.value = false;
-        workingValue.listeners.forEach(listener => {
+        workingValue.listeners.forEach((listener) => {
           listener();
         });
       }}
@@ -183,7 +183,7 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
 
 function Parameters({
   parameters,
-  path
+  path,
 }: {
   parameters: Parameter[];
   path: Array<string | number>;
@@ -215,7 +215,7 @@ function PrettySignature({
   node,
   path,
   type,
-  funcType
+  funcType,
 }: {
   node: SignatureNode;
   path: Array<string | number>;
@@ -240,7 +240,7 @@ function PrettySignature({
           <span css={bracketStyle({ isHovered: false })}>{">"}</span>
         </span>
       )}
-      <AddBrackets nodes={node.parameters.map(x => x.type)}>
+      <AddBrackets nodes={node.parameters.map((x) => x.type)}>
         <Parameters parameters={node.parameters} path={path} />
       </AddBrackets>
       {funcType === "arrow" ? (
@@ -413,8 +413,8 @@ let RenderNode: (props: {
               nodes={getChildPositionedMagicalNodes({
                 node,
                 path: [],
-                depth: 0
-              }).map(x => x.node)}
+                depth: 0,
+              }).map((x) => x.node)}
               initialIsShown={false}
               openBracket="{"
               closeBracket="}"
@@ -468,6 +468,13 @@ let RenderNode: (props: {
     case "Lazy": {
       return <LazyNodeView node={node} path={path} />;
     }
+    case "Error": {
+      return (
+        <span>
+          An error occurred when serialising the types at this location
+        </span>
+      );
+    }
     default: {
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
     }
@@ -476,7 +483,7 @@ let RenderNode: (props: {
 
 function LazyNodeView({
   node,
-  path
+  path,
 }: {
   node: LazyNode;
   path: Array<number | string>;
@@ -516,7 +523,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   let visitedNodes = new Set<MagicalNode>();
 
   let queue: Array<PositionedMagicalNode> = [
-    { node: rootNode, path: [], depth: 0 }
+    { node: rootNode, path: [], depth: 0 },
   ];
 
   while (queue.length) {
@@ -532,7 +539,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
         "Tuple",
         "Class",
         "Promise",
-        "Builtin"
+        "Builtin",
       ] as Array<MagicalNode["type"]>).includes(currentPositionedNode.node.type)
     ) {
       pathsThatShouldBeExpandedByDefault.add(
@@ -561,7 +568,7 @@ export let renderTypes = (node: MagicalNode) => {
     <div
       css={{
         fontFamily:
-          "source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace"
+          "source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace",
       }}
     >
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
@@ -585,16 +592,16 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
     return node;
   }
   let types = node.types;
-  if (types.every(value => value.type === "Object")) {
+  if (types.every((value) => value.type === "Object")) {
     let objectNodes = types as ObjectNode[];
     return {
       type: "Object",
-      callSignatures: flatMap(objectNodes, x => x.callSignatures),
-      constructSignatures: flatMap(objectNodes, x => x.callSignatures),
-      properties: flatMap(objectNodes, x => x.properties),
+      callSignatures: flatMap(objectNodes, (x) => x.callSignatures),
+      constructSignatures: flatMap(objectNodes, (x) => x.callSignatures),
+      properties: flatMap(objectNodes, (x) => x.properties),
       name: null,
       // TODO: fix this
-      aliasTypeArguments: []
+      aliasTypeArguments: [],
     };
   }
   return node;
