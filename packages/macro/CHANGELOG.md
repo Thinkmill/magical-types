@@ -1,5 +1,14 @@
 # magical-types
 
+## 0.6.2
+
+### Patch Changes
+
+- [`00de208`](https://github.com/Thinkmill/magical-types/commit/00de2082fa81bd67d1b4abb8ec3701d2aab57a7d) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Return error nodes in more cases
+
+- Updated dependencies [[`00de208`](https://github.com/Thinkmill/magical-types/commit/00de2082fa81bd67d1b4abb8ec3701d2aab57a7d)]:
+  - @magical-types/convert-type@0.1.3
+
 ## 0.6.1
 
 ### Patch Changes
