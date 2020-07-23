@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/serialization",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "dist/serialization.cjs.js",
   "module": "dist/serialization.esm.js",
   "dependencies": {
