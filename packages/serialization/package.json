@@ -5,9 +5,9 @@
   "module": "dist/serialization.esm.js",
   "dependencies": {
     "@babel/runtime": "^7.7.2",
-    "@magical-types/utils": "^0.1.1",
+    "@magical-types/errors": "^0.0.1",
     "@magical-types/types": "^0.1.1",
-    "@magical-types/errors": "^0.0.1"
+    "@magical-types/utils": "^0.1.1"
   },
   "preconstruct": {
     "entrypoints": [
