@@ -101,14 +101,18 @@ let wrapInCache = <Arg extends object, Return>(
       return obj;
     } catch (err) {
       debugger;
-      if (
-        !err.message.startsWith(
-          "The following error occurred while trying to stringify"
-        )
-      ) {
-        err.message = `The following error occurred while trying to stringify the following path: ${path}: ${err.message}`;
+      if (process.env.MAGICAL_TYPES_DEBUG) {
+        if (
+          !err.message.startsWith(
+            "The following error occurred while trying to stringify"
+          )
+        ) {
+          err.message = `The following error occurred while trying to stringify the following path: ${path}: ${err.message}`;
+        }
+        throw err;
       }
-      throw err;
+      Object.assign(obj, { type: "Error" });
+      return obj;
     }
   };
 };
