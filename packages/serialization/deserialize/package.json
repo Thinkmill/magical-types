@@ -1,0 +1,7 @@
+{
+  "preconstruct": {
+    "source": "../src/deserialize"
+  },
+  "main": "dist/serialization.cjs.js",
+  "module": "dist/serialization.esm.js"
+}
