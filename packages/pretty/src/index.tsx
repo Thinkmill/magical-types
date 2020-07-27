@@ -1,4 +1,11 @@
-import React, { useEffect, useReducer, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useReducer,
+  useMemo,
+  useState,
+  Fragment,
+  ReactElement,
+} from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import ReactMarkdown from "react-markdown";
@@ -48,38 +55,6 @@ const TypeMinWidth = (props: React.HTMLAttributes<HTMLSpanElement>) => (
     {...props}
   />
 );
-
-function Properties({
-  node,
-  path,
-}: {
-  node: ClassNode;
-  path: Array<number | string>;
-}) {
-  return (
-    <Indent>
-      {node.properties.map((prop, index) => {
-        return (
-          <div key={index}>
-            {prop.description !== "" && (
-              <div>
-                <ReactMarkdown source={prop.description} />
-              </div>
-            )}
-            <TypeMinWidth>
-              <Type>{prop.key}</Type>
-            </TypeMinWidth>
-            {prop.required ? <Required> required</Required> : null}{" "}
-            <RenderNode
-              node={prop.value}
-              path={path.concat("properties", index, "value")}
-            />
-          </div>
-        );
-      })}
-    </Indent>
-  );
-}
 
 function PrettyObject({
   node,
@@ -181,7 +156,7 @@ function PrettyTypeParameter({ node }: { node: TypeParameterNode }) {
   );
 }
 
-function Parameters({
+export function Parameters({
   parameters,
   path,
 }: {
@@ -211,7 +186,7 @@ function Parameters({
   );
 }
 
-function PrettySignature({
+export function PrettySignature({
   node,
   path,
   type,
@@ -261,13 +236,22 @@ function PrettySignature({
   );
 }
 
-let RenderNode: (props: {
+let RenderNode = function RenderNode({
+  node,
+  path,
+}: {
   node: MagicalNode;
   path: Array<string | number>;
-}) => React.ReactElement = function RenderNode({ node, path }): any {
+}): ReactElement | null {
   if (path.length > 2000) {
-    return "This node has a path of greater than 2000, this is mostly likely because of a bug in Magical Types";
+    return (
+      <Fragment>
+        This node has a path of greater than 2000, this is mostly likely because
+        of a bug in Magical Types
+      </Fragment>
+    );
   }
+  let replacementRenderer;
   switch (node.type) {
     case "Intrinsic": {
       return <Type>{node.value}</Type>;
@@ -323,12 +307,18 @@ let RenderNode: (props: {
     case "IndexedAccess": {
       return (
         <span>
-          <div>
-            <RenderNode node={node.object} path={path.concat("object")} />
-          </div>
-          <div>
-            [<RenderNode node={node.index} path={path.concat("index")} />]
-          </div>
+          <TypeMeta>IndexedAccess</TypeMeta>
+          <AddBrackets
+            nodes={null}
+            initialIsShown
+            openBracket="<"
+            closeBracket=">"
+          >
+            <Indent>
+              <RenderNode node={node.object} path={path.concat("object")} />
+              <RenderNode node={node.index} path={path.concat("index")} />
+            </Indent>
+          </AddBrackets>
         </span>
       );
     }
@@ -360,18 +350,26 @@ let RenderNode: (props: {
       );
     }
     case "Intersection": {
-      let arr: Array<React.ReactNode> = [];
-      node.types.forEach((type, index) => {
-        arr.push(
-          <span key={index}>
-            <RenderNode node={type} path={path.concat("types", index)} />
-          </span>
-        );
-        if (index < node.types.length - 1) {
-          arr.push(<div key={`divider-${index}`}>&</div>);
-        }
-      });
-      return arr;
+      return (
+        <span>
+          <TypeMeta>Intersection</TypeMeta>
+          <AddBrackets
+            nodes={node.types}
+            initialIsShown={path}
+            openBracket="<"
+            closeBracket=">"
+          >
+            <Indent>
+              {node.types.map((n, index, array) => (
+                <div key={index}>
+                  <RenderNode node={n} path={path.concat("types", index)} />
+                  {array.length - 1 === index ? "" : ", "}
+                </div>
+              ))}
+            </Indent>
+          </AddBrackets>
+        </span>
+      );
     }
     case "Object": {
       if (
@@ -437,7 +435,27 @@ let RenderNode: (props: {
             openBracket="{"
             closeBracket="}"
           >
-            <Properties path={path} node={node} />
+            <Indent>
+              {node.properties.map((prop, index) => {
+                return (
+                  <div key={index}>
+                    {prop.description !== "" && (
+                      <div>
+                        <ReactMarkdown source={prop.description} />
+                      </div>
+                    )}
+                    <TypeMinWidth>
+                      <Type>{prop.key}</Type>
+                    </TypeMinWidth>
+                    {prop.required ? <Required> required</Required> : null}{" "}
+                    <RenderNode
+                      node={prop.value}
+                      path={path.concat("properties", index, "value")}
+                    />
+                  </div>
+                );
+              })}
+            </Indent>
           </AddBrackets>
         </span>
       );
@@ -479,6 +497,7 @@ let RenderNode: (props: {
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
     }
   }
+  return null;
 };
 
 function LazyNodeView({
