@@ -3,6 +3,11 @@
   "version": "0.1.1",
   "main": "dist/serialization.cjs.js",
   "module": "dist/serialization.esm.js",
+  "files": [
+    "dist",
+    "serialize",
+    "deserialize"
+  ],
   "dependencies": {
     "@babel/runtime": "^7.7.2",
     "@magical-types/errors": "^0.0.1",

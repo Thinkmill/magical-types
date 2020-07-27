@@ -5,7 +5,7 @@ import {
   PositionedMagicalNode,
 } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
-import { getChildPositionedMagicalNodes } from "@magical-types/utils";
+import { flatMap } from "@magical-types/utils";
 
 export function chunkNodes({ nodes, nodesMeta }: SerializationResult) {
   let below5: MagicalNodeWithIndexes[] = [];
@@ -24,10 +24,7 @@ export function chunkNodes({ nodes, nodesMeta }: SerializationResult) {
   return [below5, between5And10, above10] as const;
 }
 
-type NodesMeta = Map<
-  MagicalNode,
-  { path: (string | number)[]; index: MagicalNodeIndex; depth: number }
->;
+type NodesMeta = Map<MagicalNode, { index: MagicalNodeIndex; depth: number }>;
 
 export type SerializationResult = {
   nodes: MagicalNodeWithIndexes[];
@@ -37,25 +34,32 @@ export type SerializationResult = {
 export function serializeNodes(rootNodes: MagicalNode[]): SerializationResult {
   let i = 0;
   // because of circular references, we don't want to visit a node more than once
-  let visitedNodes: NodesMeta = new Map();
+  let visitedNodes: Map<
+    MagicalNode,
+    { index: MagicalNodeIndex; depth: number }
+  > = new Map();
 
-  let serializeNode = (node: PositionedMagicalNode) => {
-    visitedNodes.set(node.node, {
-      path: node.path,
-      depth: node.depth,
-      index: i++ as MagicalNodeIndex,
-    });
-    let childPositionedNodes = getChildPositionedMagicalNodes(node);
-    childPositionedNodes.forEach((childNode) => {
-      if (!visitedNodes.has(childNode.node)) {
-        serializeNode(childNode);
-      }
-    });
-  };
+  let queue: { node: MagicalNode; depth: number }[] = rootNodes.map((node) => ({
+    node,
+    depth: 0,
+  }));
 
-  rootNodes.forEach((node) => {
-    serializeNode({ depth: 0, node, path: [] });
-  });
+  while (queue.length) {
+    let currentNode = queue.shift()!;
+    if (!visitedNodes.has(currentNode.node)) {
+      visitedNodes.set(currentNode.node, {
+        depth: currentNode.depth,
+        index: i++ as MagicalNodeIndex,
+      });
+
+      let childNodes = getChildMagicalNodes(currentNode.node);
+      childNodes.forEach((node) => {
+        if (!visitedNodes.has(node)) {
+          queue.push({ node, depth: currentNode.depth + 1 });
+        }
+      });
+    }
+  }
 
   let newNodes: MagicalNodeWithIndexes[] = [];
   for (let [node] of visitedNodes) {
@@ -66,10 +70,7 @@ export function serializeNodes(rootNodes: MagicalNode[]): SerializationResult {
 
 function getMagicalNodeWithIndexes(
   node: MagicalNode,
-  visitedNodes: Map<
-    MagicalNode,
-    { path: (string | number)[]; index: MagicalNodeIndex }
-  >
+  visitedNodes: Map<MagicalNode, { index: MagicalNodeIndex }>
 ): MagicalNodeWithIndexes {
   let getIndexForNode: (node: MagicalNode) => MagicalNodeIndex = (node) => {
     let info = visitedNodes.get(node);
@@ -183,6 +184,77 @@ function getMagicalNodeWithIndexes(
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
       // @ts-ignore
       throw new Error("this should never happen: " + node.type);
+    }
+  }
+}
+
+function getChildMagicalNodes(node: MagicalNode): Array<MagicalNode> {
+  switch (node.type) {
+    case "Symbol":
+    case "StringLiteral":
+    case "NumberLiteral":
+    case "TypeParameter":
+    case "Error":
+    case "Intrinsic": {
+      return [];
+    }
+    case "Union":
+    case "Intersection": {
+      return node.types;
+    }
+    case "Array":
+    case "Promise":
+    case "ReadonlyArray": {
+      return [node.value];
+    }
+    case "Tuple": {
+      return node.value;
+    }
+    case "IndexedAccess": {
+      return [node.object, node.index];
+    }
+    case "Class": {
+      return [
+        ...(node.thisNode ? [node.thisNode] : []),
+        ...node.typeParameters,
+        ...node.properties.map((param) => {
+          return param.value;
+        }),
+      ];
+    }
+    case "Object": {
+      return [
+        ...flatMap(node.callSignatures, (signature) => {
+          return [
+            ...signature.typeParameters,
+            ...signature.parameters.map((x) => x.type),
+            signature.return,
+          ];
+        }),
+        ...flatMap(node.constructSignatures, (signature) => {
+          return [
+            ...signature.typeParameters,
+            ...signature.parameters.map((x) => x.type),
+            signature.return,
+          ];
+        }),
+        ...node.aliasTypeArguments.map((node) => node),
+        ...node.properties.map((param) => param.value),
+      ];
+    }
+    case "Conditional": {
+      return [node.check, node.true, node.false, node.extends];
+    }
+    case "Lazy": {
+      throw new InternalError(
+        "Lazy nodes should be loaded before being used in getChildPositionedMagicalNodes"
+      );
+    }
+
+    default: {
+      let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
+      // @ts-ignore
+      throw new InternalError("this should never happen: " + node.type);
     }
   }
 }
