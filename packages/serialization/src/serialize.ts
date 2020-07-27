@@ -39,32 +39,23 @@ export function serializeNodes(rootNodes: MagicalNode[]): SerializationResult {
   // because of circular references, we don't want to visit a node more than once
   let visitedNodes: NodesMeta = new Map();
 
-  let queue: PositionedMagicalNode[] = [...rootNodes].map((node) => ({
-    node,
-    path: [],
-    depth: 0,
-  }));
+  let serializeNode = (node: PositionedMagicalNode) => {
+    visitedNodes.set(node.node, {
+      path: node.path,
+      depth: node.depth,
+      index: i++ as MagicalNodeIndex,
+    });
+    let childPositionedNodes = getChildPositionedMagicalNodes(node);
+    childPositionedNodes.forEach((childNode) => {
+      if (!visitedNodes.has(childNode.node)) {
+        serializeNode(childNode);
+      }
+    });
+  };
 
-  while (queue.length) {
-    let currentNode = queue.shift()!;
-    if (
-      currentNode.node.type === "TypeParameter" &&
-      currentNode.node.value === "VarDate"
-    ) {
-      debugger;
-    }
-    if (!visitedNodes.has(currentNode.node)) {
-      visitedNodes.set(currentNode.node, {
-        path: currentNode.path,
-        depth: currentNode.depth,
-        index: i++ as MagicalNodeIndex,
-      });
-
-      let childPositionedNodes = getChildPositionedMagicalNodes(currentNode);
-
-      queue.push(...childPositionedNodes);
-    }
-  }
+  rootNodes.forEach((node) => {
+    serializeNode({ depth: 0, node, path: [] });
+  });
 
   let newNodes: MagicalNodeWithIndexes[] = [];
   for (let [node] of visitedNodes) {

@@ -12,7 +12,8 @@
   },
   "preconstruct": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "test-script"
     ]
   },
   "workspaces": [

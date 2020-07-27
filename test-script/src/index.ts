@@ -1,15 +1,23 @@
 import { Project } from "ts-morph";
 import { convertType } from "@magical-types/convert-type";
+import fs from "fs";
 import path from "path";
+import { serializeNodes } from "@magical-types/serialization/serialize";
 
 let project = new Project({
-  tsConfigFilePath: path.join(__dirname, "..", "..", "tsconfig.json")
+  tsConfigFilePath: path.join(__dirname, "..", "..", "tsconfig.json"),
 });
 
-project.getSourceFiles("test-script/src/*.ts").forEach(file => {
-  file.getExportedDeclarations().forEach(([decl], name) => {
-    console.log(convertType(decl.getType().compilerType, [name]));
-  });
+let result = project.getSourceFiles("test-script/src/test.tsx").map((file) => {
+  return Object.fromEntries(
+    [...file.getExportedDeclarations().entries()].map(([name, decl]) => {
+      let type = decl[0].getType().compilerType;
+      return [name, serializeNodes([convertType(type, [])])] as const;
+    })
+  );
 });
 
-setTimeout(() => {}, 10000000);
+fs.writeFileSync(
+  path.join(__dirname, "index.json"),
+  JSON.stringify(result, null, 2)
+);
