@@ -5,6 +5,7 @@ import React, {
   useState,
   Fragment,
   ReactElement,
+  useContext,
 } from "react";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
@@ -12,7 +13,6 @@ import ReactMarkdown from "react-markdown";
 import {
   MagicalNode,
   ObjectNode,
-  ClassNode,
   TypeParameterNode,
   SignatureNode,
   PositionedMagicalNode,
@@ -98,7 +98,7 @@ function PrettyObject({
             <TypeMinWidth>
               <Type>{prop.key + (prop.required ? "" : "?")}</Type>
             </TypeMinWidth>
-            <RenderNode
+            <PrettyMagicalNode
               node={prop.value}
               path={path.concat("properties", index, "value")}
             />
@@ -175,7 +175,7 @@ export function Parameters({
           ) : (
             undefined
           )}
-          <RenderNode
+          <PrettyMagicalNode
             node={param.type}
             path={path.concat("parameters", index, "type")}
           />
@@ -185,6 +185,272 @@ export function Parameters({
     </React.Fragment>
   );
 }
+
+type MagicalNodeType = MagicalNode["type"];
+
+export type MagicalNodeRenderers = {
+  [Key in MagicalNodeType]: (props: {
+    node: Extract<MagicalNode, { type: Key }>;
+    path: Array<string | number>;
+  }) => ReactElement | null;
+};
+
+function SimpleGenericRenderer({
+  node,
+  path,
+}: {
+  node: { type: string; value: MagicalNode };
+  path: Array<string | number>;
+}) {
+  let newPath = path.concat("value");
+
+  return (
+    <span>
+      <TypeMeta>{node.type}</TypeMeta>
+      <AddBrackets
+        nodes={[node.value]}
+        initialIsShown={newPath}
+        openBracket="<"
+        closeBracket=">"
+        closedContent={
+          (node as any).value.name ? (node as any).value.name : undefined
+        }
+      >
+        <PrettyMagicalNode path={newPath} node={node.value} />
+      </AddBrackets>
+    </span>
+  );
+}
+
+export const defaultRenderers: MagicalNodeRenderers = {
+  NumberLiteral({ node }) {
+    return <Type>{node.value}</Type>;
+  },
+  Intrinsic({ node }) {
+    return <Type>{node.value}</Type>;
+  },
+  StringLiteral({ node }) {
+    return <StringType>"{node.value}"</StringType>;
+  },
+  Array: SimpleGenericRenderer,
+  ReadonlyArray: SimpleGenericRenderer,
+  Promise: SimpleGenericRenderer,
+  Tuple({ node, path }) {
+    return (
+      <span>
+        <TypeMeta>Tuple</TypeMeta>
+        <AddBrackets
+          nodes={node.value}
+          initialIsShown={path}
+          openBracket="["
+          closeBracket="]"
+        >
+          {node.value.map((node, index, array) => (
+            <React.Fragment key={index}>
+              <PrettyMagicalNode
+                node={node}
+                path={path.concat("value", index)}
+              />
+              {array.length - 1 === index ? "" : ", "}
+            </React.Fragment>
+          ))}
+        </AddBrackets>
+      </span>
+    );
+  },
+  IndexedAccess({ node, path }) {
+    return (
+      <span>
+        <TypeMeta>IndexedAccess</TypeMeta>
+        <AddBrackets
+          nodes={null}
+          initialIsShown
+          openBracket="<"
+          closeBracket=">"
+        >
+          <Indent>
+            <PrettyMagicalNode
+              node={node.object}
+              path={path.concat("object")}
+            />
+            <PrettyMagicalNode node={node.index} path={path.concat("index")} />
+          </Indent>
+        </AddBrackets>
+      </span>
+    );
+  },
+  TypeParameter: PrettyTypeParameter,
+  Union({ node, path }) {
+    return (
+      <span>
+        <TypeMeta>{node.name === null ? "" : `${node.name} `}One of </TypeMeta>
+        <AddBrackets
+          nodes={node.types}
+          initialIsShown={path}
+          openBracket="<"
+          closeBracket=">"
+        >
+          <Indent>
+            {node.types.map((n, index, array) => (
+              <div key={index}>
+                <PrettyMagicalNode
+                  node={n}
+                  path={path.concat("types", index)}
+                />
+                {array.length - 1 === index ? "" : ", "}
+              </div>
+            ))}
+          </Indent>
+        </AddBrackets>
+      </span>
+    );
+  },
+  Intersection({ node, path }) {
+    return (
+      <span>
+        <TypeMeta>Intersection</TypeMeta>
+        <AddBrackets
+          nodes={node.types}
+          initialIsShown={path}
+          openBracket="<"
+          closeBracket=">"
+        >
+          <Indent>
+            {node.types.map((n, index, array) => (
+              <div key={index}>
+                <PrettyMagicalNode
+                  node={n}
+                  path={path.concat("types", index)}
+                />
+                {array.length - 1 === index ? "" : ", "}
+              </div>
+            ))}
+          </Indent>
+        </AddBrackets>
+      </span>
+    );
+  },
+  Object({ node, path }) {
+    if (
+      node.callSignatures.length === 1 &&
+      node.properties.length === 0 &&
+      node.constructSignatures.length === 0
+    ) {
+      return (
+        <PrettySignature
+          node={node.callSignatures[0]}
+          type="call"
+          funcType="arrow"
+          path={path.concat("callSignatures", 0)}
+        />
+      );
+    }
+    if (
+      node.constructSignatures.length === 1 &&
+      node.properties.length === 0 &&
+      node.callSignatures.length === 0
+    ) {
+      return (
+        <PrettySignature
+          node={node.constructSignatures[0]}
+          type="construct"
+          funcType="arrow"
+          path={path.concat("constructSignatures", 0)}
+        />
+      );
+    }
+
+    return (
+      <span>
+        <TypeMeta>{node.name}</TypeMeta>
+        {node.callSignatures.length ||
+        node.constructSignatures.length ||
+        node.properties.length ? (
+          <AddBrackets
+            nodes={getChildPositionedMagicalNodes({
+              node,
+              path: [],
+              depth: 0,
+            }).map((x) => x.node)}
+            initialIsShown={false}
+            openBracket="{"
+            closeBracket="}"
+          >
+            <PrettyObject path={path} node={node} />
+          </AddBrackets>
+        ) : (
+          <span css={bracketStyle({ isHovered: false })}>{"{}"}</span>
+        )}
+      </span>
+    );
+  },
+  Class({ node, path }) {
+    return (
+      <span>
+        <TypeMeta>class {node.name}</TypeMeta>
+        <AddBrackets
+          nodes={null}
+          initialIsShown={path}
+          openBracket="{"
+          closeBracket="}"
+        >
+          <Indent>
+            {node.properties.map((prop, index) => {
+              return (
+                <div key={index}>
+                  {prop.description !== "" && (
+                    <div>
+                      <ReactMarkdown source={prop.description} />
+                    </div>
+                  )}
+                  <TypeMinWidth>
+                    <Type>{prop.key}</Type>
+                  </TypeMinWidth>
+                  {prop.required ? <Required> required</Required> : null}{" "}
+                  <PrettyMagicalNode
+                    node={prop.value}
+                    path={path.concat("properties", index, "value")}
+                  />
+                </div>
+              );
+            })}
+          </Indent>
+        </AddBrackets>
+      </span>
+    );
+  },
+  Conditional({ node, path }) {
+    return (
+      <span>
+        <PrettyMagicalNode node={node.check} path={path.concat("check")} />{" "}
+        <TypeMeta>extends</TypeMeta>{" "}
+        <PrettyMagicalNode node={node.extends} path={path.concat("extends")} />{" "}
+        <TypeMeta> ? </TypeMeta>
+        <PrettyMagicalNode node={node.true} path={path.concat("true")} />
+        <TypeMeta> : </TypeMeta>
+        <PrettyMagicalNode node={node.false} path={path.concat("false")} />
+      </span>
+    );
+  },
+  Symbol({ node }) {
+    return (
+      <span>
+        <TypeMeta>
+          Symbol(
+          <span css={{ color: colors.P300 }}>{node.name}</span>)
+        </TypeMeta>
+      </span>
+    );
+  },
+  Lazy: LazyNodeView,
+  Error() {
+    return (
+      <Type>An error occurred when serialising the types at this location</Type>
+    );
+  },
+};
+
+export const RenderersContext = React.createContext(defaultRenderers);
 
 export function PrettySignature({
   node,
@@ -205,7 +471,7 @@ export function PrettySignature({
           <span css={bracketStyle({ isHovered: false })}>{"<"}</span>
           {node.typeParameters.map((param, index, array) => (
             <React.Fragment key={index}>
-              <RenderNode
+              <PrettyMagicalNode
                 node={param}
                 path={path.concat("typeParameters", index)}
               />
@@ -230,13 +496,13 @@ export function PrettySignature({
         </span>
       )}
       <AddBrackets nodes={[node.return]} openBracket="" closeBracket="">
-        <RenderNode node={node.return} path={path.concat("return")} />
+        <PrettyMagicalNode node={node.return} path={path.concat("return")} />
       </AddBrackets>
     </span>
   );
 }
 
-let RenderNode = function RenderNode({
+export let PrettyMagicalNode = function RenderNode({
   node,
   path,
 }: {
@@ -251,253 +517,10 @@ let RenderNode = function RenderNode({
       </Fragment>
     );
   }
-  let replacementRenderer;
-  switch (node.type) {
-    case "Intrinsic": {
-      return <Type>{node.value}</Type>;
-    }
-    case "StringLiteral": {
-      return <StringType>"{node.value}"</StringType>;
-    }
-    case "NumberLiteral": {
-      return <Type>{node.value}</Type>;
-    }
-    case "ReadonlyArray":
-    case "Promise":
-    case "Array": {
-      let newPath = path.concat("value");
 
-      return (
-        <span>
-          <TypeMeta>{node.type}</TypeMeta>
-          <AddBrackets
-            nodes={[node.value]}
-            initialIsShown={newPath}
-            openBracket="<"
-            closeBracket=">"
-            closedContent={
-              (node as any).value.name ? (node as any).value.name : undefined
-            }
-          >
-            <RenderNode path={newPath} node={node.value} />
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "Tuple": {
-      return (
-        <span>
-          <TypeMeta>Tuple</TypeMeta>
-          <AddBrackets
-            nodes={node.value}
-            initialIsShown={path}
-            openBracket="["
-            closeBracket="]"
-          >
-            {node.value.map((node, index, array) => (
-              <React.Fragment key={index}>
-                <RenderNode node={node} path={path.concat("value", index)} />
-                {array.length - 1 === index ? "" : ", "}
-              </React.Fragment>
-            ))}
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "IndexedAccess": {
-      return (
-        <span>
-          <TypeMeta>IndexedAccess</TypeMeta>
-          <AddBrackets
-            nodes={null}
-            initialIsShown
-            openBracket="<"
-            closeBracket=">"
-          >
-            <Indent>
-              <RenderNode node={node.object} path={path.concat("object")} />
-              <RenderNode node={node.index} path={path.concat("index")} />
-            </Indent>
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "TypeParameter": {
-      return <PrettyTypeParameter node={node} />;
-    }
-    case "Union": {
-      return (
-        <span>
-          <TypeMeta>
-            {node.name === null ? "" : `${node.name} `}One of{" "}
-          </TypeMeta>
-          <AddBrackets
-            nodes={node.types}
-            initialIsShown={path}
-            openBracket="<"
-            closeBracket=">"
-          >
-            <Indent>
-              {node.types.map((n, index, array) => (
-                <div key={index}>
-                  <RenderNode node={n} path={path.concat("types", index)} />
-                  {array.length - 1 === index ? "" : ", "}
-                </div>
-              ))}
-            </Indent>
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "Intersection": {
-      return (
-        <span>
-          <TypeMeta>Intersection</TypeMeta>
-          <AddBrackets
-            nodes={node.types}
-            initialIsShown={path}
-            openBracket="<"
-            closeBracket=">"
-          >
-            <Indent>
-              {node.types.map((n, index, array) => (
-                <div key={index}>
-                  <RenderNode node={n} path={path.concat("types", index)} />
-                  {array.length - 1 === index ? "" : ", "}
-                </div>
-              ))}
-            </Indent>
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "Object": {
-      if (
-        node.callSignatures.length === 1 &&
-        node.properties.length === 0 &&
-        node.constructSignatures.length === 0
-      ) {
-        return (
-          <PrettySignature
-            node={node.callSignatures[0]}
-            type="call"
-            funcType="arrow"
-            path={path.concat("callSignatures", 0)}
-          />
-        );
-      }
-      if (
-        node.constructSignatures.length === 1 &&
-        node.properties.length === 0 &&
-        node.callSignatures.length === 0
-      ) {
-        return (
-          <PrettySignature
-            node={node.constructSignatures[0]}
-            type="construct"
-            funcType="arrow"
-            path={path.concat("constructSignatures", 0)}
-          />
-        );
-      }
-
-      return (
-        <span>
-          <TypeMeta>{node.name}</TypeMeta>
-          {node.callSignatures.length ||
-          node.constructSignatures.length ||
-          node.properties.length ? (
-            <AddBrackets
-              nodes={getChildPositionedMagicalNodes({
-                node,
-                path: [],
-                depth: 0,
-              }).map((x) => x.node)}
-              initialIsShown={false}
-              openBracket="{"
-              closeBracket="}"
-            >
-              <PrettyObject path={path} node={node} />
-            </AddBrackets>
-          ) : (
-            <span css={bracketStyle({ isHovered: false })}>{"{}"}</span>
-          )}
-        </span>
-      );
-    }
-    case "Class": {
-      return (
-        <span>
-          <TypeMeta>class {node.name}</TypeMeta>
-          <AddBrackets
-            nodes={null}
-            initialIsShown={path}
-            openBracket="{"
-            closeBracket="}"
-          >
-            <Indent>
-              {node.properties.map((prop, index) => {
-                return (
-                  <div key={index}>
-                    {prop.description !== "" && (
-                      <div>
-                        <ReactMarkdown source={prop.description} />
-                      </div>
-                    )}
-                    <TypeMinWidth>
-                      <Type>{prop.key}</Type>
-                    </TypeMinWidth>
-                    {prop.required ? <Required> required</Required> : null}{" "}
-                    <RenderNode
-                      node={prop.value}
-                      path={path.concat("properties", index, "value")}
-                    />
-                  </div>
-                );
-              })}
-            </Indent>
-          </AddBrackets>
-        </span>
-      );
-    }
-    case "Conditional": {
-      return (
-        <span>
-          <RenderNode node={node.check} path={path.concat("check")} />{" "}
-          <TypeMeta>extends</TypeMeta>{" "}
-          <RenderNode node={node.extends} path={path.concat("extends")} />{" "}
-          <TypeMeta> ? </TypeMeta>
-          <RenderNode node={node.true} path={path.concat("true")} />
-          <TypeMeta> : </TypeMeta>
-          <RenderNode node={node.false} path={path.concat("false")} />
-        </span>
-      );
-    }
-    case "Symbol": {
-      return (
-        <span>
-          <TypeMeta>
-            Symbol(
-            <span css={{ color: colors.P300 }}>{node.name}</span>)
-          </TypeMeta>
-        </span>
-      );
-    }
-    case "Lazy": {
-      return <LazyNodeView node={node} path={path} />;
-    }
-    case "Error": {
-      return (
-        <span>
-          An error occurred when serialising the types at this location
-        </span>
-      );
-    }
-    default: {
-      let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
-    }
-  }
-  return null;
+  let renderers = useContext(RenderersContext);
+  let Renderer = renderers[node.type];
+  return <Renderer node={node as never} path={path} />;
 };
 
 function LazyNodeView({
@@ -521,7 +544,7 @@ function LazyNodeView({
   }, [promise]);
 
   if (value !== undefined) {
-    return <RenderNode node={value} path={path.concat("value")} />;
+    return <PrettyMagicalNode node={value} path={path.concat("value")} />;
   }
   return <React.Fragment>Loading...</React.Fragment>;
 }
@@ -558,7 +581,6 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
         "Tuple",
         "Class",
         "Promise",
-        "Builtin",
       ] as Array<MagicalNode["type"]>).includes(currentPositionedNode.node.type)
     ) {
       pathsThatShouldBeExpandedByDefault.add(
@@ -578,7 +600,7 @@ function getPathsThatShouldBeExpandedByDefault(rootNode: MagicalNode) {
   return pathsThatShouldBeExpandedByDefault;
 }
 
-export let renderTypes = (node: MagicalNode) => {
+export let Types = ({ node }: { node: MagicalNode }) => {
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
     return getPathsThatShouldBeExpandedByDefault(node);
   }, [node]);
@@ -591,13 +613,13 @@ export let renderTypes = (node: MagicalNode) => {
       }}
     >
       <PathExpansionContext.Provider value={pathsThatShouldBeExpandedByDefault}>
-        <RenderNode node={node} path={[]} />
+        <PrettyMagicalNode node={node} path={[]} />
       </PathExpansionContext.Provider>
     </div>
   );
 };
 
-const PropTypeWrapper = (props: { children: React.ReactNode }) => (
+export const PropTypeWrapper = (props: { children: React.ReactNode }) => (
   <div
     css={css`
       margin-top: ${gridSize * 4}px;
@@ -626,10 +648,6 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
   return node;
 }
 
-export function Types({ node }: { node: MagicalNode }) {
-  return renderTypes(node);
-}
-
 export function PropTypes({ node }: { node: MagicalNode }) {
   node = simplifyIntersection(node);
   let pathsThatShouldBeExpandedByDefault = useMemo(() => {
@@ -648,7 +666,7 @@ export function PropTypes({ node }: { node: MagicalNode }) {
                     <ReactMarkdown source={prop.description} />
                   </Description>
                 )}
-                <RenderNode
+                <PrettyMagicalNode
                   node={prop.value}
                   path={["properties", index, "value"]}
                 />
@@ -659,5 +677,6 @@ export function PropTypes({ node }: { node: MagicalNode }) {
       </PathExpansionContext.Provider>
     );
   }
-  return renderTypes(node);
+  return <Types node={node} />;
 }
+export { AddBrackets, TypeMeta, Type, PropTypeHeading, Description };
