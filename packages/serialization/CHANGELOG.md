@@ -1,5 +1,11 @@
 # @magical-types/serialization
 
+## 0.2.0
+
+### Minor Changes
+
+- [`bdab452`](https://github.com/Thinkmill/magical-types/commit/bdab45237b5c4e9198b973a080332a02a7647033) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Switch back to a breadth-first traversal to have correct indexes and remove path from nodesMeta
+
 ## 0.1.1
 
 ### Patch Changes
