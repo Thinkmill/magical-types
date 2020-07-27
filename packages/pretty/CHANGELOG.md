@@ -1,5 +1,11 @@
 # @magical-types/pretty
 
+## 0.3.2
+
+### Patch Changes
+
+- [`299b5d4`](https://github.com/Thinkmill/magical-types/commit/299b5d49483fabd9276444e586399d7f4355e8a3) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Improve representation of IndexedAccess and Intersection
+
 ## 0.3.1
 
 ### Patch Changes
