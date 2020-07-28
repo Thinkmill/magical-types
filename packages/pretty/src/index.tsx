@@ -330,7 +330,7 @@ export const defaultRenderers: MagicalNodeRenderers = {
       </span>
     );
   },
-  Object({ node, path }) {
+  Object: function ObjectRenderer({ node, path }) {
     if (
       node.callSignatures.length === 1 &&
       node.properties.length === 0 &&
