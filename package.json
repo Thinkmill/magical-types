@@ -14,7 +14,10 @@
     "packages": [
       "packages/*",
       "test-script"
-    ]
+    ],
+    "___experimentalFlags_WILL_CHANGE_IN_PATCH": {
+      "useTSMorphToGenerateTSDeclarations": true
+    }
   },
   "workspaces": [
     "packages/*",
@@ -33,7 +36,7 @@
     "@changesets/cli": "^2.4.0",
     "@emotion/core": "^10.0.22",
     "@manypkg/cli": "^0.9.0",
-    "@preconstruct/cli": "^1.1.4",
+    "@preconstruct/cli": "^1.1.17",
     "@testing-library/react": "^8.0.4",
     "@types/babel__core": "^7.1.2",
     "@types/jest": "^24.0.15",
