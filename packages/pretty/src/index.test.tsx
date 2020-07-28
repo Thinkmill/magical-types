@@ -5,6 +5,8 @@ import { ObjectNode } from "@magical-types/types";
 
 let nodeWithCircularParam: ObjectNode = {
   type: "Object",
+  numberIndex: undefined,
+  stringIndex: undefined,
   aliasTypeArguments: [],
   callSignatures: [
     {
@@ -12,22 +14,24 @@ let nodeWithCircularParam: ObjectNode = {
         {
           name: "thing",
           required: true,
-          type: { type: "Intrinsic", value: "string" }
-        }
+          type: { type: "Intrinsic", value: "string" },
+        },
       ],
       return: { type: "Intrinsic", value: "string" },
-      typeParameters: []
-    }
+      typeParameters: [],
+    },
   ],
   constructSignatures: [],
   name: "",
-  properties: []
+  properties: [],
 };
 
 nodeWithCircularParam.callSignatures[0].parameters[0].type = nodeWithCircularParam;
 
 let nodeWithCircularReturn: ObjectNode = {
   type: "Object",
+  numberIndex: undefined,
+  stringIndex: undefined,
   aliasTypeArguments: [],
   callSignatures: [
     {
@@ -35,16 +39,16 @@ let nodeWithCircularReturn: ObjectNode = {
         {
           name: "thing",
           required: true,
-          type: { type: "Intrinsic", value: "string" }
-        }
+          type: { type: "Intrinsic", value: "string" },
+        },
       ],
       return: { type: "Intrinsic", value: "string" },
-      typeParameters: []
-    }
+      typeParameters: [],
+    },
   ],
   constructSignatures: [],
   name: "",
-  properties: []
+  properties: [],
 };
 
 nodeWithCircularReturn.callSignatures[0].return = nodeWithCircularReturn;

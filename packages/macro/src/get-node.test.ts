@@ -9,6 +9,7 @@ test("it works", () => {
       "callSignatures": Array [],
       "constructSignatures": Array [],
       "name": "Thing",
+      "numberIndex": undefined,
       "properties": Array [
         Object {
           "description": "",
@@ -20,6 +21,7 @@ test("it works", () => {
           },
         },
       ],
+      "stringIndex": undefined,
       "type": "Object",
     }
   `);

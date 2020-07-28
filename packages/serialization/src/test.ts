@@ -3,7 +3,7 @@ import {
   MagicalNodeWithIndexes,
   MagicalNodeIndex,
   MagicalNode,
-  PositionedMagicalNode,
+  PositionedMagicalNode
 } from "@magical-types/types";
 import { serializeNodes, chunkNodes } from "./serialize";
 import { deserialize } from "./deserialize";
@@ -375,88 +375,88 @@ let tree: ObjectNode = {
                                                                                                                                                                     type:
                                                                                                                                                                       "Intrinsic",
                                                                                                                                                                     value:
-                                                                                                                                                                      "string",
-                                                                                                                                                                  },
-                                                                                                                                                                },
-                                                                                                                                                              ],
-                                                                                                                                                            },
-                                                                                                                                                          },
-                                                                                                                                                        ],
-                                                                                                                                                      },
-                                                                                                                                                    },
-                                                                                                                                                  ],
-                                                                                                                                                },
-                                                                                                                                              },
-                                                                                                                                            ],
-                                                                                                                                          },
-                                                                                                                                        },
-                                                                                                                                      ],
-                                                                                                                                    },
-                                                                                                                                  },
-                                                                                                                                ],
-                                                                                                                              },
-                                                                                                                            },
-                                                                                                                          ],
-                                                                                                                        },
-                                                                                                                      },
-                                                                                                                    ],
-                                                                                                                  },
-                                                                                                                },
-                                                                                                              ],
-                                                                                                            },
-                                                                                                          },
-                                                                                                        ],
-                                                                                                      },
-                                                                                                    },
-                                                                                                  ],
-                                                                                                },
-                                                                                              },
-                                                                                            ],
-                                                                                          },
-                                                                                        },
-                                                                                      ],
-                                                                                    },
-                                                                                  },
-                                                                                ],
-                                                                              },
-                                                                            },
-                                                                          ],
-                                                                        },
-                                                                      },
-                                                                    ],
-                                                                  },
-                                                                },
-                                                              ],
-                                                            },
-                                                          },
-                                                        ],
-                                                      },
-                                                    },
-                                                  ],
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
+                                                                                                                                                                      "string"
+                                                                                                                                                                  }
+                                                                                                                                                                }
+                                                                                                                                                              ]
+                                                                                                                                                            }
+                                                                                                                                                          }
+                                                                                                                                                        ]
+                                                                                                                                                      }
+                                                                                                                                                    }
+                                                                                                                                                  ]
+                                                                                                                                                }
+                                                                                                                                              }
+                                                                                                                                            ]
+                                                                                                                                          }
+                                                                                                                                        }
+                                                                                                                                      ]
+                                                                                                                                    }
+                                                                                                                                  }
+                                                                                                                                ]
+                                                                                                                              }
+                                                                                                                            }
+                                                                                                                          ]
+                                                                                                                        }
+                                                                                                                      }
+                                                                                                                    ]
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              ]
+                                                                                                            }
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      }
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              }
+                                                                                            ]
+                                                                                          }
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          }
+                                                        ]
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
 };
 
 test("it works", async () => {
@@ -464,7 +464,7 @@ test("it works", async () => {
   let parsed = deserialize([
     below5,
     () => Promise.resolve(between5And10),
-    () => Promise.resolve(above10),
+    () => Promise.resolve(above10)
   ])(0 as MagicalNodeIndex);
   await loadAllTheThings(parsed);
   expect(parsed).toMatchInlineSnapshot(`
@@ -473,6 +473,7 @@ test("it works", async () => {
       "callSignatures": Array [],
       "constructSignatures": Array [],
       "name": "",
+      "numberIndex": undefined,
       "properties": Array [
         Object {
           "description": "",
@@ -483,6 +484,7 @@ test("it works", async () => {
             "callSignatures": Array [],
             "constructSignatures": Array [],
             "name": "",
+            "numberIndex": undefined,
             "properties": Array [
               Object {
                 "description": "",
@@ -493,6 +495,7 @@ test("it works", async () => {
                   "callSignatures": Array [],
                   "constructSignatures": Array [],
                   "name": "",
+                  "numberIndex": undefined,
                   "properties": Array [
                     Object {
                       "description": "",
@@ -503,6 +506,7 @@ test("it works", async () => {
                         "callSignatures": Array [],
                         "constructSignatures": Array [],
                         "name": "",
+                        "numberIndex": undefined,
                         "properties": Array [
                           Object {
                             "description": "",
@@ -513,6 +517,7 @@ test("it works", async () => {
                               "callSignatures": Array [],
                               "constructSignatures": Array [],
                               "name": "",
+                              "numberIndex": undefined,
                               "properties": Array [
                                 Object {
                                   "description": "",
@@ -526,6 +531,7 @@ test("it works", async () => {
                                       "callSignatures": Array [],
                                       "constructSignatures": Array [],
                                       "name": "",
+                                      "numberIndex": undefined,
                                       "properties": Array [
                                         Object {
                                           "description": "",
@@ -539,6 +545,7 @@ test("it works", async () => {
                                               "callSignatures": Array [],
                                               "constructSignatures": Array [],
                                               "name": "",
+                                              "numberIndex": undefined,
                                               "properties": Array [
                                                 Object {
                                                   "description": "",
@@ -552,6 +559,7 @@ test("it works", async () => {
                                                       "callSignatures": Array [],
                                                       "constructSignatures": Array [],
                                                       "name": "",
+                                                      "numberIndex": undefined,
                                                       "properties": Array [
                                                         Object {
                                                           "description": "",
@@ -565,6 +573,7 @@ test("it works", async () => {
                                                               "callSignatures": Array [],
                                                               "constructSignatures": Array [],
                                                               "name": "",
+                                                              "numberIndex": undefined,
                                                               "properties": Array [
                                                                 Object {
                                                                   "description": "",
@@ -578,6 +587,7 @@ test("it works", async () => {
                                                                       "callSignatures": Array [],
                                                                       "constructSignatures": Array [],
                                                                       "name": "",
+                                                                      "numberIndex": undefined,
                                                                       "properties": Array [
                                                                         Object {
                                                                           "description": "",
@@ -591,6 +601,7 @@ test("it works", async () => {
                                                                               "callSignatures": Array [],
                                                                               "constructSignatures": Array [],
                                                                               "name": "",
+                                                                              "numberIndex": undefined,
                                                                               "properties": Array [
                                                                                 Object {
                                                                                   "description": "",
@@ -604,6 +615,7 @@ test("it works", async () => {
                                                                                       "callSignatures": Array [],
                                                                                       "constructSignatures": Array [],
                                                                                       "name": "",
+                                                                                      "numberIndex": undefined,
                                                                                       "properties": Array [
                                                                                         Object {
                                                                                           "description": "",
@@ -617,6 +629,7 @@ test("it works", async () => {
                                                                                               "callSignatures": Array [],
                                                                                               "constructSignatures": Array [],
                                                                                               "name": "",
+                                                                                              "numberIndex": undefined,
                                                                                               "properties": Array [
                                                                                                 Object {
                                                                                                   "description": "",
@@ -630,6 +643,7 @@ test("it works", async () => {
                                                                                                       "callSignatures": Array [],
                                                                                                       "constructSignatures": Array [],
                                                                                                       "name": "",
+                                                                                                      "numberIndex": undefined,
                                                                                                       "properties": Array [
                                                                                                         Object {
                                                                                                           "description": "",
@@ -643,6 +657,7 @@ test("it works", async () => {
                                                                                                               "callSignatures": Array [],
                                                                                                               "constructSignatures": Array [],
                                                                                                               "name": "",
+                                                                                                              "numberIndex": undefined,
                                                                                                               "properties": Array [
                                                                                                                 Object {
                                                                                                                   "description": "",
@@ -656,6 +671,7 @@ test("it works", async () => {
                                                                                                                       "callSignatures": Array [],
                                                                                                                       "constructSignatures": Array [],
                                                                                                                       "name": "",
+                                                                                                                      "numberIndex": undefined,
                                                                                                                       "properties": Array [
                                                                                                                         Object {
                                                                                                                           "description": "",
@@ -669,6 +685,7 @@ test("it works", async () => {
                                                                                                                               "callSignatures": Array [],
                                                                                                                               "constructSignatures": Array [],
                                                                                                                               "name": "",
+                                                                                                                              "numberIndex": undefined,
                                                                                                                               "properties": Array [
                                                                                                                                 Object {
                                                                                                                                   "description": "",
@@ -682,6 +699,7 @@ test("it works", async () => {
                                                                                                                                       "callSignatures": Array [],
                                                                                                                                       "constructSignatures": Array [],
                                                                                                                                       "name": "",
+                                                                                                                                      "numberIndex": undefined,
                                                                                                                                       "properties": Array [
                                                                                                                                         Object {
                                                                                                                                           "description": "",
@@ -695,6 +713,7 @@ test("it works", async () => {
                                                                                                                                               "callSignatures": Array [],
                                                                                                                                               "constructSignatures": Array [],
                                                                                                                                               "name": "",
+                                                                                                                                              "numberIndex": undefined,
                                                                                                                                               "properties": Array [
                                                                                                                                                 Object {
                                                                                                                                                   "description": "",
@@ -708,6 +727,7 @@ test("it works", async () => {
                                                                                                                                                       "callSignatures": Array [],
                                                                                                                                                       "constructSignatures": Array [],
                                                                                                                                                       "name": "",
+                                                                                                                                                      "numberIndex": undefined,
                                                                                                                                                       "properties": Array [
                                                                                                                                                         Object {
                                                                                                                                                           "description": "",
@@ -721,6 +741,7 @@ test("it works", async () => {
                                                                                                                                                               "callSignatures": Array [],
                                                                                                                                                               "constructSignatures": Array [],
                                                                                                                                                               "name": "",
+                                                                                                                                                              "numberIndex": undefined,
                                                                                                                                                               "properties": Array [
                                                                                                                                                                 Object {
                                                                                                                                                                   "description": "",
@@ -734,6 +755,7 @@ test("it works", async () => {
                                                                                                                                                                       "callSignatures": Array [],
                                                                                                                                                                       "constructSignatures": Array [],
                                                                                                                                                                       "name": "",
+                                                                                                                                                                      "numberIndex": undefined,
                                                                                                                                                                       "properties": Array [
                                                                                                                                                                         Object {
                                                                                                                                                                           "description": "",
@@ -747,6 +769,7 @@ test("it works", async () => {
                                                                                                                                                                               "callSignatures": Array [],
                                                                                                                                                                               "constructSignatures": Array [],
                                                                                                                                                                               "name": "",
+                                                                                                                                                                              "numberIndex": undefined,
                                                                                                                                                                               "properties": Array [
                                                                                                                                                                                 Object {
                                                                                                                                                                                   "description": "",
@@ -760,6 +783,7 @@ test("it works", async () => {
                                                                                                                                                                                       "callSignatures": Array [],
                                                                                                                                                                                       "constructSignatures": Array [],
                                                                                                                                                                                       "name": "",
+                                                                                                                                                                                      "numberIndex": undefined,
                                                                                                                                                                                       "properties": Array [
                                                                                                                                                                                         Object {
                                                                                                                                                                                           "description": "",
@@ -773,6 +797,7 @@ test("it works", async () => {
                                                                                                                                                                                               "callSignatures": Array [],
                                                                                                                                                                                               "constructSignatures": Array [],
                                                                                                                                                                                               "name": "",
+                                                                                                                                                                                              "numberIndex": undefined,
                                                                                                                                                                                               "properties": Array [
                                                                                                                                                                                                 Object {
                                                                                                                                                                                                   "description": "",
@@ -786,6 +811,7 @@ test("it works", async () => {
                                                                                                                                                                                                       "callSignatures": Array [],
                                                                                                                                                                                                       "constructSignatures": Array [],
                                                                                                                                                                                                       "name": "",
+                                                                                                                                                                                                      "numberIndex": undefined,
                                                                                                                                                                                                       "properties": Array [
                                                                                                                                                                                                         Object {
                                                                                                                                                                                                           "description": "",
@@ -799,6 +825,7 @@ test("it works", async () => {
                                                                                                                                                                                                               "callSignatures": Array [],
                                                                                                                                                                                                               "constructSignatures": Array [],
                                                                                                                                                                                                               "name": "",
+                                                                                                                                                                                                              "numberIndex": undefined,
                                                                                                                                                                                                               "properties": Array [
                                                                                                                                                                                                                 Object {
                                                                                                                                                                                                                   "description": "",
@@ -814,132 +841,159 @@ test("it works", async () => {
                                                                                                                                                                                                                   },
                                                                                                                                                                                                                 },
                                                                                                                                                                                                               ],
+                                                                                                                                                                                                              "stringIndex": undefined,
                                                                                                                                                                                                               "type": "Object",
                                                                                                                                                                                                             },
                                                                                                                                                                                                           },
                                                                                                                                                                                                         },
                                                                                                                                                                                                       ],
+                                                                                                                                                                                                      "stringIndex": undefined,
                                                                                                                                                                                                       "type": "Object",
                                                                                                                                                                                                     },
                                                                                                                                                                                                   },
                                                                                                                                                                                                 },
                                                                                                                                                                                               ],
+                                                                                                                                                                                              "stringIndex": undefined,
                                                                                                                                                                                               "type": "Object",
                                                                                                                                                                                             },
                                                                                                                                                                                           },
                                                                                                                                                                                         },
                                                                                                                                                                                       ],
+                                                                                                                                                                                      "stringIndex": undefined,
                                                                                                                                                                                       "type": "Object",
                                                                                                                                                                                     },
                                                                                                                                                                                   },
                                                                                                                                                                                 },
                                                                                                                                                                               ],
+                                                                                                                                                                              "stringIndex": undefined,
                                                                                                                                                                               "type": "Object",
                                                                                                                                                                             },
                                                                                                                                                                           },
                                                                                                                                                                         },
                                                                                                                                                                       ],
+                                                                                                                                                                      "stringIndex": undefined,
                                                                                                                                                                       "type": "Object",
                                                                                                                                                                     },
                                                                                                                                                                   },
                                                                                                                                                                 },
                                                                                                                                                               ],
+                                                                                                                                                              "stringIndex": undefined,
                                                                                                                                                               "type": "Object",
                                                                                                                                                             },
                                                                                                                                                           },
                                                                                                                                                         },
                                                                                                                                                       ],
+                                                                                                                                                      "stringIndex": undefined,
                                                                                                                                                       "type": "Object",
                                                                                                                                                     },
                                                                                                                                                   },
                                                                                                                                                 },
                                                                                                                                               ],
+                                                                                                                                              "stringIndex": undefined,
                                                                                                                                               "type": "Object",
                                                                                                                                             },
                                                                                                                                           },
                                                                                                                                         },
                                                                                                                                       ],
+                                                                                                                                      "stringIndex": undefined,
                                                                                                                                       "type": "Object",
                                                                                                                                     },
                                                                                                                                   },
                                                                                                                                 },
                                                                                                                               ],
+                                                                                                                              "stringIndex": undefined,
                                                                                                                               "type": "Object",
                                                                                                                             },
                                                                                                                           },
                                                                                                                         },
                                                                                                                       ],
+                                                                                                                      "stringIndex": undefined,
                                                                                                                       "type": "Object",
                                                                                                                     },
                                                                                                                   },
                                                                                                                 },
                                                                                                               ],
+                                                                                                              "stringIndex": undefined,
                                                                                                               "type": "Object",
                                                                                                             },
                                                                                                           },
                                                                                                         },
                                                                                                       ],
+                                                                                                      "stringIndex": undefined,
                                                                                                       "type": "Object",
                                                                                                     },
                                                                                                   },
                                                                                                 },
                                                                                               ],
+                                                                                              "stringIndex": undefined,
                                                                                               "type": "Object",
                                                                                             },
                                                                                           },
                                                                                         },
                                                                                       ],
+                                                                                      "stringIndex": undefined,
                                                                                       "type": "Object",
                                                                                     },
                                                                                   },
                                                                                 },
                                                                               ],
+                                                                              "stringIndex": undefined,
                                                                               "type": "Object",
                                                                             },
                                                                           },
                                                                         },
                                                                       ],
+                                                                      "stringIndex": undefined,
                                                                       "type": "Object",
                                                                     },
                                                                   },
                                                                 },
                                                               ],
+                                                              "stringIndex": undefined,
                                                               "type": "Object",
                                                             },
                                                           },
                                                         },
                                                       ],
+                                                      "stringIndex": undefined,
                                                       "type": "Object",
                                                     },
                                                   },
                                                 },
                                               ],
+                                              "stringIndex": undefined,
                                               "type": "Object",
                                             },
                                           },
                                         },
                                       ],
+                                      "stringIndex": undefined,
                                       "type": "Object",
                                     },
                                   },
                                 },
                               ],
+                              "stringIndex": undefined,
                               "type": "Object",
                             },
                           },
                         ],
+                        "stringIndex": undefined,
                         "type": "Object",
                       },
                     },
                   ],
+                  "stringIndex": undefined,
                   "type": "Object",
                 },
               },
             ],
+            "stringIndex": undefined,
             "type": "Object",
           },
         },
       ],
+      "stringIndex": undefined,
       "type": "Object",
     }
   `);
@@ -952,7 +1006,7 @@ async function loadAllTheThings(rootNode: MagicalNode) {
   let visitedNodes = new Set<MagicalNode>();
 
   let queue: Array<PositionedMagicalNode> = [
-    { node: rootNode, path: [], depth: 0 },
+    { node: rootNode, path: [], depth: 0 }
   ];
 
   while (queue.length) {
