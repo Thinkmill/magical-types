@@ -106,6 +106,7 @@ export let deserialize = weakMemoize(function parseStringified(
         case "Intersection": {
           return {
             type: "Intersection",
+            name: node.name,
             types: node.types.map((x) => getNodeFromIndex(x)),
           };
         }
@@ -137,7 +138,10 @@ export let deserialize = weakMemoize(function parseStringified(
             properties: node.properties.map((x) => {
               return { ...x, value: getNodeFromIndex(x.value) };
             }),
-            thisNode: node.thisNode ? getNodeFromIndex(node.thisNode) : null,
+            thisNode:
+              node.thisNode === undefined
+                ? undefined
+                : getNodeFromIndex(node.thisNode),
             typeParameters: node.typeParameters.map((x) => getNodeFromIndex(x)),
           };
         }

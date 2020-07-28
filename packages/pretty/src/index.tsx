@@ -673,6 +673,7 @@ function intersectIndexType(
       } else if (type !== indexNode) {
         type = {
           type: "Intersection",
+          name: undefined,
           types: [type, indexNode],
         };
       }
@@ -695,7 +696,7 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
       callSignatures: flatMap(objectNodes, (x) => x.callSignatures),
       constructSignatures: flatMap(objectNodes, (x) => x.callSignatures),
       properties: flatMap(objectNodes, (x) => x.properties),
-      name: null,
+      name: undefined,
       // TODO: fix this
       aliasTypeArguments: [],
     };

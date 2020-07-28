@@ -12,7 +12,7 @@ type IndexedAccessNode = {
 
 export type ObjectNode = {
   type: "Object";
-  name: string | null;
+  name: string | undefined;
   stringIndex: MagicalNode | undefined;
   numberIndex: MagicalNode | undefined;
   properties: Array<Property>;
@@ -23,9 +23,9 @@ export type ObjectNode = {
 
 export type ClassNode = {
   type: "Class";
-  name: string | null;
+  name: string | undefined;
   typeParameters: Array<MagicalNode>;
-  thisNode: MagicalNode | null;
+  thisNode: MagicalNode | undefined;
   properties: Array<Property>;
 };
 
@@ -45,8 +45,12 @@ export type MagicalNode =
   | { type: "NumberLiteral"; value: number }
   | { type: "Array"; value: MagicalNode }
   | { type: "ReadonlyArray"; value: MagicalNode }
-  | { type: "Union"; types: Array<MagicalNode>; name: string | null }
-  | { type: "Intersection"; types: Array<MagicalNode> }
+  | { type: "Union"; types: Array<MagicalNode>; name: string | undefined }
+  | {
+      type: "Intersection";
+      types: Array<MagicalNode>;
+      name: string | undefined;
+    }
   | { type: "Symbol"; name: string }
   | {
       type: "Conditional";

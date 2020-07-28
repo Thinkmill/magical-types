@@ -3,7 +3,7 @@ import {
   MagicalNodeWithIndexes,
   MagicalNodeIndex,
   MagicalNode,
-  PositionedMagicalNode
+  PositionedMagicalNode,
 } from "@magical-types/types";
 import { serializeNodes, chunkNodes } from "./serialize";
 import { deserialize } from "./deserialize";
@@ -13,6 +13,8 @@ let tree: ObjectNode = {
   type: "Object",
   aliasTypeArguments: [],
   constructSignatures: [],
+  numberIndex: undefined,
+  stringIndex: undefined,
   name: "",
   callSignatures: [],
   properties: [
@@ -24,6 +26,8 @@ let tree: ObjectNode = {
         type: "Object",
         aliasTypeArguments: [],
         constructSignatures: [],
+        numberIndex: undefined,
+        stringIndex: undefined,
         name: "",
         callSignatures: [],
         properties: [
@@ -35,6 +39,8 @@ let tree: ObjectNode = {
               type: "Object",
               aliasTypeArguments: [],
               constructSignatures: [],
+              numberIndex: undefined,
+              stringIndex: undefined,
               name: "",
               callSignatures: [],
               properties: [
@@ -46,6 +52,8 @@ let tree: ObjectNode = {
                     type: "Object",
                     aliasTypeArguments: [],
                     constructSignatures: [],
+                    numberIndex: undefined,
+                    stringIndex: undefined,
                     name: "",
                     callSignatures: [],
                     properties: [
@@ -57,6 +65,8 @@ let tree: ObjectNode = {
                           type: "Object",
                           aliasTypeArguments: [],
                           constructSignatures: [],
+                          numberIndex: undefined,
+                          stringIndex: undefined,
                           name: "",
                           callSignatures: [],
                           properties: [
@@ -68,6 +78,8 @@ let tree: ObjectNode = {
                                 type: "Object",
                                 aliasTypeArguments: [],
                                 constructSignatures: [],
+                                numberIndex: undefined,
+                                stringIndex: undefined,
                                 name: "",
                                 callSignatures: [],
                                 properties: [
@@ -79,6 +91,8 @@ let tree: ObjectNode = {
                                       type: "Object",
                                       aliasTypeArguments: [],
                                       constructSignatures: [],
+                                      numberIndex: undefined,
+                                      stringIndex: undefined,
                                       name: "",
                                       callSignatures: [],
                                       properties: [
@@ -90,6 +104,8 @@ let tree: ObjectNode = {
                                             type: "Object",
                                             aliasTypeArguments: [],
                                             constructSignatures: [],
+                                            numberIndex: undefined,
+                                            stringIndex: undefined,
                                             name: "",
                                             callSignatures: [],
                                             properties: [
@@ -101,6 +117,8 @@ let tree: ObjectNode = {
                                                   type: "Object",
                                                   aliasTypeArguments: [],
                                                   constructSignatures: [],
+                                                  numberIndex: undefined,
+                                                  stringIndex: undefined,
                                                   name: "",
                                                   callSignatures: [],
                                                   properties: [
@@ -112,6 +130,8 @@ let tree: ObjectNode = {
                                                         type: "Object",
                                                         aliasTypeArguments: [],
                                                         constructSignatures: [],
+                                                        numberIndex: undefined,
+                                                        stringIndex: undefined,
                                                         name: "",
                                                         callSignatures: [],
                                                         properties: [
@@ -123,6 +143,8 @@ let tree: ObjectNode = {
                                                               type: "Object",
                                                               aliasTypeArguments: [],
                                                               constructSignatures: [],
+                                                              numberIndex: undefined,
+                                                              stringIndex: undefined,
                                                               name: "",
                                                               callSignatures: [],
                                                               properties: [
@@ -137,6 +159,8 @@ let tree: ObjectNode = {
                                                                       "Object",
                                                                     aliasTypeArguments: [],
                                                                     constructSignatures: [],
+                                                                    numberIndex: undefined,
+                                                                    stringIndex: undefined,
                                                                     name: "",
                                                                     callSignatures: [],
                                                                     properties: [
@@ -151,6 +175,8 @@ let tree: ObjectNode = {
                                                                             "Object",
                                                                           aliasTypeArguments: [],
                                                                           constructSignatures: [],
+                                                                          numberIndex: undefined,
+                                                                          stringIndex: undefined,
                                                                           name:
                                                                             "",
                                                                           callSignatures: [],
@@ -166,6 +192,8 @@ let tree: ObjectNode = {
                                                                                   "Object",
                                                                                 aliasTypeArguments: [],
                                                                                 constructSignatures: [],
+                                                                                numberIndex: undefined,
+                                                                                stringIndex: undefined,
                                                                                 name:
                                                                                   "",
                                                                                 callSignatures: [],
@@ -181,6 +209,8 @@ let tree: ObjectNode = {
                                                                                         "Object",
                                                                                       aliasTypeArguments: [],
                                                                                       constructSignatures: [],
+                                                                                      numberIndex: undefined,
+                                                                                      stringIndex: undefined,
                                                                                       name:
                                                                                         "",
                                                                                       callSignatures: [],
@@ -196,6 +226,8 @@ let tree: ObjectNode = {
                                                                                               "Object",
                                                                                             aliasTypeArguments: [],
                                                                                             constructSignatures: [],
+                                                                                            numberIndex: undefined,
+                                                                                            stringIndex: undefined,
                                                                                             name:
                                                                                               "",
                                                                                             callSignatures: [],
@@ -211,6 +243,8 @@ let tree: ObjectNode = {
                                                                                                     "Object",
                                                                                                   aliasTypeArguments: [],
                                                                                                   constructSignatures: [],
+                                                                                                  numberIndex: undefined,
+                                                                                                  stringIndex: undefined,
                                                                                                   name:
                                                                                                     "",
                                                                                                   callSignatures: [],
@@ -226,6 +260,8 @@ let tree: ObjectNode = {
                                                                                                           "Object",
                                                                                                         aliasTypeArguments: [],
                                                                                                         constructSignatures: [],
+                                                                                                        numberIndex: undefined,
+                                                                                                        stringIndex: undefined,
                                                                                                         name:
                                                                                                           "",
                                                                                                         callSignatures: [],
@@ -241,6 +277,8 @@ let tree: ObjectNode = {
                                                                                                                 "Object",
                                                                                                               aliasTypeArguments: [],
                                                                                                               constructSignatures: [],
+                                                                                                              numberIndex: undefined,
+                                                                                                              stringIndex: undefined,
                                                                                                               name:
                                                                                                                 "",
                                                                                                               callSignatures: [],
@@ -256,6 +294,8 @@ let tree: ObjectNode = {
                                                                                                                       "Object",
                                                                                                                     aliasTypeArguments: [],
                                                                                                                     constructSignatures: [],
+                                                                                                                    numberIndex: undefined,
+                                                                                                                    stringIndex: undefined,
                                                                                                                     name:
                                                                                                                       "",
                                                                                                                     callSignatures: [],
@@ -271,6 +311,8 @@ let tree: ObjectNode = {
                                                                                                                             "Object",
                                                                                                                           aliasTypeArguments: [],
                                                                                                                           constructSignatures: [],
+                                                                                                                          numberIndex: undefined,
+                                                                                                                          stringIndex: undefined,
                                                                                                                           name:
                                                                                                                             "",
                                                                                                                           callSignatures: [],
@@ -286,6 +328,8 @@ let tree: ObjectNode = {
                                                                                                                                   "Object",
                                                                                                                                 aliasTypeArguments: [],
                                                                                                                                 constructSignatures: [],
+                                                                                                                                numberIndex: undefined,
+                                                                                                                                stringIndex: undefined,
                                                                                                                                 name:
                                                                                                                                   "",
                                                                                                                                 callSignatures: [],
@@ -300,6 +344,8 @@ let tree: ObjectNode = {
                                                                                                                                       type:
                                                                                                                                         "Object",
                                                                                                                                       aliasTypeArguments: [],
+                                                                                                                                      numberIndex: undefined,
+                                                                                                                                      stringIndex: undefined,
                                                                                                                                       constructSignatures: [],
                                                                                                                                       name:
                                                                                                                                         "",
@@ -316,6 +362,8 @@ let tree: ObjectNode = {
                                                                                                                                               "Object",
                                                                                                                                             aliasTypeArguments: [],
                                                                                                                                             constructSignatures: [],
+                                                                                                                                            numberIndex: undefined,
+                                                                                                                                            stringIndex: undefined,
                                                                                                                                             name:
                                                                                                                                               "",
                                                                                                                                             callSignatures: [],
@@ -331,6 +379,8 @@ let tree: ObjectNode = {
                                                                                                                                                     "Object",
                                                                                                                                                   aliasTypeArguments: [],
                                                                                                                                                   constructSignatures: [],
+                                                                                                                                                  numberIndex: undefined,
+                                                                                                                                                  stringIndex: undefined,
                                                                                                                                                   name:
                                                                                                                                                     "",
                                                                                                                                                   callSignatures: [],
@@ -346,6 +396,8 @@ let tree: ObjectNode = {
                                                                                                                                                           "Object",
                                                                                                                                                         aliasTypeArguments: [],
                                                                                                                                                         constructSignatures: [],
+                                                                                                                                                        numberIndex: undefined,
+                                                                                                                                                        stringIndex: undefined,
                                                                                                                                                         name:
                                                                                                                                                           "",
                                                                                                                                                         callSignatures: [],
@@ -359,6 +411,8 @@ let tree: ObjectNode = {
                                                                                                                                                             value: {
                                                                                                                                                               type:
                                                                                                                                                                 "Object",
+                                                                                                                                                              numberIndex: undefined,
+                                                                                                                                                              stringIndex: undefined,
                                                                                                                                                               aliasTypeArguments: [],
                                                                                                                                                               constructSignatures: [],
                                                                                                                                                               name:
@@ -375,88 +429,88 @@ let tree: ObjectNode = {
                                                                                                                                                                     type:
                                                                                                                                                                       "Intrinsic",
                                                                                                                                                                     value:
-                                                                                                                                                                      "string"
-                                                                                                                                                                  }
-                                                                                                                                                                }
-                                                                                                                                                              ]
-                                                                                                                                                            }
-                                                                                                                                                          }
-                                                                                                                                                        ]
-                                                                                                                                                      }
-                                                                                                                                                    }
-                                                                                                                                                  ]
-                                                                                                                                                }
-                                                                                                                                              }
-                                                                                                                                            ]
-                                                                                                                                          }
-                                                                                                                                        }
-                                                                                                                                      ]
-                                                                                                                                    }
-                                                                                                                                  }
-                                                                                                                                ]
-                                                                                                                              }
-                                                                                                                            }
-                                                                                                                          ]
-                                                                                                                        }
-                                                                                                                      }
-                                                                                                                    ]
-                                                                                                                  }
-                                                                                                                }
-                                                                                                              ]
-                                                                                                            }
-                                                                                                          }
-                                                                                                        ]
-                                                                                                      }
-                                                                                                    }
-                                                                                                  ]
-                                                                                                }
-                                                                                              }
-                                                                                            ]
-                                                                                          }
-                                                                                        }
-                                                                                      ]
-                                                                                    }
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            }
-                                                                          ]
-                                                                        }
-                                                                      }
-                                                                    ]
-                                                                  }
-                                                                }
-                                                              ]
-                                                            }
-                                                          }
-                                                        ]
-                                                      }
-                                                    }
-                                                  ]
-                                                }
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                ]
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                                                                                                                                                                      "string",
+                                                                                                                                                                  },
+                                                                                                                                                                },
+                                                                                                                                                              ],
+                                                                                                                                                            },
+                                                                                                                                                          },
+                                                                                                                                                        ],
+                                                                                                                                                      },
+                                                                                                                                                    },
+                                                                                                                                                  ],
+                                                                                                                                                },
+                                                                                                                                              },
+                                                                                                                                            ],
+                                                                                                                                          },
+                                                                                                                                        },
+                                                                                                                                      ],
+                                                                                                                                    },
+                                                                                                                                  },
+                                                                                                                                ],
+                                                                                                                              },
+                                                                                                                            },
+                                                                                                                          ],
+                                                                                                                        },
+                                                                                                                      },
+                                                                                                                    ],
+                                                                                                                  },
+                                                                                                                },
+                                                                                                              ],
+                                                                                                            },
+                                                                                                          },
+                                                                                                        ],
+                                                                                                      },
+                                                                                                    },
+                                                                                                  ],
+                                                                                                },
+                                                                                              },
+                                                                                            ],
+                                                                                          },
+                                                                                        },
+                                                                                      ],
+                                                                                    },
+                                                                                  },
+                                                                                ],
+                                                                              },
+                                                                            },
+                                                                          ],
+                                                                        },
+                                                                      },
+                                                                    ],
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 
 test("it works", async () => {
@@ -464,7 +518,7 @@ test("it works", async () => {
   let parsed = deserialize([
     below5,
     () => Promise.resolve(between5And10),
-    () => Promise.resolve(above10)
+    () => Promise.resolve(above10),
   ])(0 as MagicalNodeIndex);
   await loadAllTheThings(parsed);
   expect(parsed).toMatchInlineSnapshot(`
@@ -1006,7 +1060,7 @@ async function loadAllTheThings(rootNode: MagicalNode) {
   let visitedNodes = new Set<MagicalNode>();
 
   let queue: Array<PositionedMagicalNode> = [
-    { node: rootNode, path: [], depth: 0 }
+    { node: rootNode, path: [], depth: 0 },
   ];
 
   while (queue.length) {

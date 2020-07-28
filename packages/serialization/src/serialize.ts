@@ -5,7 +5,7 @@ import {
   PositionedMagicalNode,
 } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
-import { flatMap, getChildMagicalNodes } from "@magical-types/utils";
+import { getChildMagicalNodes } from "@magical-types/utils";
 
 export function chunkNodes({ nodes, nodesMeta }: SerializationResult) {
   let below5: MagicalNodeWithIndexes[] = [];
@@ -100,6 +100,7 @@ function getMagicalNodeWithIndexes(
     case "Intersection": {
       return {
         type: "Intersection",
+        name: node.name,
         types: node.types.map((x) => getIndexForNode(x)),
       };
     }
@@ -131,7 +132,7 @@ function getMagicalNodeWithIndexes(
         properties: node.properties.map((x) => {
           return { ...x, value: getIndexForNode(x.value) };
         }),
-        thisNode: node.thisNode ? getIndexForNode(node.thisNode) : null,
+        thisNode: node.thisNode ? getIndexForNode(node.thisNode) : undefined,
         typeParameters: node.typeParameters.map((x) => getIndexForNode(x)),
       };
     }

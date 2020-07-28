@@ -240,17 +240,16 @@ function convertProperty(
   };
 }
 
-function getNameForType(type: typescript.Type): string | null {
+function getNameForType(type: typescript.Type): string | undefined {
   if (type.symbol) {
     let name = type.symbol.getName();
-    if (name !== "__type") {
+    if (name !== "__type" && name !== "__object") {
       return name;
     }
   }
   if (type.aliasSymbol) {
     return type.aliasSymbol.getName();
   }
-  return null;
 }
 
 function symbolFlagsToString(type: typescript.Symbol) {
@@ -387,13 +386,13 @@ export let convertType = wrapInCache(
     if (type.isClass()) {
       return {
         type: "Class",
-        name: type.symbol ? type.symbol.getName() : null,
+        name: type.symbol ? type.symbol.getName() : undefined,
         typeParameters: (type.typeParameters || []).map((x, index) =>
           convertType(x, path.concat("typeParameters", index))
         ),
         thisNode: type.thisType
           ? convertType(type.thisType, path.concat("thisType"))
-          : null,
+          : undefined,
         properties: type
           .getProperties()
           // this is most definitely wrong but it works
@@ -474,8 +473,7 @@ export let convertType = wrapInCache(
     //   // return convertType(substitutionType.type, path.concat("type"));
     // }
 
-    // @ts-ignore
-    if (type.flags & typescript.TypeFlags.IndexedAccess) {
+    if ((type as any).flags & typescript.TypeFlags.IndexedAccess) {
       let indexedAccessType = type as typescript.IndexedAccessType;
 
       return {
@@ -510,6 +508,7 @@ export let convertType = wrapInCache(
     let flags = typeFlagsToString(type);
     if ((type as any).flags & typescript.TypeFlags.Substitution) {
       let substitutionType: typescript.SubstitutionType = type;
+      substitutionType.baseType;
       return convertType(
         substitutionType.substitute,
         path.concat("substitute")
@@ -521,12 +520,13 @@ export let convertType = wrapInCache(
         name: (type as typescript.UniqueESSymbolType).escapedName.toString(),
       };
     }
-    // @ts-ignore
-    if (type.isIntersection()) {
+    let reassignedType = type as typescript.Type;
+    if (reassignedType.isIntersection()) {
+      reassignedType.aliasTypeArguments;
       return {
         type: "Intersection",
-        // @ts-ignore
-        types: type.types.map((type, index) =>
+        name: getNameForType(type),
+        types: reassignedType.types.map((type, index) =>
           convertType(type, path.concat("types", index))
         ),
       };
