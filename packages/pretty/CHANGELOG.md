@@ -1,5 +1,11 @@
 # @magical-types/pretty
 
+## 0.3.4
+
+### Patch Changes
+
+- [`8c94cd9`](https://github.com/Thinkmill/magical-types/commit/8c94cd98a1514076a086dd570d0391b9e6294464) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Fix type declarations having any in unexpected places
+
 ## 0.3.3
 
 ### Patch Changes
