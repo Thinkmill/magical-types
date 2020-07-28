@@ -309,7 +309,9 @@ export const defaultRenderers: MagicalNodeRenderers = {
   Union({ node, path }) {
     return (
       <span>
-        <TypeMeta>{node.name === null ? "" : `${node.name} `}One of </TypeMeta>
+        <TypeMeta>
+          {node.name === undefined ? "" : `${node.name} `}One of{" "}
+        </TypeMeta>
         <AddBrackets
           nodes={node.types}
           initialIsShown={path}
@@ -334,7 +336,9 @@ export const defaultRenderers: MagicalNodeRenderers = {
   Intersection({ node, path }) {
     return (
       <span>
-        <TypeMeta>Intersection</TypeMeta>
+        <TypeMeta>
+          {node.name === undefined ? "" : `${node.name} `}Intersection
+        </TypeMeta>
         <AddBrackets
           nodes={node.types}
           initialIsShown={path}

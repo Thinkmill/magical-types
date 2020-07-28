@@ -223,8 +223,9 @@ test("it works", () => {
             <span
               class="emotion-18"
             >
-              undefined 
-              One of 
+              
+              One of
+               
             </span>
             <button
               class="state-bit emotion-19"
