@@ -28,6 +28,7 @@
     "@magical-types/convert-type": "^0.1.4",
     "@magical-types/errors": "^0.0.1",
     "@magical-types/pretty": "^0.3.5",
+    "@magical-types/serialization": "^0.2.1",
     "@magical-types/types": "^0.1.2",
     "@magical-types/utils": "^0.1.2",
     "babel-plugin-macros": "^2.6.1",
