@@ -1,12 +1,12 @@
 {
   "name": "@magical-types/pretty",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "main": "dist/pretty.cjs.js",
   "module": "dist/pretty.esm.js",
   "dependencies": {
     "@babel/runtime": "^7.7.2",
     "@emotion/core": "^10.0.22",
-    "@magical-types/utils": "^0.1.1",
+    "@magical-types/utils": "^0.1.2",
     "react-markdown": "^4.1.0"
   },
   "peerDependencies": {
