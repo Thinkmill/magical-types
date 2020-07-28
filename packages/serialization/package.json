@@ -1,6 +1,6 @@
 {
   "name": "@magical-types/serialization",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/serialization.cjs.js",
   "module": "dist/serialization.esm.js",
   "files": [
@@ -11,8 +11,8 @@
   "dependencies": {
     "@babel/runtime": "^7.7.2",
     "@magical-types/errors": "^0.0.1",
-    "@magical-types/types": "^0.1.1",
-    "@magical-types/utils": "^0.1.1"
+    "@magical-types/types": "^0.1.2",
+    "@magical-types/utils": "^0.1.2"
   },
   "preconstruct": {
     "entrypoints": [
