@@ -3,18 +3,24 @@ import React from "react";
 import { jsx } from "@emotion/core";
 import {
   PropTypes,
-  FunctionTypes
+  FunctionTypes,
 } from "@magical-types/macro/write-data-to-fs.macro";
 import Select from "react-select";
 
+//
 // type Thing = (firstArg: string) => number;
 
 type Status = "notstarted" | "started" | "inprogress" | "completed";
 
-type Task = { id: string; status: Status; title: string; task: Task };
+type Task = {
+  id: string;
+  status: Status;
+  title: string;
+  task: Task;
+};
 
 let thing = {
-  wow: "string"
+  wow: "string",
 } as const;
 
 type AThing = (something: AThing) => string;
@@ -26,8 +32,11 @@ type Props = {
    * Important Note: this is the _changed_ tasks, **not** all of the new tasks.
    */
   thing: { something: AThing };
+  indexy: Thing;
   onTasksChange: (changedTasks: Array<Task>) => void;
 };
+
+type Thing = { [key: string]: string; [key: number]: string };
 
 let MyComponentThatDoesStuff = (props: Props) => {
   return null;

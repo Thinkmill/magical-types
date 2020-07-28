@@ -4,7 +4,7 @@ import { InternalError } from "@magical-types/errors";
 import { Project, ts as typescript } from "ts-morph";
 import { convertType, getPropTypesType } from "@magical-types/convert-type";
 import { MagicalNode, MagicalNodeIndex } from "@magical-types/types";
-import { serializeNodes } from "./serialize";
+import { serializeNodes } from "@magical-types/serialization/serialize";
 import * as fs from "fs-extra";
 import path from "path";
 
@@ -180,7 +180,7 @@ export function getTypes(
   if (num !== numOfThings) {
     throw new InternalError("num !== numOfThings");
   }
-  let { nodes, nodesToIndex } = serializeNodes(rootNodes);
+  let { nodes, nodesMeta } = serializeNodes(rootNodes);
   let nodesBelow5 = 0;
 
   let typeDataBabelNode;
@@ -189,7 +189,7 @@ export function getTypes(
     let between5And10 = [];
     let above10 = [];
 
-    for (let [, { depth, index }] of nodesToIndex) {
+    for (let [, { depth, index }] of nodesMeta) {
       if (depth < 5) {
         below5.push(nodes[index]);
       } else if (depth <= 10) {
@@ -279,6 +279,6 @@ export function getTypes(
     ])
   );
   callbacks.forEach((cb, i) => {
-    cb(id.name, nodesToIndex.get(rootNodes[i])!.index);
+    cb(id.name, nodesMeta.get(rootNodes[i])!.index);
   });
 }

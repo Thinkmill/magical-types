@@ -1,0 +1,23 @@
+[
+  {
+    "Thing": {
+      "nodes": [
+        {
+          "type": "Object",
+          "name": "Thing",
+          "numberIndex": 1,
+          "stringIndex": 1,
+          "properties": [],
+          "callSignatures": [],
+          "constructSignatures": [],
+          "aliasTypeArguments": []
+        },
+        {
+          "type": "Intrinsic",
+          "value": "boolean"
+        }
+      ],
+      "nodesMeta": {}
+    }
+  }
+]

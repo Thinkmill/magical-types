@@ -13,6 +13,8 @@ type IndexedAccessNode = {
 export type ObjectNode = {
   type: "Object";
   name: string | null;
+  stringIndex: MagicalNode | undefined;
+  numberIndex: MagicalNode | undefined;
   properties: Array<Property>;
   callSignatures: Array<SignatureNode>;
   constructSignatures: Array<SignatureNode>;

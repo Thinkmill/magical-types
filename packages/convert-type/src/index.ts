@@ -405,9 +405,18 @@ export let convertType = wrapInCache(
     }
 
     if (type.flags & typescript.TypeFlags.Object) {
+      let stringIndexType = type.getStringIndexType();
+      let numberIndexType = type.getNumberIndexType();
+
       return {
         type: "Object",
         name: getNameForType(type),
+        stringIndex: stringIndexType
+          ? convertType(stringIndexType, path.concat("getStringIndexType()"))
+          : undefined,
+        numberIndex: numberIndexType
+          ? convertType(numberIndexType, path.concat("getNumberIndexType()"))
+          : undefined,
         aliasTypeArguments: (type.aliasTypeArguments || []).map(
           (type, index) => {
             return convertType(type, path.concat("aliasTypeArguments", index));

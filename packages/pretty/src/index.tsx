@@ -32,7 +32,11 @@ import AddBrackets, {
   bracketStyle,
   PathExpansionContext,
 } from "./pretty-proptypes/PrettyConvert/AddBrackets";
-import { getChildPositionedMagicalNodes, flatMap } from "@magical-types/utils";
+import {
+  getChildPositionedMagicalNodes,
+  flatMap,
+  getChildMagicalNodes,
+} from "@magical-types/utils";
 import PropTypeHeading from "./pretty-proptypes/Prop/Heading";
 import PropsWrapper from "./pretty-proptypes/Props/Wrapper";
 
@@ -87,6 +91,28 @@ function PrettyObject({
           />
         );
       })}
+      {node.stringIndex ? (
+        <div>
+          <TypeMinWidth>
+            <Type>[key: string]</Type>
+            <PrettyMagicalNode
+              node={node.stringIndex}
+              path={path.concat("stringIndex")}
+            />
+          </TypeMinWidth>
+        </div>
+      ) : null}
+      {node.numberIndex ? (
+        <div>
+          <TypeMinWidth>
+            <Type>[key: number]</Type>
+            <PrettyMagicalNode
+              node={node.numberIndex}
+              path={path.concat("numberIndex")}
+            />
+          </TypeMinWidth>
+        </div>
+      ) : null}
       {node.properties.map((prop, index) => {
         return (
           <div key={index}>
@@ -331,9 +357,13 @@ export const defaultRenderers: MagicalNodeRenderers = {
     );
   },
   Object: function ObjectRenderer({ node, path }) {
+    let hasNoProperties =
+      node.properties.length === 0 &&
+      node.stringIndex === undefined &&
+      node.numberIndex === undefined;
     if (
       node.callSignatures.length === 1 &&
-      node.properties.length === 0 &&
+      hasNoProperties &&
       node.constructSignatures.length === 0
     ) {
       return (
@@ -347,7 +377,7 @@ export const defaultRenderers: MagicalNodeRenderers = {
     }
     if (
       node.constructSignatures.length === 1 &&
-      node.properties.length === 0 &&
+      hasNoProperties &&
       node.callSignatures.length === 0
     ) {
       return (
@@ -360,18 +390,18 @@ export const defaultRenderers: MagicalNodeRenderers = {
       );
     }
 
+    console.log(node);
+
     return (
       <span>
         <TypeMeta>{node.name}</TypeMeta>
         {node.callSignatures.length ||
         node.constructSignatures.length ||
-        node.properties.length ? (
+        node.properties.length ||
+        node.stringIndex ||
+        node.numberIndex ? (
           <AddBrackets
-            nodes={getChildPositionedMagicalNodes({
-              node,
-              path: [],
-              depth: 0,
-            }).map((x) => x.node)}
+            nodes={getChildMagicalNodes(node)}
             initialIsShown={false}
             openBracket="{"
             closeBracket="}"
@@ -628,6 +658,29 @@ export const PropTypeWrapper = (props: { children: React.ReactNode }) => (
   />
 );
 
+function intersectIndexType(
+  nodes: ObjectNode[],
+  indexType: "stringIndex" | "numberIndex"
+) {
+  let type: undefined | MagicalNode;
+  nodes.forEach((node) => {
+    let indexNode = node[indexType];
+    if (indexNode !== undefined) {
+      if (type === undefined) {
+        type = indexNode;
+      } else if (type.type === "Intersection") {
+        type.types.push();
+      } else if (type !== indexNode) {
+        type = {
+          type: "Intersection",
+          types: [type, indexNode],
+        };
+      }
+    }
+  });
+  return type;
+}
+
 function simplifyIntersection(node: MagicalNode): MagicalNode {
   if (node.type !== "Intersection") {
     return node;
@@ -637,6 +690,8 @@ function simplifyIntersection(node: MagicalNode): MagicalNode {
     let objectNodes = types as ObjectNode[];
     return {
       type: "Object",
+      numberIndex: intersectIndexType(objectNodes, "numberIndex"),
+      stringIndex: intersectIndexType(objectNodes, "stringIndex"),
       callSignatures: flatMap(objectNodes, (x) => x.callSignatures),
       constructSignatures: flatMap(objectNodes, (x) => x.callSignatures),
       properties: flatMap(objectNodes, (x) => x.properties),

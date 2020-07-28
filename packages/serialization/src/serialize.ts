@@ -5,7 +5,7 @@ import {
   PositionedMagicalNode,
 } from "@magical-types/types";
 import { InternalError } from "@magical-types/errors";
-import { flatMap } from "@magical-types/utils";
+import { flatMap, getChildMagicalNodes } from "@magical-types/utils";
 
 export function chunkNodes({ nodes, nodesMeta }: SerializationResult) {
   let below5: MagicalNodeWithIndexes[] = [];
@@ -139,6 +139,12 @@ function getMagicalNodeWithIndexes(
       return {
         type: "Object",
         name: node.name,
+        numberIndex: node.numberIndex
+          ? getIndexForNode(node.numberIndex)
+          : undefined,
+        stringIndex: node.stringIndex
+          ? getIndexForNode(node.stringIndex)
+          : undefined,
         properties: node.properties.map((x) => {
           return { ...x, value: getIndexForNode(x.value) };
         }),
@@ -184,77 +190,6 @@ function getMagicalNodeWithIndexes(
       let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
       // @ts-ignore
       throw new Error("this should never happen: " + node.type);
-    }
-  }
-}
-
-function getChildMagicalNodes(node: MagicalNode): Array<MagicalNode> {
-  switch (node.type) {
-    case "Symbol":
-    case "StringLiteral":
-    case "NumberLiteral":
-    case "TypeParameter":
-    case "Error":
-    case "Intrinsic": {
-      return [];
-    }
-    case "Union":
-    case "Intersection": {
-      return node.types;
-    }
-    case "Array":
-    case "Promise":
-    case "ReadonlyArray": {
-      return [node.value];
-    }
-    case "Tuple": {
-      return node.value;
-    }
-    case "IndexedAccess": {
-      return [node.object, node.index];
-    }
-    case "Class": {
-      return [
-        ...(node.thisNode ? [node.thisNode] : []),
-        ...node.typeParameters,
-        ...node.properties.map((param) => {
-          return param.value;
-        }),
-      ];
-    }
-    case "Object": {
-      return [
-        ...flatMap(node.callSignatures, (signature) => {
-          return [
-            ...signature.typeParameters,
-            ...signature.parameters.map((x) => x.type),
-            signature.return,
-          ];
-        }),
-        ...flatMap(node.constructSignatures, (signature) => {
-          return [
-            ...signature.typeParameters,
-            ...signature.parameters.map((x) => x.type),
-            signature.return,
-          ];
-        }),
-        ...node.aliasTypeArguments.map((node) => node),
-        ...node.properties.map((param) => param.value),
-      ];
-    }
-    case "Conditional": {
-      return [node.check, node.true, node.false, node.extends];
-    }
-    case "Lazy": {
-      throw new InternalError(
-        "Lazy nodes should be loaded before being used in getChildPositionedMagicalNodes"
-      );
-    }
-
-    default: {
-      let _thisMakesTypeScriptEnsureThatAllNodesAreSpecifiedHere: never = node;
-      // @ts-ignore
-      throw new InternalError("this should never happen: " + node.type);
     }
   }
 }

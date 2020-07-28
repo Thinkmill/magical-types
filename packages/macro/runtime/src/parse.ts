@@ -150,6 +150,14 @@ export let parseStringified = weakMemoize(function parseStringified(
           return {
             type: "Object",
             name: node.name,
+            numberIndex:
+              node.numberIndex === undefined
+                ? undefined
+                : getNodeFromIndex(node.numberIndex),
+            stringIndex:
+              node.stringIndex === undefined
+                ? undefined
+                : getNodeFromIndex(node.stringIndex),
             properties: node.properties.map((x) => {
               return { ...x, value: getNodeFromIndex(x.value) };
             }),
