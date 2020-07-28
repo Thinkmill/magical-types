@@ -1,5 +1,11 @@
 # @magical-types/pretty
 
+## 0.3.3
+
+### Patch Changes
+
+- [`642e5be`](https://github.com/Thinkmill/magical-types/commit/642e5be604cd5a1c68f39bf479c1a75ed73013f9) Thanks [@mitchellhamilton](https://github.com/mitchellhamilton)! - Fix Object nodes throwing when rendering
+
 ## 0.3.2
 
 ### Patch Changes
