@@ -394,8 +394,6 @@ export const defaultRenderers: MagicalNodeRenderers = {
       );
     }
 
-    console.log(node);
-
     return (
       <span>
         <TypeMeta>{node.name}</TypeMeta>
