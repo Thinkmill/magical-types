@@ -1,5 +1,11 @@
 # @magical-types/pretty
 
+## 0.3.6
+
+### Patch Changes
+
+- [#55](https://github.com/Thinkmill/magical-types/pull/55) [`2824de5`](https://github.com/Thinkmill/magical-types/commit/2824de512ba4dfa2a1eede1eb3bb758c2a920f46) Thanks [@ChrisLaneAU](https://github.com/ChrisLaneAU)! - Removed a console.log
+
 ## 0.3.5
 
 ### Patch Changes
